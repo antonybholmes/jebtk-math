@@ -1,0 +1,186 @@
+/**
+ * Copyright 2017 Antony Holmes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jebtk.math;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.jebtk.core.Indexed;
+import org.jebtk.math.test.Condition;
+import org.jebtk.math.test.GreaterThanCondition;
+import org.jebtk.math.test.GreaterThanEqualToCondition;
+import org.jebtk.math.test.LessThanCondition;
+import org.jebtk.math.test.LessThanEqualToCondition;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MathUtils.
+ */
+public class MathUtils {
+	
+	/**
+	 * Instantiates a new math utils.
+	 */
+	private MathUtils() {
+		// Do nothing
+	}
+	
+	/**
+	 * Divide a list of doubles by a number.
+	 *
+	 * @param <T> the generic type
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static <T extends Number> List<Double> multiply(List<T> values, double x) {
+		List<Double> ret = new ArrayList<Double>(values.size());
+		
+		for (T v : values) {
+			ret.add(v.doubleValue() * x);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Adds the.
+	 *
+	 * @param values the values
+	 * @param i the i
+	 * @return the list
+	 */
+	public static List<Integer> add(Collection<Integer> values, int i) {
+		List<Integer> ret = new ArrayList<Integer>(values.size());
+		
+		for (int v : values) {
+			ret.add(v + 1);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Divide a list of numbers by a number.
+	 *
+	 * @param <T> the generic type
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static <T extends Number> List<Double> divide(List<T> values, double x) {
+		List<Double> ret = new ArrayList<Double>(values.size());
+		
+		for (T v : values) {
+			ret.add(v.doubleValue() / x);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Find the indices of indexed values whose value is greater than x.
+	 *
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static List<Integer> gt(Collection<Indexed<Integer, Double>> values, double x) {
+		return findInIndexedList(values, new GreaterThanCondition(x));
+	}
+	
+	/**
+	 * Find all items greater than or equal to x in a list and
+	 * return their indices.
+	 *
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static List<Integer> ge(Collection<Indexed<Integer, Double>> values, double x) {
+		return findInIndexedList(values, new GreaterThanEqualToCondition(x));
+	}
+	
+	/**
+	 * Lt indexed list.
+	 *
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static List<Integer> lt(Collection<Indexed<Integer, Double>> values, double x) {
+		return findInIndexedList(values, new LessThanCondition(x));
+	}
+	
+	/**
+	 * Le.
+	 *
+	 * @param values the values
+	 * @param x the x
+	 * @return the list
+	 */
+	public static List<Integer> le(Collection<Indexed<Integer, Double>> values, double x) {
+		return findInIndexedList(values, new LessThanEqualToCondition(x));
+	}
+	
+	/**
+	 * Returns the list of indices where a condition is met.
+	 *
+	 * @param values the values
+	 * @param condition the condition
+	 * @return the list
+	 */
+	public static List<Integer> findInIndexedList(Collection<Indexed<Integer, Double>> values, 
+			Condition condition) {
+		List<Integer> indices = new ArrayList<Integer>();
+		
+		for (Indexed<Integer, Double> index : values) {
+			if (condition.test(index.getValue())) {
+				indices.add(index.getIndex());
+			}
+		}
+		
+		return indices;
+	}
+
+	
+	/**
+	 * Returns the indices of items of who are greater than the min.
+	 *
+	 * @param items the items
+	 * @param min the min
+	 * @return the list
+	 */
+	public static List<Indexed<Integer, Double>> min(List<Indexed<Integer, Double>> items,
+			double min) {
+
+		List<Indexed<Integer, Double>> ret = 
+				new ArrayList<Indexed<Integer, Double>>(items.size());
+
+		for (Indexed<Integer, Double> index : items) {
+			//System.err.println("filter sd " + i + " " + sd[i] + " " + min);
+
+			if (index.getValue() >= min) {
+				ret.add(index);
+			}
+		}
+
+		return ret;
+	}
+
+	
+}
