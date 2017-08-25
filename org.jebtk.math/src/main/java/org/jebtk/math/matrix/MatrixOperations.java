@@ -1578,12 +1578,12 @@ public class MatrixOperations {
 	 * This is used to extract all of the field values that need to be
 	 * collapsed from the original matrix and putting them into the new
 	 * matrix
-	 * 
-	 * @param m
-	 * @param rowToRows
-	 * @param rowAnnotation		The row annotation that was used for joining.
+	 *
+	 * @param m the m
+	 * @param rowToRows the row to rows
+	 * @param rowAnnotation 	The row annotation that was used for joining.
 	 * 							This will not be joined
-	 * @param ret
+	 * @param ret the ret
 	 */
 	private static void joinAnnotations(final AnnotationMatrix m,
 			Map<Integer, List<Integer>> rowToRows,
@@ -2375,6 +2375,12 @@ public class MatrixOperations {
 	
 	
 	
+	/**
+	 * Mean.
+	 *
+	 * @param m the m
+	 * @return the double
+	 */
 	public static double mean(final AnnotationMatrix m) {
 		return mean(m.getInnerMatrix());
 	}
@@ -2383,7 +2389,6 @@ public class MatrixOperations {
 	 * Mean.
 	 *
 	 * @param m the m
-	 * @param row the row
 	 * @return the double
 	 */
 	public static double mean(final Matrix m) {
@@ -2416,7 +2421,6 @@ public class MatrixOperations {
 	 * Mean.
 	 *
 	 * @param m the m
-	 * @param row the row
 	 * @return the double
 	 */
 	public static double mean(final DoubleMatrix m) {

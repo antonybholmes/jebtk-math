@@ -1,3 +1,18 @@
+/**
+ * Copyright 2017 Antony Holmes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jebtk.math.machine.learning;
 
 import java.util.ArrayDeque;
@@ -17,12 +32,26 @@ import org.jebtk.core.tree.TreeNode;
 import org.jebtk.math.matrix.AnnotationMatrix;
 import org.jebtk.math.matrix.MatrixGroup;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class C45.
+ */
 public class C45 {
 	
+	/**
+	 * Instantiates a new c45.
+	 */
 	private C45() {
 		// Do nothing
 	}
 	
+	/**
+	 * Parses the double.
+	 *
+	 * @param m the m
+	 * @param groups the groups
+	 * @return the decision tree
+	 */
 	public static DecisionTree parseDouble(AnnotationMatrix m, 
 			List<? extends MatrixGroup> groups) {
 		
@@ -176,6 +205,13 @@ public class C45 {
 		return root;
 	}
 	
+	/**
+	 * Entropy.
+	 *
+	 * @param labels the labels
+	 * @param s the s
+	 * @return the double
+	 */
 	private static double entropy(final List<String> labels,
 			final List<Integer> s) {
 		CountMap<String> countMap = new CountMap<String>();
@@ -198,6 +234,15 @@ public class C45 {
 		return entropy;
 	}
 	
+	/**
+	 * Inf gain.
+	 *
+	 * @param labels the labels
+	 * @param s the s
+	 * @param pivot the pivot
+	 * @param hs the hs
+	 * @return the double
+	 */
 	private static double infGain(final List<String> labels,
 			final List<Integer> s,
 			int pivot,

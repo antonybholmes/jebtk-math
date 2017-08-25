@@ -2495,6 +2495,15 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		return cells;
 	}
 
+	/**
+	 * Parses the txt matrix.
+	 *
+	 * @param file the file
+	 * @param hasHeader the has header
+	 * @param rowAnnotations the row annotations
+	 * @return the annotation matrix
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static AnnotationMatrix parseTxtMatrix(Path file,
 			boolean hasHeader,
 			int rowAnnotations) throws IOException {
@@ -2748,6 +2757,13 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		}
 	}
 	
+	/**
+	 * Alt index modulo.
+	 *
+	 * @param i the i
+	 * @param size the size
+	 * @return the int
+	 */
 	public static int altIndexModulo(int i, int size) {
 		return (size + i) % size;
 	}

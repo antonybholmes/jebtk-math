@@ -1090,9 +1090,9 @@ public class Excel {
 
 	/**
 	 * Create some blank cells in a spreadsheet.
-	 * 
-	 * @param n
-	 * @param row
+	 *
+	 * @param n the n
+	 * @param row the row
 	 */
 	public static void createEmptyColumns(int n, XSSFRow row) {
 		int s = row.getLastCellNum();

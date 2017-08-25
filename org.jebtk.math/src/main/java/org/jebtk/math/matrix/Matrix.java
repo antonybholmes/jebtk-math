@@ -495,9 +495,9 @@ public abstract class Matrix extends MatrixEventListeners {
 
 	/**
 	 * Copy a column from one matrix to another.
-	 * 
-	 * @param from
-	 * @param column
+	 *
+	 * @param from the from
+	 * @param column the column
 	 */
 	public void copyColumn(final Matrix from, int column) {
 		copyColumn(from, column, column);
@@ -1249,9 +1249,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	
 	/**
 	 * Copy columns from one matrix to another.
-	 * 
-	 * @param from
-	 * @param to
+	 *
+	 * @param from the from
+	 * @param to the to
 	 */
 	public static void copyColumns(Matrix from, 
 			Matrix to) {
@@ -1267,6 +1267,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 *
 	 * @param from the from
 	 * @param to the to
+	 * @param column the column
 	 * @param columns the columns
 	 */
 	public static void copyColumns(Matrix from, 
@@ -1282,6 +1283,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param from the from
 	 * @param to the to
 	 * @param toOffset the to offset
+	 * @param column the column
 	 * @param columns the columns
 	 */
 	public static void copyColumns(Matrix from, 

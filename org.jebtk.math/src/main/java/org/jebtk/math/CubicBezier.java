@@ -1,9 +1,25 @@
+/**
+ * Copyright 2017 Antony Holmes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jebtk.math;
 
 import java.awt.geom.Point2D;
 
-import org.jebtk.core.geom.DoublePos;
+import org.jebtk.core.geom.DoublePos2D;
 
+// TODO: Auto-generated Javadoc
 /**
  * Evaluate a point on a cubic bezier curve.
  * 
@@ -12,16 +28,30 @@ import org.jebtk.core.geom.DoublePos;
  */
 public class CubicBezier {
 	
-	private static final DoublePos P0 = new DoublePos(0, 0);
-	private static final DoublePos P3 = new DoublePos(1, 1);
+	/** The Constant P0. */
+	private static final DoublePos2D P0 = new DoublePos2D(0, 0);
+	
+	/** The Constant P3. */
+	private static final DoublePos2D P3 = new DoublePos2D(1, 1);
 
+	/** The m X. */
 	private double[] mX = new double[4];
+	
+	/** The m Y. */
 	private double[] mY = new double[4];
 
-	public CubicBezier(DoublePos p0, 
-			DoublePos p1, 
-			DoublePos p2, 
-			DoublePos p3) {
+	/**
+	 * Instantiates a new cubic bezier.
+	 *
+	 * @param p0 the p 0
+	 * @param p1 the p 1
+	 * @param p2 the p 2
+	 * @param p3 the p 3
+	 */
+	public CubicBezier(DoublePos2D p0, 
+			DoublePos2D p1, 
+			DoublePos2D p2, 
+			DoublePos2D p3) {
 		mX[0] = p0.getX();
 		mX[1] = p1.getX();
 		mX[2] = p2.getX();
@@ -33,6 +63,14 @@ public class CubicBezier {
 		mY[3] = p3.getY();
 	}
 
+	/**
+	 * Instantiates a new cubic bezier.
+	 *
+	 * @param p0 the p 0
+	 * @param p1 the p 1
+	 * @param p2 the p 2
+	 * @param p3 the p 3
+	 */
 	public CubicBezier(Point2D.Double p0, 
 			Point2D.Double p1, 
 			Point2D.Double p2, 
@@ -48,6 +86,18 @@ public class CubicBezier {
 		mY[3] = p3.y;
 	}
 	
+	/**
+	 * Instantiates a new cubic bezier.
+	 *
+	 * @param x0 the x 0
+	 * @param y0 the y 0
+	 * @param x1 the x 1
+	 * @param y1 the y 1
+	 * @param x2 the x 2
+	 * @param y2 the y 2
+	 * @param x3 the x 3
+	 * @param y3 the y 3
+	 */
 	public CubicBezier(double x0,
 			double y0,
 			double x1,
@@ -67,17 +117,34 @@ public class CubicBezier {
 		mY[3] = y3;
 	}
 
-	public DoublePos eval(double t) {
+	/**
+	 * Eval.
+	 *
+	 * @param t the t
+	 * @return the double pos 2 D
+	 */
+	public DoublePos2D eval(double t) {
 		double u = 1 - t;
 		double tt = t*t;
 		double uu = u*u;
 		double uuu = uu * u;
 		double ttt = tt * t;
 
-		return new DoublePos(evalX(t, u, tt, uu, uuu, ttt), 
+		return new DoublePos2D(evalX(t, u, tt, uu, uuu, ttt), 
 				evalY(t, u, tt, uu, uuu, ttt));
 	}
 
+	/**
+	 * Eval X.
+	 *
+	 * @param t the t
+	 * @param u the u
+	 * @param tt the tt
+	 * @param uu the uu
+	 * @param uuu the uuu
+	 * @param ttt the ttt
+	 * @return the double
+	 */
 	private double evalX(double t, 
 			double u,
 			double tt,
@@ -92,6 +159,17 @@ public class CubicBezier {
 		return x;
 	}
 	
+	/**
+	 * Eval Y.
+	 *
+	 * @param t the t
+	 * @param u the u
+	 * @param tt the tt
+	 * @param uu the uu
+	 * @param uuu the uuu
+	 * @param ttt the ttt
+	 * @return the double
+	 */
 	private double evalY(double t, 
 			double u,
 			double tt,
@@ -109,15 +187,24 @@ public class CubicBezier {
 	/**
 	 * Return a normalized Cubic Bezier where the start and end points are
 	 * fixed at (0, 0) and (1, 1) respectively.
-	 * 
-	 * @param p1
-	 * @param p2
-	 * @return
+	 *
+	 * @param p1 the p 1
+	 * @param p2 the p 2
+	 * @return the cubic bezier
 	 */
-	public static CubicBezier normCubicBezier(DoublePos p1, DoublePos p2) {
+	public static CubicBezier normCubicBezier(DoublePos2D p1, DoublePos2D p2) {
 		return new CubicBezier(P0, p1, p2, P3);
 	}
 	
+	/**
+	 * Norm cubic bezier.
+	 *
+	 * @param x1 the x 1
+	 * @param y1 the y 1
+	 * @param x2 the x 2
+	 * @param y2 the y 2
+	 * @return the cubic bezier
+	 */
 	public static CubicBezier normCubicBezier(double x1, 
 			double y1, 
 			double x2, 
