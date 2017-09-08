@@ -2533,7 +2533,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		if (hasHeader) {
 			return new MixedMatrixParser(hasHeader, skipMatches, rowAnnotations, delimiter).parse(file);
 		} else {
-			return parseDynamicMatrix(file, hasHeader, skipMatches, rowAnnotations, delimiter);
+			return parseDynamicMatrix(file, skipMatches, rowAnnotations, delimiter);
 		}
 	}
 
@@ -2554,7 +2554,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		if (hasHeader) {
 			return new CsvMatrixParser(hasHeader, rowAnnotations).parse(file);
 		} else {
-			return parseDynamicMatrix(file, hasHeader, skipMatches, rowAnnotations, TextUtils.COMMA_DELIMITER);
+			return parseDynamicMatrix(file, skipMatches, rowAnnotations, TextUtils.COMMA_DELIMITER);
 		}
 	}
 
@@ -2569,12 +2569,11 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 * @return the annotation matrix
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static AnnotationMatrix parseDynamicMatrix(Path file, 
-			boolean hasHeader,
+	public static AnnotationMatrix parseDynamicMatrix(Path file,
 			List<String> skipMatches,
 			int rowAnnotations, 
 			String delimiter) throws IOException {
-		return new DynamicMatrixParser(hasHeader, skipMatches, rowAnnotations, delimiter).parse(file);
+		return new DynamicMatrixParser(skipMatches, rowAnnotations, delimiter).parse(file);
 	}
 
 

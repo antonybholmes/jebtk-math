@@ -30,6 +30,7 @@ package org.jebtk.math.matrix;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 import org.jebtk.core.collections.CollectionUtils;
@@ -63,7 +64,7 @@ public class MixedMatrixParser implements MatrixParser {
 	protected String mDelimiter = null;
 
 	/** The m skip matches. */
-	private List<String> mSkipMatches;
+	private Collection<String> mSkipMatches;
 
 
 	/**
@@ -75,7 +76,7 @@ public class MixedMatrixParser implements MatrixParser {
 	 * @param delimiter the delimiter
 	 */
 	public MixedMatrixParser(boolean hasHeader,
-			List<String> skipMatches,
+			Collection<String> skipMatches,
 			int rowAnnotations, 
 			String delimiter) {
 		// If row annotations >0, you must have a header otherwise the file

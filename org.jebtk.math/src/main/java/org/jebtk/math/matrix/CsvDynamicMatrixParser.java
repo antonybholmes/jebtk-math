@@ -39,36 +39,17 @@ public class CsvDynamicMatrixParser extends CsvMatrixParser {
 	 * Instantiates a new text matrix parser.
 	 */
 	public CsvDynamicMatrixParser() {
-		this(true, 0);
+		this(0);
 	}
 	
 	/**
 	 * Instantiates a new text matrix parser.
 	 *
+	 * @param hasHeader the has header
 	 * @param rowAnnotations the row annotations
 	 */
 	public CsvDynamicMatrixParser(int rowAnnotations) {
-		this(true, rowAnnotations);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 */
-	public CsvDynamicMatrixParser(boolean hasHeader) {
-		this(hasHeader, 0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvDynamicMatrixParser(boolean hasHeader, 
-			int rowAnnotations) {
-		super(hasHeader, rowAnnotations);
+		super(false, rowAnnotations);
 	}
 
 	/* (non-Javadoc)

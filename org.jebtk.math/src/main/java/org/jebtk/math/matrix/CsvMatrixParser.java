@@ -126,8 +126,6 @@ public class CsvMatrixParser implements MatrixParser {
 		int rows = mHasHeader ? 0 : 1;
 		int columns = -1;
 		
-		System.err.println("csv " + mHasHeader + " " + mRowAnnotations);
-		
 		try {
 			line = reader.readLine();
 			tokens = TextUtils.parseCSVLine(line); //ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line)); //TextUtils.tabSplit(line);
@@ -157,8 +155,6 @@ public class CsvMatrixParser implements MatrixParser {
 				line = reader.readLine();
 				tokens = TextUtils.parseCSVLine(line);
 				
-				System.err.println("csv " + CollectionUtils.subList(tokens, mRowAnnotations));
-
 				matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
 
 				rowAnnotationNames = CollectionUtils.subList(tokens, 0, mRowAnnotations);
