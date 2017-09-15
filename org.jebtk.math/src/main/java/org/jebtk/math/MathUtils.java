@@ -93,6 +93,37 @@ public class MathUtils {
 	}
 	
 	/**
+	 * Return an array of a value divided by each element in an array.
+	 * 
+	 * @param d
+	 * @param values
+	 * @return
+	 */
+	public static double[] divide(double d, final double[] values) {
+		int n = values.length;
+		
+		double[] ret = new double[n];
+		
+		for (int i = 0; i < n; ++i) {
+			ret[i] = d / values[i];
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Modify an array to d / x where x is an element in the array.
+	 * 
+	 * @param d
+	 * @param values
+	 */
+	public static void divide2(double d, double[] values) {
+		for (int i = 0; i < values.length; ++i) {
+			values[i] = d / values[i];
+		}
+	}
+	
+	/**
 	 * Find the indices of indexed values whose value is greater than x.
 	 *
 	 * @param values the values

@@ -63,7 +63,7 @@ public abstract class Matrix extends MatrixEventListeners {
 
 	/** The Constant NUMBER_MATRIX_TYPES. */
 	private static final Set<CellType> NUMBER_MATRIX_TYPES = CollectionUtils.toSet(CellType.NUMBER);
-	
+
 	/** The Constant TEXT_MATRIX_TYPES. */
 	private static final Set<CellType> TEXT_MATRIX_TYPES = CollectionUtils.toSet(CellType.TEXT);
 
@@ -117,8 +117,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	 *
 	 * @return the type
 	 */
-	public AnnotationType getType() {
-		return AnnotationType.NUMERIC;
+	public MatrixType getType() {
+		return MatrixType.NUMBER;
 	}
 
 	/**
@@ -502,7 +502,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyColumn(final Matrix from, int column) {
 		copyColumn(from, column, column);
 	}
-	
+
 	/**
 	 * Copy column.
 	 *
@@ -683,34 +683,6 @@ public abstract class Matrix extends MatrixEventListeners {
 		StringBuilder buffer = new StringBuilder("[").append(getRowCount()).append(" x ").append(getColumnCount()).append("]");
 
 		return buffer.toString();
-
-		/*
-		StringBuilder buffer = new StringBuilder();
-
-		buffer.append("[");
-
-		for (int i = 0; i < getRowCount(); ++i) {
-			buffer.append("[");
-
-			for (int j = 0; j < getColumnCount(); ++j) {
-				buffer.append(getText(i, j));
-
-				if (j < getColumnCount() - 1) {
-					buffer.append(",");
-				}
-			}
-
-			buffer.append("]");
-
-			if (i < getRowCount() - 1) {
-				buffer.append(",");
-			}
-		}
-
-		buffer.append("]");
-
-		return buffer.toString();
-		 */
 	}
 
 	/**
@@ -976,7 +948,7 @@ public abstract class Matrix extends MatrixEventListeners {
 
 		return ret;
 	}
-	
+
 
 	//
 	// Static methods
@@ -996,51 +968,51 @@ public abstract class Matrix extends MatrixEventListeners {
 		if (m instanceof MixedMatrix) {
 			return extractText((MixedMatrix)m, rows, columns);
 		}
-		
+
 		if (columns == null || rows == null) {
 			return null;
 		}
-		
+
 		int n = m.getColumnCount();
-	
+
 		for (int i = 0; i < n; ++i) {
 			if (m.getCellType(0, i) == CellType.TEXT) {
 				columns.add(i);
 			}
 		}
-		
+
 		if (columns.size() == 0) {
 			return null;
 		}
-		
+
 		int rn = m.getRowCount();
-		
+
 
 		for (int i = 0; i < rn; ++i) {
 			if (m.getCellType(i, columns.get(0)) == CellType.TEXT) {
 				rows.add(i);
 			}
 		}
-		
+
 		if (rows.size() == 0) {
 			return null;
 		}
-		
+
 		TextMatrix ret = TextMatrix.createTextMatrix(rows.size(), columns.size());
-		
+
 		for (int i = 0; i < rows.size(); ++i) {
 			int r = rows.get(i);
-			
+
 			for (int j = 0; j < columns.size(); ++j) {
 				int c = columns.get(j);
-			
+
 				ret.set(i, j, m.getText(r, c));
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Extract text.
 	 *
@@ -1054,7 +1026,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			List<Integer> columns) {
 		return extractData(m, CellType.TEXT, rows, columns);
 	}
-	
+
 	/**
 	 * Extract the numerical portion of a matrix. The supplied rows and
 	 * columns lists will be populated by the rows and indices of the matrix
@@ -1071,50 +1043,50 @@ public abstract class Matrix extends MatrixEventListeners {
 		if (m instanceof MixedMatrix) {
 			return extractNumbers((MixedMatrix)m, rows, columns);
 		}
-		
+
 		if (columns == null || rows == null) {
 			return null;
 		}
-		
+
 		int n = m.getColumnCount();
-		
+
 		for (int i = 0; i < n; ++i) {
 			if (m.getCellType(0, i) == CellType.NUMBER) {
 				columns.add(i);
 			}
 		}
-		
+
 		if (columns.size() == 0) {
 			return null;
 		}
-		
+
 		int rn = m.getRowCount();
-			
+
 		for (int i = 0; i < rn; ++i) {
 			if (m.getCellType(i, columns.get(0)) == CellType.NUMBER) {
 				rows.add(i);
 			}
 		}
-		
+
 		if (rows.size() == 0) {
 			return null;
 		}
-		
+
 		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(rows.size(), columns.size());
 
 		for (int i = 0; i < rows.size(); ++i) {
 			int r = rows.get(i);
-			
+
 			for (int j = 0; j < columns.size(); ++j) {
 				int c = columns.get(j);
-			
+
 				ret.set(i, j, m.getValue(r, c));
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Extract numbers from a matrix and create a new matrix from them.
 	 *
@@ -1133,8 +1105,8 @@ public abstract class Matrix extends MatrixEventListeners {
 			List<Integer> columns) {
 		return extractData(m, CellType.NUMBER, rows, columns);
 	}
-	
-	
+
+
 	/**
 	 * Extract data.
 	 *
@@ -1151,38 +1123,38 @@ public abstract class Matrix extends MatrixEventListeners {
 		if (columns == null || rows == null) {
 			return null;
 		}
-		
-		int cn = m.mColumns;
-		
+
+		int cn = m.mCols;
+
 		for (int i = 0; i < cn; ++i) {
 			if (m.mCellType[i] == cellType) {
 				columns.add(i);
 			}
 		}
-		
+
 		if (columns.size() == 0) {
 			return null;
 		}
-		
+
 		int rn = m.mRows;
-		
+
 		int c = columns.get(0);
-		
+
 		for (int i = 0; i < rn; ++i) {
 			if (m.mCellType[c] == cellType) {
 				rows.add(i);
 			}
-			
+
 			c += cn;
 		}
-		
+
 		if (cellType == CellType.NUMBER) {
 			return extractDoubleData(m,rows, columns);
 		} else {
 			return extractTextData(m,rows, columns);
 		}
 	}
-	
+
 	/**
 	 * Extract double data.
 	 *
@@ -1195,26 +1167,26 @@ public abstract class Matrix extends MatrixEventListeners {
 			List<Integer> rows, 
 			List<Integer> columns) {
 		int rn = m.mRows;
-		int cn = m.mColumns;
+		int cn = m.mCols;
 		int cn2 = columns.size();
-		
+
 		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(rows.size(), cn2);
-		
+
 		for (int i = 0; i < cn2; ++i) {
 			int origColIndex = columns.get(i);
 			int newIndex = i;
-			
+
 			for (int j = 0; j < rn; ++j) {
 				ret.mData[newIndex] = ((Number)m.mData[origColIndex]).doubleValue();
-				
+
 				origColIndex += cn;
 				newIndex += cn2;
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Extract the text data from the rows and columns specified.
 	 *
@@ -1227,26 +1199,26 @@ public abstract class Matrix extends MatrixEventListeners {
 			List<Integer> rows, 
 			List<Integer> columns) {
 		int rn = m.mRows;
-		int cn = m.mColumns;
+		int cn = m.mCols;
 		int cn2 = columns.size();
-		
+
 		TextMatrix ret = TextMatrix.createTextMatrix(rows.size(), cn2);
-		
+
 		for (int i = 0; i < cn2; ++i) {
 			int origColIndex = columns.get(i);
 			int newIndex = i;
-			
+
 			for (int j = 0; j < rn; ++j) {
 				ret.mData[newIndex] = (String)m.mData[origColIndex];
-				
+
 				origColIndex += cn;
 				newIndex += cn2;
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Copy columns from one matrix to another.
 	 *
@@ -1256,12 +1228,12 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static void copyColumns(Matrix from, 
 			Matrix to) {
 		int cols = Math.min(from.getColumnCount(), to.getColumnCount());
-		
+
 		for (int i = 0; i < cols; ++i) {
 			to.copyColumn(from, i);
 		}
 	}
-	
+
 	/**
 	 * Copy columns.
 	 *
@@ -1294,7 +1266,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		int tc = toOffset;
 
 		to.copyColumn(from, column, tc++);
-		
+
 		for (int c : columns) {
 			to.copyColumn(from, c, tc++);
 		}
@@ -1594,7 +1566,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		} else {
 			return MixedMatrix.createMixedMatrix(m);
 		}
-		
+
 		//return ofSameType(m, m.getRowCount(), m.getColumnCount());
 	}
 
@@ -1609,7 +1581,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static Matrix ofSameType(final Matrix m, int rows, int columns) {
 		//return ofSameType(m.getType(), rows, columns);
-		
+
 		if (m instanceof DoubleMatrix) {
 			return DoubleMatrix.createDoubleMatrix(rows, columns);
 		} else if (m instanceof IntMatrix) {
@@ -1630,9 +1602,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param columns the columns
 	 * @return the matrix
 	 */
-	public static Matrix ofSameType(AnnotationType type, int rows, int columns) {
+	public static Matrix ofSameType(MatrixType type, int rows, int columns) {
 		switch (type) {
-		case NUMERIC:
+		case NUMBER:
 			return new DoubleMatrix(rows, columns);
 		case TEXT:
 			return new TextMatrix(rows, columns);
@@ -1648,9 +1620,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return true, if is text
 	 */
 	public static boolean isText(Matrix m) {
-		return m.getType() == AnnotationType.TEXT;
+		return m.getType() == MatrixType.TEXT;
 	}
-	
+
 	/**
 	 * Returns the cell types in the matrix. This is predominately for use
 	 * with mixed matrices to check whether they contain a mixture of text
@@ -1669,29 +1641,29 @@ public abstract class Matrix extends MatrixEventListeners {
 			return cellTypes((MixedMatrix)m);
 		} else {
 			Set<CellType> ret = new HashSet<CellType>();
-			
+
 			int n = CellType.values().length;
-			
+
 			for (int i = 0; i < m.getRowCount(); ++i) {
 				for (int j = 0; j < m.getColumnCount(); ++j) {
 					ret.add(m.getCellType(i, j));
-					
+
 					if (ret.size() == n) {
 						// Contains all types so no point checking further
 						break;
 					}
 				}
-				
+
 				if (ret.size() == n) {
 					// Contains all types so no point checking further
 					break;
 				}
 			}
-			
+
 			return ret;
 		}
 	}
-	
+
 	/**
 	 * Cell types.
 	 *
@@ -1701,7 +1673,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static Set<CellType> cellTypes(DoubleMatrix m) {
 		return NUMBER_MATRIX_TYPES;
 	}
-	
+
 	/**
 	 * Cell types.
 	 *
@@ -1711,7 +1683,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static Set<CellType> cellTypes(TextMatrix m) {
 		return TEXT_MATRIX_TYPES;
 	}
-	
+
 	/**
 	 * Cell types.
 	 *
@@ -1720,17 +1692,17 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static Set<CellType> cellTypes(MixedMatrix m) {
 		Set<CellType> ret = new HashSet<CellType>();
-		
+
 		int n = CellType.values().length;
-		
+
 		for (int i = 0; i < m.mData.length; ++i) {
 			ret.add(m.mCellType[i]);
-				
+
 			if (ret.size() == n) {
 				break;
 			}
 		}
-		
+
 		return ret;
 	}
 }

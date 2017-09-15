@@ -35,7 +35,7 @@ import org.jebtk.core.text.TextUtils;
 // TODO: Auto-generated Javadoc
 /**
  * For matrices that intending to store data in a 1D array format. This
- * class provides only some of the required implementation.
+ * class provides some of the required implementation.
  * 
  * @author Antony Holmes Holmes
  */
@@ -89,7 +89,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		}
 
 		fireMatrixChanged();
-		
+
 		return this;
 	}
 
@@ -103,7 +103,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		}
 
 		fireMatrixChanged();
-		
+
 		return this;
 	}
 
@@ -117,7 +117,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		}
 
 		fireMatrixChanged();
-		
+
 		return this;
 	}
 
@@ -131,7 +131,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		}
 
 		fireMatrixChanged();
-		
+
 		return this;
 	}
 
@@ -186,7 +186,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void update(int row, int column, double v) {
 		update(getIndex(row, column), v);
 	}
-	
+
 	/**
 	 * Update.
 	 *
@@ -196,7 +196,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void update(int index, double v) {
 		// Do nothing
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#update(int, int, int)
 	 */
@@ -204,7 +204,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void update(int row, int column, int v) {
 		update(getIndex(row, column), v);
 	}
-	
+
 	/**
 	 * Update.
 	 *
@@ -298,7 +298,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void set(int row, int column, double v) {
 		set(getIndex(row, column), v);
 	}
-	
+
 	/**
 	 * Sets the.
 	 *
@@ -318,7 +318,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void update(int row, int column, Object v) {
 		update(getIndex(row, column), v);
 	}
-	
+
 	/**
 	 * Sets the.
 	 *
@@ -330,7 +330,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 
 		fireMatrixChanged();
 	}
-	
+
 	/**
 	 * Sets the.
 	 *
@@ -475,7 +475,9 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @param index the index
 	 * @return the cell type
 	 */
-	public abstract CellType getCellType(int index);
+	public CellType getCellType(int index) {
+		return CellType.NUMBER;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#setColumn(int, java.util.List)
@@ -489,7 +491,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		for (int i = 0; i < r; ++i) {
 			set(ix, values.get(i));
 
-			ix += mColumns;
+			ix += mCols;
 		}
 
 		fireMatrixChanged();
@@ -509,7 +511,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		for (int row = 0; row < r; ++row) {
 			values.add(get(i1));
 
-			i1 += mColumns;
+			i1 += mCols;
 		}
 
 		return values;
@@ -529,7 +531,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		for (int row = 0; row < r; ++row) {
 			values[row] = getValue(i1);
 
-			i1 += mColumns;
+			i1 += mCols;
 		}
 
 		return values;
@@ -549,7 +551,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		for (int row = 0; row < r; ++row) {
 			values.add(getText(i1));
 
-			i1 += mColumns;
+			i1 += mCols;
 		}
 
 		return values;
@@ -623,7 +625,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 		for (int row = 0; row < r; ++row) {
 			update(i, from.get(row, column));
 
-			i += mColumns;
+			i += mCols;
 		}
 
 		fireMatrixChanged();
@@ -653,14 +655,14 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	@Override
 	public Matrix transpose() { 
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(mColumns, mRows);
+		MixedMatrix ret = MixedMatrix.createMixedMatrix(mCols, mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < getNumCells(); ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mColumns == 0) {
+			if (i % mCols == 0) {
 				i2 = c++;
 			}
 

@@ -215,9 +215,9 @@ public abstract class DynamicMatrix<T> extends Matrix {
 		}
 
 		if (o instanceof Double) {
-			update(row, column, (Double)o);
+			update(row, column, (double)o);
 		} else if (o instanceof Integer) {
-			update(row, column, (Integer)o);
+			update(row, column, (int)o);
 		} else if (o instanceof Number) {
 			update(row, column, ((Number)o).doubleValue());
 		} else {

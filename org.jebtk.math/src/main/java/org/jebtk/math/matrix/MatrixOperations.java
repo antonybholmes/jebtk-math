@@ -44,6 +44,7 @@ import org.jebtk.core.text.Join;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.Stats;
 import org.jebtk.math.statistics.TTest;
+import org.jebtk.math.statistics.TwoSampleTest;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -2364,9 +2365,9 @@ public class MatrixOperations {
 	 * @return the double
 	 */
 	public static double mean(final DoubleMatrix m, int row) {
-		double[] data = new double[m.mColumns];
+		double[] data = new double[m.mCols];
 
-		System.arraycopy(m.mData, m.mRowOffsets[row], data, 0, m.mColumns);
+		System.arraycopy(m.mData, m.mRowOffsets[row], data, 0, m.mCols);
 
 		return Statistics.mean(data);
 	}
@@ -2521,12 +2522,59 @@ public class MatrixOperations {
 			}
 
 			double p;
+			
+			TwoSampleTest test = TwoSampleTest.create(p1, p2); 
 
 			if (equalVariance) {
-				p = TTest.twoTailEqualVarianceTTest(p1, p2);
+				p = test.twoTailEqualVarianceTTest();
 			} else {
-				p = TTest.twoTailUnequalVarianceTTest(p1, p2);
+				p = test.twoTailUnequalVarianceTTest();
 			}
+
+			// Set strange values to NaN
+			if (Mathematics.isInvalidNumber(p)) {
+				p = 1; //Double.NaN;
+			}
+
+			pvalues.add(p);
+		}
+
+		return pvalues;
+	}
+	
+	/**
+	 * Perform a Mann Whitney test on two matrix groups.
+	 * 
+	 * @param m
+	 * @param g1
+	 * @param g2
+	 * @param equalVariance
+	 * @return
+	 */
+	public static List<Double> mannWhitney(AnnotationMatrix m, 
+			MatrixGroup g1,
+			MatrixGroup g2) {
+		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
+
+		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
+		List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
+
+		for (int i = 0; i < m.getRowCount(); ++i) {
+			List<Double> p1 = new ArrayList<Double>(g11.size());
+
+			for (int c : g11) {
+				p1.add(m.getValue(i, c));
+			}
+
+			List<Double> p2 = new ArrayList<Double>(g22.size());
+
+			for (int c : g22) {
+				p2.add(m.getValue(i, c));
+			}
+
+			TwoSampleTest test = TwoSampleTest.create(p1, p2); 
+
+			double p = test.mannWhitney();
 
 			// Set strange values to NaN
 			if (Mathematics.isInvalidNumber(p)) {
@@ -2898,7 +2946,7 @@ public class MatrixOperations {
 	public static void numToRow(final Collection<? extends Number> values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mColumns;
+		int c = row * m.mCols;
 
 		for (Number v : values) {
 			m.mData[c++] = v.doubleValue();
@@ -2950,7 +2998,7 @@ public class MatrixOperations {
 	public static void numToRow(final double[] values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mColumns;
+		int c = row * m.mCols;
 
 		for (double v : values) {
 			m.mData[c++] = v;
@@ -3003,7 +3051,7 @@ public class MatrixOperations {
 	public static void numToRow(final int[] values, 
 			int row, 
 			IntMatrix m) {
-		int c = row * m.mColumns;
+		int c = row * m.mCols;
 
 		for (int v : values) {
 			m.mData[c++] = v;
@@ -3020,7 +3068,7 @@ public class MatrixOperations {
 	public static void numToRow(final int[] values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mColumns;
+		int c = row * m.mCols;
 
 		for (int v : values) {
 			m.mData[c++] = v;
@@ -3067,7 +3115,7 @@ public class MatrixOperations {
 	public static void textToRow(final Collection<String> values, 
 			int row, 
 			TextMatrix m) {
-		int c = row * m.mColumns;
+		int c = row * m.mCols;
 
 		for (Object v : values) {
 			m.mData[c++] = v.toString();

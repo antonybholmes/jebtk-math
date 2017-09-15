@@ -104,8 +104,8 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
-		return AnnotationType.MIXED;
+	public MatrixType getType() {
+		return MatrixType.MIXED;
 	}
 	
 	/* (non-Javadoc)

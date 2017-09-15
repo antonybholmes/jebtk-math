@@ -76,8 +76,8 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
-		return AnnotationType.MIXED;
+	public MatrixType getType() {
+		return MatrixType.MIXED;
 	}
 	
 	/* (non-Javadoc)

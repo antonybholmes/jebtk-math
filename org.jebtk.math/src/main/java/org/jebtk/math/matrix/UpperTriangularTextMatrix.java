@@ -76,8 +76,8 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
-		return AnnotationType.TEXT;
+	public MatrixType getType() {
+		return MatrixType.TEXT;
 	}
 	
 	/* (non-Javadoc)

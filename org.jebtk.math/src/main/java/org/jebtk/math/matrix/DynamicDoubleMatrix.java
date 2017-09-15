@@ -117,14 +117,6 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
-	 */
-	@Override
-	public CellType getCellType(int row, int column) {
-		return CellType.NUMBER;
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
 	 */
 	@Override

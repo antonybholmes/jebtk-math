@@ -155,14 +155,6 @@ public class LongMatrix extends IndexableMatrix {
 	public void update(LongMatrix m) {
 		System.arraycopy(m.mData, 0, mData, 0, Math.min(m.mData.length, mData.length));
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getType()
-	 */
-	@Override
-	public AnnotationType getType() {
-		return AnnotationType.NUMERIC;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copy()
@@ -170,14 +162,6 @@ public class LongMatrix extends IndexableMatrix {
 	@Override
 	public Matrix copy() {
 		return new LongMatrix(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return CellType.NUMBER;
 	}
 
 	/* (non-Javadoc)
@@ -273,7 +257,7 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i).intValue();
 
-			ix += mColumns;
+			ix += mCols;
 		}
 	}
 
@@ -296,8 +280,8 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = (long)from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 		
 		fireMatrixChanged();
@@ -325,8 +309,8 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 		
 		fireMatrixChanged();
@@ -355,14 +339,14 @@ public class LongMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public Matrix transpose() { 
-		LongMatrix ret = createLongMatrix(mColumns, mRows);
+		LongMatrix ret = createLongMatrix(mCols, mRows);
 
 		int i2 = 0;
 		int c = 0;
 		
 		for (int i = 0; i < mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mColumns == 0) {
+			if (i % mCols == 0) {
 				i2 = c++;
 			}
 			
@@ -389,7 +373,7 @@ public class LongMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			values[row] = mData[i1];
 			
-			i1 += mColumns;
+			i1 += mCols;
 		}
 
 		return values;

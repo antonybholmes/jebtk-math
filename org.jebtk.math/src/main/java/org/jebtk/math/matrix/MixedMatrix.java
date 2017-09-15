@@ -126,8 +126,8 @@ public class MixedMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
-		return AnnotationType.MIXED;
+	public MatrixType getType() {
+		return MatrixType.MIXED;
 	}
 
 	/* (non-Javadoc)
@@ -324,8 +324,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 	}
 
@@ -344,8 +344,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 	}
 
@@ -364,8 +364,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 	}
 
@@ -420,7 +420,7 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 
-			ix += mColumns;
+			ix += mCols;
 		}
 	}
 
@@ -436,7 +436,7 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			mData[ix] = values.get(row);
 
-			ix += mColumns;
+			ix += mCols;
 		}
 	}
 
@@ -445,14 +445,14 @@ public class MixedMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public Matrix transpose() {
-		MixedMatrix ret = createMixedMatrix(mColumns, mRows);
+		MixedMatrix ret = createMixedMatrix(mCols, mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mColumns == 0) {
+			if (i % mCols == 0) {
 				i2 = c++;
 			}
 

@@ -111,7 +111,6 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 			}});
 		
 		mM.addMatrixListener(new MatrixEventListener() {
-
 			@Override
 			public void matrixChanged(ChangeEvent e) {
 				changed();
@@ -141,10 +140,7 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	public AnnotatableMatrix(AnnotationMatrix matrix, boolean copy) {
 		this(matrix.getInnerMatrix(), copy);
 
-		copyRowAnnotations(matrix, this);
-		
-		
-		copyColumnAnnotations(matrix, this);
+		copyAnnotations(matrix, this);
 
 		refresh();
 	}
@@ -160,11 +156,8 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	public AnnotatableMatrix(AnnotationMatrix matrix, Matrix m) {
 		this(m);
 
-		copyRowAnnotations(matrix, this);
-		copyColumnAnnotations(matrix, this);
+		copyAnnotations(matrix, this);
 
-		//SysUtils.err().println("rtr c name", getColumnName(2));
-		
 		refresh();
 	}
 	
@@ -203,7 +196,7 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
+	public MatrixType getType() {
 		return mM.getType();
 	}
 	
@@ -280,27 +273,13 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 		if (row >= 0 && column >= 0) {
 			return mM.getText(row, column);
 		} else if (row < 0 && column < 0) {
-			return getRowAnnotationNames().get(getRowAnnotationNames().size() + column);
+			return getRowAnnotationName(column);
 		} else if (row < 0) {
 			return getColumnAnnotations(row).getText(0, column);
 		} else {
 			// col < 0
 			return getRowAnnotations(column).getText(0, row);
 		}
-		
-		/*
-		MatrixCellRef c = translate(row, column);
-
-		if (c.row < 0 && c.column < 0) {
-			return getRowAnnotationNames().get(column);
-		} else if (c.row < 0) {
-			return getColumnAnnotations(row).getText(0, c.column);
-		} else if (c.column < 0) {
-			return getRowAnnotations(column).getText(0, c.row);
-		} else {
-			return mM.getText(c.row, c.column);
-		}
-		*/
 	}
 
 	/* (non-Javadoc)
@@ -311,7 +290,7 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 		if (row >= 0 && column >= 0) {
 			return mM.get(row, column);
 		} else if (row < 0 && column < 0) {
-			return getRowAnnotationNames().get(getRowAnnotationNames().size() + column);
+			return getRowAnnotationName(column);
 		} else if (row < 0) {
 			return getColumnAnnotations(row).get(0, column);
 		} else {
@@ -426,7 +405,17 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	public void updateToNull(int row, int column) {
 		mM.updateToNull(row, column);
 	}
+	
+	@Override
+	public Annotation getRowAnnotation() {
+		return mRowAnnotation;
+	}
 
+	@Override
+	public String getRowAnnotationName(int index) {
+		return mRowAnnotation.getName(index);
+	}
+	
 	/**
 	 * Returns the names of each extra column of annotation for
 	 * the rows. This is exclusive of the core matrix.
@@ -524,7 +513,15 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 		mRowAnnotation.setAnnotation(name, row, value);
 	}
 	
+	@Override
+	public String getColumnAnnotationName(int index) {
+		return mColumnAnnotation.getName(index);
+	}
 	
+	@Override
+	public Annotation getColumnAnnotation() {
+		return mColumnAnnotation;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.MatrixAnnotations#getColumnAnnotationNames()
@@ -1029,6 +1026,25 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	public static AnnotationMatrix createNumericalMatrix(AnnotationMatrix m) {
 		AnnotationMatrix ret = 
 				createNumericalMatrix(m.getRowCount(), m.getColumnCount());
+
+		copyAnnotations(m, ret);
+
+		return ret;
+	}
+	
+	public static AnnotationMatrix createDoubleMatrix(int rows, int columns) {
+		return new AnnotatableMatrix(new DoubleMatrix(rows, columns));
+	}
+
+	/**
+	 * Creates the numerical matrix.
+	 *
+	 * @param m the m
+	 * @return the annotation matrix
+	 */
+	public static AnnotationMatrix createDoubleMatrix(AnnotationMatrix m) {
+		AnnotationMatrix ret = 
+				createDoubleMatrix(m.getRowCount(), m.getColumnCount());
 
 		copyAnnotations(m, ret);
 

@@ -297,25 +297,18 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			int s = altIndexModulo(row, getColumnAnnotationNames().size());
 			return getColumnAnnotations(s).getText(0, column);
 		} else {
+			// column < 1
+			//if (column == -1) {
 			int s = altIndexModulo(column, getRowAnnotationNames().size());
 			return getRowAnnotations(s).getText(0, row);
+			//} else {
+			//	return TextUtils.EMPTY_STRING;
+			//}
 		}
 	}
 
-	/*
-	public int translateRow(int row) {
-		return getColumnAnnotationNames().size() - row; //row - getColumnAnnotationNames().size();
-	}
-
-	public int translateCol(int col) {
-		return getRowAnnotationNames().size() - col; //col - getRowAnnotationNames().size();
-	}
-
-	public MatrixCellRef translate(int row, int col) {
-		return new MatrixCellRef(translateRow(row), translateCol(col));
-	}
-	 */
-
+	public abstract Annotation getRowAnnotation();
+	
 	/**
 	 * Sets the row annotation.
 	 *
@@ -336,7 +329,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 */
 	public abstract void setNumRowAnnotations(String name, 
 			double[] values);
-	
+
 	/**
 	 * Sets the num row annotations.
 	 *
@@ -417,7 +410,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 
 	public abstract void setNumColumnAnnotations(String name, 
 			Collection<? extends Number> values);
-	
+
 	/**
 	 * Convert a double array to a column annotation.
 	 *
@@ -425,7 +418,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 * @param values the values
 	 */
 	public abstract void setNumColumnAnnotations(String name, double[] values);
-	
+
 	/**
 	 * Convert an int array to a column annotation.
 	 *
@@ -443,6 +436,8 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	public abstract void setTextColumnAnnotations(String name, 
 			Collection<String> values);
 
+	public abstract Annotation getColumnAnnotation();
+	
 	/**
 	 * Sets the column annotations.
 	 *
@@ -1622,9 +1617,9 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			AnnotationMatrix to,
 			Collection<Integer> rows) {
 		for (String name : from.getRowAnnotationNames()) {
-			
+
 			switch (from.getRowAnnotations(name).getType()) {
-			case NUMERIC:
+			case NUMBER:
 				double[] annotations = 
 				from.getRowAnnotations(name).rowAsDouble(0);
 
@@ -1643,7 +1638,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 				to.setTextRowAnnotations(name, ls);
 				break;
 			}
-			
+
 			/*
 			List<Object> annotations = from.getRowAnnotations(name).rowAsList(0);
 
@@ -1651,7 +1646,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 					CollectionUtils.subList(annotations, rows);
 
 			to.setRowAnnotations(name, subAnnotations);
-			*/
+			 */
 		}
 	}
 
@@ -1668,7 +1663,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			List<Indexed<Integer, V>> rows) {
 		for (String name : from.getRowAnnotationNames()) {
 			switch (from.getRowAnnotations(name).getType()) {
-			case NUMERIC:
+			case NUMBER:
 				double[] annotations = 
 				from.getRowAnnotations(name).rowAsDouble(0);
 
@@ -1696,7 +1691,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 					CollectionUtils.subListIndexed(annotations, rows);
 
 			to.setRowAnnotations(name, subAnnotations);
-			*/
+			 */
 		}
 	}
 
@@ -1710,7 +1705,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		if (from instanceof AnnotationMatrix) {
 			copyColumnAnnotation((AnnotationMatrix)from, column, this, toColumn);
 		}
-		
+
 		super.copyColumn(from, column, toColumn); //getInnerMatrix().copyColumn(from, column, toColumn);
 	}
 
@@ -1737,7 +1732,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 
 		if (column >= 0) {
 			copyColumnAnnotation(from, column, this, toColumn);
-			
+
 			super.copyColumn(from, column, toColumn);
 		} else {
 			//co >= 0
@@ -1793,14 +1788,14 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	public static void copyColumnAnnotations(final AnnotationMatrix from, 
 			AnnotationMatrix to,
 			Collection<Integer> columns) {
-		
+
 		for (String name : from.getColumnAnnotationNames()) {
 			//List<Object> annotations = from.getColumnAnnotations(name).rowAsList(0);
 			//List<Object> subAnnotations = CollectionUtils.subList(annotations, columns);
 			//to.setColumnAnnotations(name, subAnnotations);
-			
+
 			switch (from.getColumnAnnotations(name).getType()) {
-			case NUMERIC:
+			case NUMBER:
 				double[] annotations = 
 				from.getColumnAnnotations(name).rowAsDouble(0);
 
@@ -1819,8 +1814,8 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 				to.setTextColumnAnnotations(name, ls);
 				break;
 			}
-			
-			
+
+
 		}
 	}
 
@@ -1881,6 +1876,8 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 */
 	public static void copyAnnotations(final AnnotationMatrix from, 
 			AnnotationMatrix to) {
+		to.setName(from.getName());
+
 		copyRowAnnotations(from, to);
 		copyColumnAnnotations(from, to);
 	}
@@ -1902,9 +1899,9 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			//List<Object> subAnnotations = 
 			//		CollectionUtils.subListIndexed(annotations, columns);
 			//to.setColumnAnnotations(name, subAnnotations);
-			
+
 			switch (from.getColumnAnnotations(name).getType()) {
-			case NUMERIC:
+			case NUMBER:
 				double[] annotations = 
 				from.getColumnAnnotations(name).rowAsDouble(0);
 
@@ -2513,7 +2510,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 				rowAnnotations, 
 				TextUtils.TAB_DELIMITER);
 	}
-	
+
 	/**
 	 * Parses the txt matrix.
 	 *
@@ -2755,7 +2752,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			copyRowAnnotation(m, rows.get(i), ret, i);
 		}
 	}
-	
+
 	/**
 	 * Alt index modulo.
 	 *
@@ -2766,4 +2763,6 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	public static int altIndexModulo(int i, int size) {
 		return (size + i) % size;
 	}
+
+	
 }

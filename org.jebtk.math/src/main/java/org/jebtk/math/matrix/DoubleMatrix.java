@@ -53,7 +53,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	private static final long serialVersionUID = 1L;
 
 	/** The m data. */
-	protected double[] mData = null;
+	public double[] mData = null;
 
 	/**
 	 * Instantiates a new numerical matrix.
@@ -81,7 +81,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		// Set the default value
 		update(v);
 	}
-	
+
 	/**
 	 * Inits the.
 	 */
@@ -123,7 +123,7 @@ public class DoubleMatrix extends IndexableMatrix {
 
 		update(m);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
 	 */
@@ -131,7 +131,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public void updateToNull(int index) {
 		mData[index] = NULL_NUMBER;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#update(org.abh.common.math.matrix.Matrix)
 	 */
@@ -152,7 +152,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public void update(DoubleMatrix m) {
 		System.arraycopy(m.mData, 0, mData, 0, Math.min(m.mData.length, mData.length));
 	}
-	
+
 	/**
 	 * Gets the data.
 	 *
@@ -161,21 +161,13 @@ public class DoubleMatrix extends IndexableMatrix {
 	public double[] getData() {
 		return mData;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copy()
 	 */
 	@Override
 	public Matrix copy() {
 		return new DoubleMatrix(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return CellType.NUMBER;
 	}
 
 	/* (non-Javadoc)
@@ -207,10 +199,6 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void update(double v) {
-		//for (int i = 0; i < mData.length; ++i) {
-		//	mData[i] = v;
-		//}
-
 		Arrays.fill(mData, v);
 	}
 
@@ -242,10 +230,10 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 
-			ix += mColumns;
+			ix += mCols;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#copyColumn(org.abh.common.math.matrix.Matrix, int, int)
 	 */
@@ -265,7 +253,7 @@ public class DoubleMatrix extends IndexableMatrix {
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getValue(i, column);
 
-				i1 += mColumns;
+				i1 += mCols;
 			}
 		}
 	}
@@ -284,7 +272,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		//if (from.getRowCount() == 0 || getRowCount() == 0) {
 		//	return;
 		//}
-		
+
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
@@ -293,10 +281,10 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
-		
+
 		fireMatrixChanged();
 	}
 
@@ -311,40 +299,40 @@ public class DoubleMatrix extends IndexableMatrix {
 		int c = Math.min(from.getColumnCount(), getColumnCount());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
-		
+
 		fireMatrixChanged();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
 	 */
 	@Override
 	public double[] columnAsDouble(int column) {
 		double[] values = new double[mRows];
-		
+
 		int i1 = column;
-		
+
 		for (int row = 0; row < mRows; ++row) {
 			values[row] = mData[i1];
-			
-			i1 += mColumns;
+
+			i1 += mCols;
 		}
 
 		return values;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
 	 */
 	@Override
 	public double[] rowAsDouble(int row) {
-		double[] values = new double[mColumns];
-		
-		System.arraycopy(mData, mRowOffsets[row], values, 0, mColumns);
-		
+		double[] values = new double[mCols];
+
+		System.arraycopy(mData, mRowOffsets[row], values, 0, mCols);
+
 		return values;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#add(double)
 	 */
@@ -353,12 +341,12 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] += x;
 		}
-		
+
 		fireMatrixChanged();
-		
+
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#subtract(double)
 	 */
@@ -367,12 +355,12 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] -= x;
 		}
-		
+
 		fireMatrixChanged();
-		
+
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#multiply(double)
 	 */
@@ -381,12 +369,12 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] *= x;
 		}
-		
+
 		fireMatrixChanged();
-		
+
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#add(org.abh.common.math.matrix.DoubleMatrix)
 	 */
@@ -395,12 +383,12 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] += m.mData[i];
 		}
-		
+
 		fireMatrixChanged();
-		
+
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#dot(org.abh.common.math.matrix.DoubleMatrix)
 	 */
@@ -409,37 +397,36 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] *= m.mData[i];
 		}
-		
+
 		fireMatrixChanged();
-		
+
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
 	 */
 	@Override
 	public Matrix transpose() { 
-		DoubleMatrix ret = createDoubleMatrix(mColumns, mRows);
+		DoubleMatrix ret = createDoubleMatrix(mCols, mRows);
 
 		int i2 = 0;
 		int c = 0;
-		
+
 		for (int i = 0; i < mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mColumns == 0) {
+			if (i % mCols == 0) {
 				i2 = c++;
 			}
-			
+
 			ret.mData[i2] = mData[i];
-		
+
 			// Skip blocks
 			i2 += mRows;
 		}
-		
+
 		return ret;
 	}
-	
 
 	//
 	// Static methods
@@ -880,25 +867,25 @@ public class DoubleMatrix extends IndexableMatrix {
 		} else {
 			int r = m.getRowCount();
 			int c = m.getColumnCount();
-			
+
 			double[] means = new double[c];
-			
+
 			for (int i = 0; i < c; ++i) {
 				double[] values = new double[r];
-					
+
 				for (int j = 0; j < r; ++j) {
 					values[j] = m.getValue(j, i);
 				}
-				
+
 				double mean = Statistics.mean(values);
-				
+
 				means[i] = mean;
 			}
-			
+
 			return means;
 		}
 	}
-	
+
 	/**
 	 * Return the means of the matrix columns.
 	 *
@@ -908,28 +895,28 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double[] columnMeans(IndexableMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] means = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.getValue(index);
-				
+
 				index += c;
 			}
-			
+
 			double mean = Statistics.mean(values);
-			
+
 			means[i] = mean;
 		}
-		
+
 		return means;
 	}
-	
+
 	/**
 	 * Column means.
 	 *
@@ -938,29 +925,29 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	public static double[] columnMeans(DoubleMatrix m) {
 		int r = m.mRows;
-		int c = m.mColumns;
-		
+		int c = m.mCols;
+
 		double[] means = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.mData[index];
-				
+
 				index += c;
 			}
-			
+
 			double mean = Statistics.mean(values);
-			
+
 			means[i] = mean;
 		}
-		
+
 		return means;
 	}
-	
+
 	/**
 	 * Column pop std dev.
 	 *
@@ -975,25 +962,25 @@ public class DoubleMatrix extends IndexableMatrix {
 		} else {
 			int r = m.getRowCount();
 			int c = m.getColumnCount();
-			
+
 			double[] ret = new double[c];
-			
+
 			for (int i = 0; i < c; ++i) {
 				double[] values = new double[r];
-					
+
 				for (int j = 0; j < r; ++j) {
 					values[j] = m.getValue(j, i);
 				}
-				
+
 				double sd = Statistics.popStdDev(values);
-				
+
 				ret[i] = sd;
 			}
-			
+
 			return ret;
 		}
 	}
-	
+
 	/**
 	 * Return the means of the matrix columns.
 	 *
@@ -1003,28 +990,28 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(IndexableMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] ret = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.getValue(index);
-				
+
 				index += c;
 			}
-			
+
 			double sd = Statistics.popStdDev(values);
-			
+
 			ret[i] = sd;
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Column pop std dev.
 	 *
@@ -1034,25 +1021,25 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(DoubleMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] ret = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.mData[index];
-				
+
 				index += c;
 			}
-			
+
 			double sd = Statistics.popStdDev(values);
-			
+
 			ret[i] = sd;
 		}
-		
+
 		return ret;
 	}
 
@@ -1065,7 +1052,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static DoubleMatrix createDoubleMatrix(Matrix m) {
 		return createDoubleMatrix(m.getRowCount(), m.getColumnCount());
 	}
-	
+
 	/**
 	 * Creates the double matrix.
 	 *
@@ -1076,7 +1063,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static DoubleMatrix createDoubleMatrix(int rows, int cols) {
 		return new DoubleMatrix(rows, cols);
 	}
-	
+
 	/**
 	 * Create a zero matrix.
 	 *
@@ -1087,7 +1074,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static DoubleMatrix createZerosMatrix(int rows, int cols) {
 		return new DoubleMatrix(rows, cols, 0);
 	}
-	
+
 	/**
 	 * Creates the ones matrix.
 	 *

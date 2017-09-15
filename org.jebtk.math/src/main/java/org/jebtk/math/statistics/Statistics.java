@@ -501,6 +501,10 @@ public class Statistics {
 	 * @return the double
 	 */
 	public static final double median(final List<Double> values) {
+		if (CollectionUtils.isNullOrEmpty(values)) {
+			return 0;
+		}
+		
 		List<Double> sv = CollectionUtils.sort(values);
 
 		if (sv.size() % 2 == 0) {
@@ -1519,7 +1523,35 @@ public class Statistics {
 		return ret;
 	}
 
-
-
-
+	public static double geometricMean(double[] values) {
+		return geometricMean(values, 0, values.length);
+	}
+	
+	/**
+	 * Calculate the geometric mean of a number of values in an array
+	 * at the specified offset.
+	 * 
+	 * @param values
+	 * @param offset
+	 * @param l
+	 * @return
+	 */
+	public static double geometricMean(double[] values, int offset, int l) {
+		
+		int c = 0;
+		double sum = 1;
+		double v;
+		int s = offset;
+		
+		for (int i = 0; i < l; ++i) {
+			v = values[s++];
+			
+			if (v > 0) {
+				sum *= v;
+				++c;
+			}
+		}
+		
+		return Mathematics.nthRoot(sum, c);
+	}
 }

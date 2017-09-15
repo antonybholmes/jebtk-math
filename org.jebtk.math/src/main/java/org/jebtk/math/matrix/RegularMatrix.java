@@ -41,10 +41,10 @@ public abstract class RegularMatrix extends Matrix {
 	private static final long serialVersionUID = 1L;
 	
 	/**  The number of rows in the matrix. */
-	protected final int mRows;
+	public final int mRows;
 	
 	/**  The number of columns in the matrix. */
-	protected final int mColumns;
+	public final int mCols;
 
 	/**
 	 * Create a new matrix defaulting to being entirely numeric.
@@ -56,7 +56,7 @@ public abstract class RegularMatrix extends Matrix {
 		super(rows, columns);
 		
 		mRows = rows;
-		mColumns = columns;
+		mCols = columns;
 	}
 
 	/* (non-Javadoc)
@@ -72,6 +72,6 @@ public abstract class RegularMatrix extends Matrix {
 	 */
 	@Override
 	public int getColumnCount() {
-		return mColumns;
+		return mCols;
 	}
 }

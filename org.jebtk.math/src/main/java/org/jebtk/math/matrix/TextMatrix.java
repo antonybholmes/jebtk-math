@@ -140,8 +140,8 @@ public class TextMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
 	@Override
-	public AnnotationType getType() {
-		return AnnotationType.TEXT;
+	public MatrixType getType() {
+		return MatrixType.TEXT;
 	}
 	
 	/* (non-Javadoc)
@@ -249,7 +249,7 @@ public class TextMatrix extends IndexableMatrix {
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getText(i, column);
 
-				i1 += mColumns;
+				i1 += mCols;
 			}
 		}
 	}
@@ -273,8 +273,8 @@ public class TextMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 			
-			i1 += from.mColumns;
-			i2 += mColumns;
+			i1 += from.mCols;
+			i2 += mCols;
 		}
 		
 		fireMatrixChanged();
@@ -307,7 +307,7 @@ public class TextMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 			
-			ix += mColumns;
+			ix += mCols;
 		}
 		
 		fireMatrixChanged();
@@ -327,7 +327,7 @@ public class TextMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			values.add(mData[i1]);
 			
-			i1 += mColumns;
+			i1 += mCols;
 		}
 
 		return values;
@@ -356,13 +356,13 @@ public class TextMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public Matrix transpose() { 
-		TextMatrix ret = new TextMatrix(mColumns, mRows);
+		TextMatrix ret = new TextMatrix(mCols, mRows);
 
 		int c = 0;
 		int i2 = 0;
 		
 		for (int i = 0; i < mData.length; ++i) {
-			if (i % mColumns == 0) {
+			if (i % mCols == 0) {
 				i2 = c++;
 			}
 			

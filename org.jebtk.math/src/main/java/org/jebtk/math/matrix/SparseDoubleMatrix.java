@@ -106,14 +106,6 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return CellType.NUMBER;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
 	 */
 	@Override

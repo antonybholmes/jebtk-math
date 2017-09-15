@@ -19,10 +19,10 @@ package org.jebtk.math.matrix;
 /**
  * The Enum AnnotationType.
  */
-public enum AnnotationType {
+public enum MatrixType {
 	
 	/** The numeric. */
-	NUMERIC,
+	NUMBER,
 	
 	/** The text. */
 	TEXT,

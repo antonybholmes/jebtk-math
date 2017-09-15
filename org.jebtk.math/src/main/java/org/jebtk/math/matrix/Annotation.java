@@ -78,7 +78,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	public Annotation(int size) {
 		mSize = size;
 
-		mAnnotationMap = new HashMap<String, IndexableMatrix>(size);
+		mAnnotationMap = new HashMap<String, IndexableMatrix>(10);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 */
 	public void setAnnotation(String name, 
 			Collection<? extends Object> values) {
-		autoCreate(name, AnnotationType.MIXED);
+		autoCreate(name, MatrixType.MIXED);
 
 		MatrixOperations.toRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -102,7 +102,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 */
 	public void setNumAnnotation(String name, 
 			Collection<? extends Number> values) {
-		autoCreate(name, AnnotationType.NUMERIC);
+		autoCreate(name, MatrixType.NUMBER);
 
 		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -114,7 +114,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param values the values
 	 */
 	public void setNumAnnotation(String name, double[] values) {
-		autoCreate(name, AnnotationType.NUMERIC);
+		autoCreate(name, MatrixType.NUMBER);
 
 		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -126,7 +126,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param values the values
 	 */
 	public void setNumAnnotation(String name, int[] values) {
-		autoCreate(name, AnnotationType.NUMERIC, true);
+		autoCreate(name, MatrixType.NUMBER, true);
 
 		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -138,7 +138,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param values the values
 	 */
 	public void setTextAnnotation(String name, Collection<String> values) {
-		autoCreate(name, AnnotationType.TEXT);
+		autoCreate(name, MatrixType.TEXT);
 
 		MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -153,14 +153,14 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 		//SysUtils.err().println(name, m.getType());
 
 		switch (m.getType()) {
-		case NUMERIC:
-			autoCreate(name, AnnotationType.NUMERIC);
+		case NUMBER:
+			autoCreate(name, MatrixType.NUMBER);
 			break;
 		case TEXT:
-			autoCreate(name, AnnotationType.TEXT);
+			autoCreate(name, MatrixType.TEXT);
 			break;
 		default:
-			autoCreate(name, AnnotationType.MIXED);
+			autoCreate(name, MatrixType.MIXED);
 			break;
 		}
 
@@ -174,7 +174,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param type the type
 	 * @return the matrix
 	 */
-	private Matrix autoCreate(String name, AnnotationType type) {
+	private Matrix autoCreate(String name, MatrixType type) {
 		return autoCreate(name, type, false);
 	}
 	
@@ -186,10 +186,10 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param intMode the int mode
 	 * @return the matrix
 	 */
-	private Matrix autoCreate(String name, AnnotationType type, boolean intMode) {
+	private Matrix autoCreate(String name, MatrixType type, boolean intMode) {
 		if (!mAnnotationMap.containsKey(name)) {
 			switch(type) {
-			case NUMERIC:
+			case NUMBER:
 				if (intMode) {
 					mAnnotationMap.put(name, new IntMatrix(1, mSize));
 				} else {
@@ -232,7 +232,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @return the annotation
 	 */
 	public Matrix getAnnotation(String name) {
-		return autoCreate(name, AnnotationType.MIXED);
+		return autoCreate(name, MatrixType.MIXED);
 	}
 
 	/**
@@ -340,7 +340,8 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	/**
 	 * Gets the name.
 	 *
-	 * @param index the index
+	 * @param index 	the index. Annotations are accessed using negative
+	 * 					indices
 	 * @return the name
 	 */
 	public String getName(int index) {
@@ -359,7 +360,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param value the value
 	 */
 	public void setAnnotation(String name, int index, double value) {
-		autoCreate(name, AnnotationType.MIXED);
+		autoCreate(name, MatrixType.MIXED);
 
 		// modify the internal representation rather than a copy
 		mAnnotationMap.get(name).set(0, index, value);
@@ -373,7 +374,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param value the value
 	 */
 	public void setAnnotation(String name, int index, int value) {
-		autoCreate(name, AnnotationType.MIXED);
+		autoCreate(name, MatrixType.MIXED);
 
 		// modify the internal representation rather than a copy
 		mAnnotationMap.get(name).set(0, index, value);
@@ -387,7 +388,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param value the value
 	 */
 	public void setAnnotation(String name, int index, String value) {
-		autoCreate(name, AnnotationType.MIXED);
+		autoCreate(name, MatrixType.MIXED);
 
 		// modify the internal representation rather than a copy
 		mAnnotationMap.get(name).set(0, index, value);
@@ -401,7 +402,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param value the value
 	 */
 	public void setAnnotation(String name, int index, Object value) {
-		autoCreate(name, AnnotationType.MIXED);
+		autoCreate(name, MatrixType.MIXED);
 
 		// modify the internal representation rather than a copy
 		mAnnotationMap.get(name).set(0, index, value);

@@ -117,14 +117,6 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getCellType(int, int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return CellType.NUMBER;
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
 	 */
 	@Override
