@@ -4,6 +4,14 @@ import org.jebtk.math.matrix.AnnotationMatrix;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixFunction;
 
+/**
+ * Inline functions that perform arithmetic on a matrix and modify it in place.
+ * Use MatrixOperations to modify a copy of a matrix and leave the original
+ * alone.
+ * 
+ * @author antony
+ *
+ */
 public class MatrixArithmetic {
 	private static abstract class ArithFunc implements MatrixFunction {
 
