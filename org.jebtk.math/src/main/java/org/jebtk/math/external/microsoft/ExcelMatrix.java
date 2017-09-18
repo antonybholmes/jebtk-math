@@ -29,8 +29,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.matrix.AnnotatableMatrix;
 import org.jebtk.math.matrix.AnnotationMatrix;
-import org.jebtk.math.matrix.MatrixType;
 import org.jebtk.math.matrix.CellType;
+import org.jebtk.math.matrix.Matrix;
+import org.jebtk.math.matrix.MatrixType;
 import org.jebtk.math.matrix.RegularMatrix;
 
 // TODO: Auto-generated Javadoc
@@ -83,6 +84,11 @@ public class ExcelMatrix extends RegularMatrix {
 	@Override
 	public MatrixType getType() {
 		return MatrixType.MIXED;
+	}
+	
+	@Override
+	public Matrix transpose() {
+		return this;
 	}
 	
 	/* (non-Javadoc)

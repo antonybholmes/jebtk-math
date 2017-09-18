@@ -351,24 +351,32 @@ public class TextMatrix extends IndexableMatrix {
 		return values;
 	}
 	
+	public void apply(MatrixFunction f) {
+		// Do nothing
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
 	 */
 	@Override
-	public Matrix transpose() { 
-		TextMatrix ret = new TextMatrix(mCols, mRows);
+	public Matrix transpose() {
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(TextMatrix m) {
+		TextMatrix ret = new TextMatrix(m.mCols, m.mRows);
 
 		int c = 0;
 		int i2 = 0;
 		
-		for (int i = 0; i < mData.length; ++i) {
-			if (i % mCols == 0) {
+		for (int i = 0; i < m.mData.length; ++i) {
+			if (i % m.mCols == 0) {
 				i2 = c++;
 			}
 			
-			ret.mData[i2] = mData[i];
+			ret.mData[i2] = m.mData[i];
 			
-			i2 += mRows;
+			i2 += m.mRows;
 		}
 		
 		return ret;

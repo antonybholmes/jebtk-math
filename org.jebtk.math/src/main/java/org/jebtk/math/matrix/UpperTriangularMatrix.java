@@ -118,12 +118,4 @@ public abstract class UpperTriangularMatrix extends IndexMatrix {
 			return mOffsets[row] + column;
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() { 
-		return copy();
-	}
 }

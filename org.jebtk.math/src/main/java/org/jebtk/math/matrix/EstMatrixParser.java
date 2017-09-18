@@ -56,8 +56,6 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 	public AnnotationMatrix parse(Path file) throws IOException {
 		AnnotationMatrix matrix = null;
 		
-		System.err.println("matrix " + file);
-		
 		if (!FileUtils.exists(file)) {
 			return null;
 		}

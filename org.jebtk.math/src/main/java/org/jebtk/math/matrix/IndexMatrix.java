@@ -79,63 +79,6 @@ public abstract class IndexMatrix extends RegularMatrix {
 		update(m);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#add(double)
-	 */
-	@Override
-	public Matrix add(double v) {
-		for (int i = 0; i < mSize; ++i) {
-			set(i, getValue(i) + v);
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#subtract(double)
-	 */
-	@Override
-	public Matrix subtract(double v) {
-		for (int i = 0; i < mSize; ++i) {
-			set(i, getValue(i) - v);
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#multiply(double)
-	 */
-	@Override
-	public Matrix multiply(double v) {
-		for (int i = 0; i < mSize; ++i) {
-			set(i, getValue(i) * v);
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#divide(double)
-	 */
-	@Override
-	public Matrix divide(double v) {
-		for (int i = 0; i < mSize; ++i) {
-			set(i, getValue(i) / v);
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-
 	/**
 	 * Copy the values from a matrix to this matrix.
 	 *
@@ -195,24 +138,6 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	public void update(int index, double v) {
 		// Do nothing
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#update(int, int, int)
-	 */
-	@Override
-	public void update(int row, int column, int v) {
-		update(getIndex(row, column), v);
-	}
-
-	/**
-	 * Update.
-	 *
-	 * @param index the index
-	 * @param v the v
-	 */
-	public void update(int index, int v) {
-		update(index, (double)v);
 	}
 
 	/* (non-Javadoc)
@@ -405,42 +330,6 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	public double getValue(int index) {
 		return NULL_NUMBER;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getIntValue(int, int)
-	 */
-	@Override
-	public int getIntValue(int row, int column) {
-		return getIntValue(getIndex(row, column));
-	}
-
-	/**
-	 * Gets the int value of a cell.
-	 *
-	 * @param index the index
-	 * @return the value
-	 */
-	public int getIntValue(int index) {
-		return (int)getValue(index);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getLongValue(int, int)
-	 */
-	@Override
-	public long getLongValue(int row, int column) {
-		return getLongValue(getIndex(row, column));
-	}
-
-	/**
-	 * Gets the long value.
-	 *
-	 * @param index the index
-	 * @return the long value
-	 */
-	public long getLongValue(int index) {
-		return (long)getValue(index);
 	}
 
 	/* (non-Javadoc)
@@ -648,30 +537,5 @@ public abstract class IndexMatrix extends RegularMatrix {
 		}
 
 		fireMatrixChanged();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() { 
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(mCols, mRows);
-
-		int i2 = 0;
-		int c = 0;
-
-		for (int i = 0; i < getNumCells(); ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % mCols == 0) {
-				i2 = c++;
-			}
-
-			ret.set(i2, get(i));;
-
-			// Skip blocks
-			i2 += mRows;
-		}
-
-		return ret;
 	}
 }

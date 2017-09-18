@@ -192,23 +192,41 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getIntValue(int)
-	 */
 	@Override
-	public int getIntValue(int index) {
-		Object v = mData.get(index);
-		
-		if (v != null) {
-			if (v instanceof Integer) {
-				return (Integer)v;
-			} else if (v instanceof Double) {
-				return ((Double)v).intValue();
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
+	public void apply(MatrixFunction f) {
+		for (int i : mData.keySet()) {
+			if (mData.get(i) instanceof Double) {
+				mData.put(i, f.apply(i, 0, (double)mData.get(i)));
+			} 
 		}
+
+		fireMatrixChanged();
+	}
+	
+	
+	@Override
+	public Matrix transpose() { 
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final SparseMixedMatrix m) { 
+		SparseMixedMatrix ret = new SparseMixedMatrix(m.mCols, m.mRows);
+
+		int i2 = 0;
+		int c = 0;
+
+		for (int i : m.mData.keySet()) {
+			// Each time we end a row, reset i2 back to the next column
+			if (i % m.mCols == 0) {
+				i2 = c++;
+			}
+
+			ret.mData.put(i2, m.mData.get(i));
+
+			// Skip blocks
+			i2 += m.mRows;
+		}
+
+		return ret;
 	}
 }

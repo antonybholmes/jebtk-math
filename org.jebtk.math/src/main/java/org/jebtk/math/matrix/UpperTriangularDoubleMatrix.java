@@ -156,46 +156,23 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 		return copy();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#add(double)
-	 */
+	
 	@Override
-	public Matrix add(double v) {
+	public void apply(MatrixFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
-			mData[i] += v;
+			mData[i] = f.apply(i, 0, mData[i]);
 		}
 		
 		fireMatrixChanged();
-		
-		return this;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#subtract(double)
-	 */
 	@Override
-	public Matrix subtract(double v) {
+	public void stat(StatMatrixFunction f) {
+		f.init();
+		
 		for (int i = 0; i < mData.length; ++i) {
-			mData[i] -= v;
+			f.apply(i, 0, mData[i]);
 		}
-		
-		fireMatrixChanged();
-		
-		return this;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#multiply(double)
-	 */
-	@Override
-	public Matrix multiply(double v) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] *= v;
-		}
-		
-		fireMatrixChanged();
-		
-		return this;
 	}
 	
 	//

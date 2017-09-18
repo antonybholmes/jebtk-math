@@ -33,10 +33,13 @@ package org.jebtk.math.matrix;
  */
 public enum CellType {
 	
-	/**
-	 * The number.
-	 */
 	NUMBER,
+	
+	DOUBLE,
+	
+	INT,
+	
+	LONG,
 	
 	/**
 	 * The text.

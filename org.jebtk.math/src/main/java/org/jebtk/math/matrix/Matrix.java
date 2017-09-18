@@ -60,12 +60,18 @@ public abstract class Matrix extends MatrixEventListeners {
 	/** The Constant NULL_INT_NUMBER. */
 	public static final int NULL_INT_NUMBER = Integer.MIN_VALUE;
 
+	public static final long NULL_LONG_NUMBER = Long.MIN_VALUE;
+
 
 	/** The Constant NUMBER_MATRIX_TYPES. */
-	private static final Set<CellType> NUMBER_MATRIX_TYPES = CollectionUtils.toSet(CellType.NUMBER);
+	private static final Set<CellType> NUMBER_MATRIX_TYPES = 
+			CollectionUtils.toSet(CellType.NUMBER);
 
 	/** The Constant TEXT_MATRIX_TYPES. */
-	private static final Set<CellType> TEXT_MATRIX_TYPES = CollectionUtils.toSet(CellType.TEXT);
+	private static final Set<CellType> TEXT_MATRIX_TYPES = 
+			CollectionUtils.toSet(CellType.TEXT);
+
+
 
 
 	/** The m size. */
@@ -159,32 +165,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param column the column
 	 * @param value the value
 	 */
-	public void update(int row, int column, double value) {
+	public void update(int row, int column, double v) {
 		// Do nothing
-	}
-
-	/**
-	 * Sets the.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @param value the value
-	 */
-	public void set(int row, int column, int value) {
-		update(row, column, value);
-
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Update.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @param value the value
-	 */
-	public void update(int row, int column, int value) {
-		update(row, column, (double)value);
 	}
 
 	/**
@@ -199,25 +181,6 @@ public abstract class Matrix extends MatrixEventListeners {
 			}
 		}
 	}
-
-	/**
-	 * Update.
-	 *
-	 * @param value the value
-	 */
-	public void update(int value) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				update(i, j, value);
-			}
-		}
-	}
-
-
-	//public void set(int index, double v) {
-	//	updateValue(index, v);
-	//	fireMatrixChanged();
-	//}
 
 	/**
 	 * Sets the all values in the matrix to a given number and triggers
@@ -594,28 +557,6 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 
 	/**
-	 * Gets the int value.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the int value
-	 */
-	public int getIntValue(int row, int column) {
-		return (int)getValue(row, column);
-	}
-
-	/**
-	 * Gets the long value.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the long value
-	 */
-	public long getLongValue(int row, int column) {
-		return (long)getValue(row, column);
-	}
-
-	/**
 	 * Gets the text.
 	 *
 	 * @param row the row
@@ -791,105 +732,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		return values;
 	}
 
-	/**
-	 * Add a constant value to each element.
-	 *
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public Matrix add(double x) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) + x);
-			}
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/**
-	 * Subtract.
-	 *
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public Matrix subtract(double x) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) - x);
-			}
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/**
-	 * Multiply each element by a constant.
-	 *
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public Matrix multiply(double x) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) * x);
-			}
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/**
-	 * Divide each element by a constant.
-	 *
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public Matrix divide(double x) {
-		return multiply(1 / x);
-	}
-
-	/**
-	 * Adds the.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix add(Matrix m) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) + m.getValue(i, j));
-			}
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/**
-	 * Adds the.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix add(DoubleMatrix m) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) + m.getValue(i, j));
-			}
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
+	public abstract Matrix transpose();
 
 	/**
 	 * Dot.
@@ -898,55 +741,57 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the matrix
 	 */
 	public Matrix dot(Matrix m) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) * m.getValue(i, j));
-			}
-		}
+		dot(this, m);
 
 		fireMatrixChanged();
 
 		return this;
 	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix dot(DoubleMatrix m) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				set(i, j, getValue(i, j) * m.getValue(i, j));
+	
+	public static void dot(Matrix m1, Matrix m2) {
+		for (int i = 0; i < m1.getRowCount(); ++i) {
+			for (int j = 0; j < m1.getColumnCount(); ++j) {
+				m1.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
 			}
 		}
-
-		fireMatrixChanged();
-
-		return this;
 	}
 
-	/**
-	 * Return a copy of the matrix transposed.
-	 *
-	 * @return the matrix
-	 */
-	public Matrix transpose() {
-		MixedMatrix ret = 
-				MixedMatrix.createMixedMatrix(getColumnCount(), getRowCount());
+	public Matrix applied(MatrixFunction f) {
+		// Copy the matrix
+		Matrix ret = copy();
 
-		// Swap row and column indices. We use index lookup to reduce
-		// the number of number of times indices must be looked up to
-		// set cell elements.
-
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				ret.set(j, i, get(i, j));
-			}
-		}
+		ret.apply(f);
 
 		return ret;
+	}
+
+	public void apply(MatrixFunction f) {
+		for (int i = 0; i < getRowCount(); ++i) {
+			for (int j = 0; j < getColumnCount(); ++j) {
+				double v = getValue(i, j);
+
+				if (Mathematics.isValidNumber(v)) {
+					set(i, j, f.apply(i, j, v));
+				}
+			}
+		}
+		
+		fireMatrixChanged();
+	}
+	
+	/**
+	 * Apply a stat function over a matrix.
+	 * 
+	 * @param f
+	 */
+	public void stat(StatMatrixFunction f) {
+		f.init();
+		
+		for (int i = 0; i < getRowCount(); ++i) {
+			for (int j = 0; j < getColumnCount(); ++j) {
+				f.apply(i, j, getValue(i, j));
+			}
+		}
 	}
 
 
@@ -1525,6 +1370,14 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static boolean isValidMatrixNum(double v) {
 		return !Double.isNaN(v);
+	}
+
+	public static boolean isValidMatrixNum(int v) {
+		return v != NULL_INT_NUMBER;
+	}
+
+	public static boolean isValidMatrixNum(long v) {
+		return v != NULL_LONG_NUMBER;
 	}
 
 	/**

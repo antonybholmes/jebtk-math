@@ -143,8 +143,10 @@ public class IntMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void updateToNull(int index) {
-		mData[index] = Integer.MIN_VALUE;
+		mData[index] = NULL_INT_NUMBER;
 	}
+	
+
 
 	/**
 	 * Update.
@@ -184,29 +186,13 @@ public class IntMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public double getValue(int index) {
-		long v = mData[index];
+		int v = mData[index];
 		
-		if (v == Integer.MIN_VALUE) {
-			return Double.NaN;
-		} else  {
+		if (isValidMatrixNum(v)) {
 			return v;
+		} else  {
+			return NULL_NUMBER;
 		}		
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getIntValue(int)
-	 */
-	@Override
-	public int getIntValue(int index) {
-		return mData[index];	
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getLongValue(int)
-	 */
-	@Override
-	public long getLongValue(int index) {
-		return mData[index];	
 	}
 
 	/* (non-Javadoc)
@@ -214,11 +200,15 @@ public class IntMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void update(double v) {
-		//for (int i = 0; i < mData.length; ++i) {
-		//	mData[i] = v;
-		//}
+		int i;
+		
+		if (isValidMatrixNum(v)) {
+			i = (int)v;
+		} else {
+			i = NULL_INT_NUMBER;
+		}
 
-		Arrays.fill(mData, (int)v);
+		Arrays.fill(mData, i);
 	}
 
 	/* (non-Javadoc)
@@ -226,15 +216,15 @@ public class IntMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void update(int index, double v) {
-		update(index, (int)v);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, int)
-	 */
-	@Override
-	public void update(int index, int v) {
-		mData[index] = v;
+		int i;
+		
+		if (isValidMatrixNum(v)) {
+			i = (int)v;
+		} else {
+			i = NULL_INT_NUMBER;
+		}
+		
+		mData[index] = i;
 	}
 
 	/* (non-Javadoc)
@@ -370,28 +360,77 @@ public class IntMatrix extends IndexableMatrix {
 		return values;
 	}
 	
+	@Override
+	public void apply(MatrixFunction f) {
+		for (int i = 0; i < mData.length; ++i) {
+			double v = f.apply(i, 0, mData[i]);
+			
+			if (isValidMatrixNum(v)) {
+				mData[i] = (int)v;
+			} else {
+				mData[i] = NULL_INT_NUMBER;
+			}
+		}
+	}
+	
+	@Override
+	public void stat(StatMatrixFunction f) {
+		f.init();
+		
+		for (int i = 0; i < mData.length; ++i) {
+			f.apply(i, 0, mData[i]);
+		}
+	}
+	
+	@Override
+	public Matrix dot(final Matrix m) {
+		if (m instanceof IntMatrix) {
+			return dot((IntMatrix)m);
+		} else {
+			return super.dot(m);
+		}
+	}
+	
+	public Matrix dot(final IntMatrix m) {
+		dot(this, m);
+
+		fireMatrixChanged();
+
+		return this;
+	}
+	
+	public static void dot(IntMatrix m1, final IntMatrix m2) {
+		for (int i = 0; i < m1.mData.length; ++i) {
+			m1.mData[i] *= m2.mData[i];
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
 	 */
 	@Override
 	public Matrix transpose() { 
-		IntMatrix ret = createIntMatrix(mCols, mRows);
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final IntMatrix m) { 
+		IntMatrix ret = createIntMatrix(m.mCols, m.mRows);
 
 		int i2 = 0;
 		int c = 0;
-		
-		for (int i = 0; i < mData.length; ++i) {
+
+		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mCols == 0) {
+			if (i % m.mCols == 0) {
 				i2 = c++;
 			}
-			
-			ret.mData[i2] = mData[i];
-	
+
+			ret.mData[i2] = m.mData[i];
+
 			// Skip blocks
-			i2 += mRows;
+			i2 += m.mRows;
 		}
-		
+
 		return ret;
 	}
 	
@@ -1003,27 +1042,6 @@ public class IntMatrix extends IndexableMatrix {
 		}
 
 		return max;
-	}
-
-	/**
-	 * Creates the.
-	 *
-	 * @param m the m
-	 * @return the int matrix
-	 */
-	public static IntMatrix create(Matrix m) {
-		return create(m.getRowCount(), m.getColumnCount());
-	}
-
-	/**
-	 * Creates the.
-	 *
-	 * @param r the r
-	 * @param c the c
-	 * @return the int matrix
-	 */
-	public static IntMatrix create(int r, int c) {
-		return new IntMatrix(r, c);
 	}
 
 	/**

@@ -333,74 +333,45 @@ public class DoubleMatrix extends IndexableMatrix {
 		return values;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#add(double)
-	 */
 	@Override
-	public Matrix add(double x) {
+	public void apply(MatrixFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
-			mData[i] += x;
+			mData[i] = f.apply(i, 0, mData[i]);
 		}
-
+		
 		fireMatrixChanged();
-
-		return this;
+	}
+	
+	@Override
+	public void stat(StatMatrixFunction f) {
+		f.init();
+		
+		for (int i = 0; i < mData.length; ++i) {
+			f.apply(i, 0, mData[i]);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#subtract(double)
-	 */
 	@Override
-	public Matrix subtract(double x) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] -= x;
+	public Matrix dot(final Matrix m) {
+		if (m instanceof DoubleMatrix) {
+			return dot((DoubleMatrix)m);
+		} else {
+			return super.dot(m);
 		}
-
-		fireMatrixChanged();
-
-		return this;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#multiply(double)
-	 */
-	@Override
-	public Matrix multiply(double x) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] *= x;
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#add(org.abh.common.math.matrix.DoubleMatrix)
-	 */
-	@Override
-	public Matrix add(DoubleMatrix m) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] += m.mData[i];
-		}
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#dot(org.abh.common.math.matrix.DoubleMatrix)
-	 */
-	@Override
+	
 	public Matrix dot(final DoubleMatrix m) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] *= m.mData[i];
-		}
+		dot(this, m);
 
 		fireMatrixChanged();
 
 		return this;
+	}
+	
+	public static void dot(DoubleMatrix m1, final DoubleMatrix m2) {
+		for (int i = 0; i < m1.mData.length; ++i) {
+			m1.mData[i] *= m2.mData[i];
+		}
 	}
 
 	/* (non-Javadoc)
@@ -408,21 +379,25 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public Matrix transpose() { 
-		DoubleMatrix ret = createDoubleMatrix(mCols, mRows);
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final DoubleMatrix m) { 
+		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mCols, m.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
-		for (int i = 0; i < mData.length; ++i) {
+		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mCols == 0) {
+			if (i % m.mCols == 0) {
 				i2 = c++;
 			}
 
-			ret.mData[i2] = mData[i];
+			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += mRows;
+			i2 += m.mRows;
 		}
 
 		return ret;

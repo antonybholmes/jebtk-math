@@ -25,7 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jebtk.math.matrix;
+package org.jebtk.math.matrix.utils;
+
+import org.jebtk.math.matrix.AnnotationMatrix;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -108,51 +110,6 @@ public abstract class MatrixOperation {
 	public static MatrixOperation transform() {
 		return new NullMatrixOperation();
 	}
-
-	//
-	// Arithmetic
-	//
-
-	/**
-	 * The class AddMatrixOperation.
-	 */
-	private static class AddMatrixOperation extends MatrixOperation {
-
-		/**
-		 * The member x.
-		 */
-		private double mX;
-
-		/**
-		 * Instantiates a new adds the matrix operation.
-		 *
-		 * @param mo the mo
-		 * @param x the x
-		 */
-		public AddMatrixOperation(MatrixOperation mo, double x) {
-			super(mo);
-
-			mX = x;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
-		 */
-		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
-			return MatrixOperations.add(m, mX);
-		}
-	}
-	
-	/**
-	 * Adds the.
-	 *
-	 * @param x the x
-	 * @return the matrix operation
-	 */
-	public MatrixOperation add(double x) {
-		return new AddMatrixOperation(this, x);
-	}
 	
 	/**
 	 * The Class MinMatrixOperation.
@@ -193,49 +150,6 @@ public abstract class MatrixOperation {
 	 */
 	public MatrixOperation min(double x) {
 		return new MinMatrixOperation(this, x);
-	}
-
-
-	
-	/**
-	 * The class SubtractMatrixOperation.
-	 */
-	private static class SubtractMatrixOperation extends MatrixOperation {
-
-		/**
-		 * The member x.
-		 */
-		private double mX;
-
-		/**
-		 * Instantiates a new subtract matrix operation.
-		 *
-		 * @param mo the mo
-		 * @param x the x
-		 */
-		public SubtractMatrixOperation(MatrixOperation mo, double x) {
-			super(mo);
-
-			mX = x;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
-		 */
-		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
-			return MatrixOperations.subtract(m, mX);
-		}
-	}
-
-	/**
-	 * Subtract.
-	 *
-	 * @param x the x
-	 * @return the matrix operation
-	 */
-	public MatrixOperation subtract(double x) {
-		return new SubtractMatrixOperation(this, x);
 	}
 
 	//
@@ -336,50 +250,5 @@ public abstract class MatrixOperation {
 	 */
 	public MatrixOperation ln() {
 		return new LnMatrixOperation(this);
-	}
-	
-	//
-	// Filter
-	//
-	
-	/**
-	 * The class MinThresholdMatrixOperation.
-	 */
-	private static class MinThresholdMatrixOperation extends MatrixOperation {
-		
-		/**
-		 * The member x.
-		 */
-		private double mX;
-
-		/**
-		 * Instantiates a new min threshold matrix operation.
-		 *
-		 * @param mo the mo
-		 * @param x the x
-		 */
-		public MinThresholdMatrixOperation(MatrixOperation mo, double x) {
-			super(mo);
-			
-			mX = x;
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
-		 */
-		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
-			return MatrixOperations.minThreshold(m, mX);
-		}
-	}
-
-	/**
-	 * Min threshold.
-	 *
-	 * @param x the x
-	 * @return the matrix operation
-	 */
-	public MatrixOperation minThreshold(double x) {
-		return new MinThresholdMatrixOperation(this, x);
 	}
 }

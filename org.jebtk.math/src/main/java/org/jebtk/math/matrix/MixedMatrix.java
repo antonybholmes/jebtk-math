@@ -181,26 +181,6 @@ public class MixedMatrix extends IndexableMatrix {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getIntValue(int)
-	 */
-	@Override
-	public int getIntValue(int index) {
-		Object v = mData[index];
-		
-		if (v != null) {
-			if (v instanceof Integer) {
-				return (Integer)v;
-			} else if (v instanceof Double) {
-				return ((Double)v).intValue();
-			} else {
-				return NULL_INT_NUMBER;
-			}
-		} else {
-			return NULL_INT_NUMBER;
-		}
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
 	 */
 	@Override
@@ -277,14 +257,6 @@ public class MixedMatrix extends IndexableMatrix {
 	public void update(int index, double v) {
 		mData[index] = v;
 		mCellType[index] = CellType.NUMBER;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, int)
-	 */
-	@Override
-	public void update(int index, int v) {
-		mData[index] = v;
 	}
 
 	/* (non-Javadoc)
@@ -445,26 +417,29 @@ public class MixedMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public Matrix transpose() {
-		MixedMatrix ret = createMixedMatrix(mCols, mRows);
+		return transpose(this);
+	}
+
+	public static Matrix transpose(MixedMatrix m) {
+		MixedMatrix ret = createMixedMatrix(m.mCols, m.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
-		for (int i = 0; i < mData.length; ++i) {
+		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mCols == 0) {
+			if (i % m.mCols == 0) {
 				i2 = c++;
 			}
 
-			ret.mData[i2] = mData[i];
+			ret.mData[i2] = m.mData[i];
 			
 			// Skip blocks
-			i2 += mRows;
+			i2 += m.mRows;
 		}
 
 		return ret;
 	}
-
 	
 	
 

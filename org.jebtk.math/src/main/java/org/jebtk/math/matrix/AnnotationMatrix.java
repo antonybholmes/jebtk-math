@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jebtk.core.Indexed;
+import org.jebtk.core.Mathematics;
 import org.jebtk.core.NameProperty;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.io.FileUtils;
@@ -986,6 +987,31 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		} else {
 			return getColumnAnnotations(row).rowAsText(0);
 		}
+	}
+	
+	
+	public Matrix applied(MatrixFunction f) {
+		// Copy the matrix
+		AnnotationMatrix ret = new AnnotatableMatrix(this, true);
+
+		ret.apply(f);
+
+		return ret;
+	}
+
+	public void apply(MatrixFunction f) {
+		getInnerMatrix().apply(f);
+		
+		fireMatrixChanged();
+	}
+	
+	/**
+	 * Apply a stat function over a matrix.
+	 * 
+	 * @param f
+	 */
+	public void stat(StatMatrixFunction f) {
+		getInnerMatrix().stat(f);
 	}
 
 	/* (non-Javadoc)

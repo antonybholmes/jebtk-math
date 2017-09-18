@@ -160,4 +160,30 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	public String getText(int index) {
 		return mData.get(index);
 	}
+	
+	@Override
+	public Matrix transpose() { 
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final SparseTextMatrix m) { 
+		SparseTextMatrix ret = new SparseTextMatrix(m.mCols, m.mRows);
+
+		int i2 = 0;
+		int c = 0;
+
+		for (int i : m.mData.keySet()) {
+			// Each time we end a row, reset i2 back to the next column
+			if (i % m.mCols == 0) {
+				i2 = c++;
+			}
+
+			ret.mData.put(i2, m.mData.get(i));
+
+			// Skip blocks
+			i2 += m.mRows;
+		}
+
+		return ret;
+	}
 }

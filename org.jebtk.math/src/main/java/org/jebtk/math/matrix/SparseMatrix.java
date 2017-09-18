@@ -134,7 +134,7 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 		if (v != null && v instanceof Number) {
 			return ((Number)v).doubleValue();
 		} else {
-			return Matrix.NULL_NUMBER;
+			return NULL_NUMBER;
 		}
 	}
 
@@ -154,27 +154,5 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 		} else {
 			return TextUtils.EMPTY_STRING;
 		}
-		
-		/*
-		Object o = mData.get(index);
-		
-		if (o == null) {
-			return null;
-		}
-		
-		if (o instanceof Number) {
-			double v = ((Number)o).doubleValue();
-			
-			if (Mathematics.isInt(v)) {
-				return Integer.toString((int)v);
-			} else {
-				return Double.toString(v);
-			}
-		} else if (o instanceof String) {
-			return (String)o;
-		} else {
-			return o.toString();
-		}
-		*/
 	}
 }

@@ -25,7 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jebtk.math.matrix;
+package org.jebtk.math.matrix.utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -41,6 +41,17 @@ import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultHashMap;
 import org.jebtk.core.text.Join;
+import org.jebtk.math.matrix.AnnotatableMatrix;
+import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.CellType;
+import org.jebtk.math.matrix.DoubleMatrix;
+import org.jebtk.math.matrix.IntMatrix;
+import org.jebtk.math.matrix.Matrix;
+import org.jebtk.math.matrix.MatrixFunction;
+import org.jebtk.math.matrix.MatrixGroup;
+import org.jebtk.math.matrix.MixedMatrix;
+import org.jebtk.math.matrix.StatMatrixFunction;
+import org.jebtk.math.matrix.TextMatrix;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.Stats;
 import org.jebtk.math.statistics.TTest;
@@ -95,7 +106,7 @@ public class MatrixOperations {
 	/**
 	 * The Class LogFunction.
 	 */
-	private static class LogFunction implements Function {
+	private static class LogFunction implements MatrixFunction {
 
 		/** The m base. */
 		private int mBase;
@@ -113,18 +124,12 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(double v) {
+		public double apply(int row, int col, double v) {
 			return Mathematics.log(v, mBase);
 		}
 	}
-
-	/**
-	 * Multiply a cell by a given value.
-	 * 
-	 * @author Antony Holmes Holmes
-	 *
-	 */
-	private static class MultFunction implements Function {
+	
+	private static class MinThresholdFunction implements MatrixFunction {
 
 		/** The m X. */
 		private double mX;
@@ -134,7 +139,7 @@ public class MatrixOperations {
 		 *
 		 * @param x the x
 		 */
-		public MultFunction(double x) {
+		public MinThresholdFunction(double x) {
 			mX = x;
 		}
 
@@ -142,56 +147,90 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(double v) {
-			return v * mX;
+		public double apply(int row, int col, double v) {
+			return Math.max(v, mX);
+		}
+	}
+	
+	private static class MinFunction extends StatMatrixFunction {
+
+		@Override
+		public void init() {
+			mStat = Double.MAX_VALUE;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
+		 */
+		@Override
+		public void apply(int row, int col, double v) {
+			if (Matrix.isValidMatrixNum(v)) {
+				if (v < mStat) {
+					mStat = v;
+				}
+			}
+		}
+	}
+	
+	private static class MaxFunction extends StatMatrixFunction {
+
+		@Override
+		public void init() {
+			mStat = Double.MIN_VALUE;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
+		 */
+		@Override
+		public void apply(int row, int col, double v) {
+			if (Matrix.isValidMatrixNum(v)) {
+				if (v > mStat) {
+					mStat = v;
+				}
+			}
+		}
+	}
+	
+	private static class ThresholdFunction implements MatrixFunction {
+
+		private double mMin;
+		private double mMax;
+
+		/**
+		 * Instantiates a new mult function.
+		 *
+		 * @param x the x
+		 */
+		public ThresholdFunction(double min, double max) {
+			mMin = min;
+			mMax = max;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
+		 */
+		@Override
+		public double apply(int row, int col, double v) {
+			return Mathematics.bound(v, mMin, mMax);
 		}
 	}
 
 	/** The ln function. */
-	private static Function LN_FUNCTION = new Function() {@Override public double apply(double v) {return Math.log(v);}};
+	private static MatrixFunction LN_FUNCTION = new MatrixFunction() {
+		@Override public double apply(int row, int col, double v) {
+			return Math.log(v);
+		}};
+		
+	private static StatMatrixFunction MIN_FUNCTION = new MinFunction();
+	
+	private static StatMatrixFunction MAX_FUNCTION = new MaxFunction();
 
 	/**
 	 * Instantiates a new matrix operations.
 	 */
 	private MatrixOperations() {
 		// Do nothing
-	}
-
-	/**
-	 * Transpose a matrix and its annotations.
-	 *
-	 * @param m the m
-	 * @return 	The transposed version of a matrix
-	 */
-	public static AnnotationMatrix transpose(AnnotationMatrix m) {
-		return (AnnotationMatrix)m.transpose();
-		
-		/*
-		System.err.println("transpose " + m.getInnerMatrix().getClass());
-
-		Matrix innerM = m.getInnerMatrix().transpose();
-
-		AnnotationMatrix ret = 
-				new AnnotatableMatrix(innerM);
-
-		System.err.println("transpose " + innerM.getRowCount() + " " + innerM.getColumnCount());
-
-		// The first name is the row-name, which must be swapped for the
-		// column name so we only copy the annotation for names(1, end) 
-		// verbatim. The same is true for the columns
-		//ret.setColumnNames(m.getRowNames());
-		//ret.setRowNames(m.getColumnNames());
-
-		for (String name : CollectionUtils.tail(m.getRowAnnotationNames())) {
-			ret.setColumnAnnotations(name, m.getRowAnnotations(name));
-		}
-
-		for (String name : CollectionUtils.tail(m.getColumnAnnotationNames())) {
-			ret.setRowAnnotations(name, m.getColumnAnnotations(name));
-		}
-
-		return ret;
-		*/
 	}
 
 	//
@@ -209,26 +248,6 @@ public class MatrixOperations {
 	}
 
 	/**
-	 * Ln.
-	 *
-	 * @param m the m
-	 * @return the annotation matrix
-	 */
-	public static Matrix ln(final Matrix m) {
-		return apply(m, LN_FUNCTION);
-	}
-
-	/**
-	 * Ln.
-	 *
-	 * @param m the m
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix ln(final DoubleMatrix m) {
-		return apply(m, LN_FUNCTION);
-	}
-
-	/**
 	 * Returns the natural log of a mixed matrix. If the matrix contains
 	 * text, the text will be preserved. For speed it is best to run this
 	 * on a mixed matrix containing only numbers
@@ -236,8 +255,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the matrix
 	 */
-	public static Matrix ln(MixedMatrix m) {
-		return apply(m, LN_FUNCTION);
+	public static Matrix ln(Matrix m) {
+		return m.applied(LN_FUNCTION);
 	}
 
 	/**
@@ -257,16 +276,6 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 */
 	public static Matrix log2(final Matrix m) {
-		return log(m, 2);
-	}
-
-	/**
-	 * Log 2.
-	 *
-	 * @param m the m
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix log2(final DoubleMatrix m) {
 		return log(m, 2);
 	}
 
@@ -291,24 +300,13 @@ public class MatrixOperations {
 	}
 
 	/**
-	 * Log 10.
-	 *
-	 * @param m the m
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix log10(final DoubleMatrix m) {
-		return log(m, 10);
-	}
-
-	/**
 	 * Log.
 	 *
 	 * @param m the m
 	 * @param base the base
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix log(final AnnotationMatrix m, 
-			int base) {
+	public static AnnotationMatrix log(final AnnotationMatrix m, int base) {
 		return new AnnotatableMatrix(m, log(m.getInnerMatrix(), base));
 	}
 
@@ -320,29 +318,7 @@ public class MatrixOperations {
 	 * @return the matrix
 	 */
 	public static Matrix log(Matrix m, int base) {
-		return apply(m, new LogFunction(base));
-	}
-
-	/**
-	 * Log.
-	 *
-	 * @param m the m
-	 * @param base the base
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix log(DoubleMatrix m, int base) {
-		return apply(m, new LogFunction(base));
-	}
-
-	/**
-	 * Log.
-	 *
-	 * @param m the m
-	 * @param base the base
-	 * @return the matrix
-	 */
-	public static Matrix log(MixedMatrix m, int base) {
-		return apply(m, new LogFunction(base));
+		return m.applied(new LogFunction(base));
 	}
 
 	//
@@ -356,8 +332,8 @@ public class MatrixOperations {
 	 * @param min the min
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix minThreshold(final AnnotationMatrix m, double min) {
-		return new AnnotatableMatrix(m, minThreshold(m.getInnerMatrix(), min));
+	public static AnnotationMatrix min(final AnnotationMatrix m, double min) {
+		return new AnnotatableMatrix(m, min(m.getInnerMatrix(), min));
 	}
 
 	/**
@@ -367,21 +343,8 @@ public class MatrixOperations {
 	 * @param min the min
 	 * @return the annotation matrix
 	 */
-	public static DoubleMatrix minThreshold(Matrix m, double min) {
-		DoubleMatrix ret = 
-				new DoubleMatrix(m.getRowCount(), m.getColumnCount());
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					ret.set(i, j, Math.max(min, v));
-				}
-			}
-		}
-
-		return ret;
+	public static Matrix min(Matrix m, double min) {
+		return m.applied(new MinThresholdFunction(min));
 	}
 
 	/**
@@ -392,10 +355,10 @@ public class MatrixOperations {
 	 * @param max the max
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix minMaxThreshold(final AnnotationMatrix m, 
+	public static AnnotationMatrix threshold(final AnnotationMatrix m, 
 			double min,
 			double max) {
-		return new AnnotatableMatrix(m, minMaxThreshold(m.getInnerMatrix(), min, max));
+		return new AnnotatableMatrix(m, threshold(m.getInnerMatrix(), min, max));
 	}
 
 	/**
@@ -406,422 +369,16 @@ public class MatrixOperations {
 	 * @param max the max
 	 * @return the annotation matrix
 	 */
-	public static DoubleMatrix minMaxThreshold(final Matrix m, 
+	public static Matrix threshold(final Matrix m, 
 			double min,
 			double max) {
-		DoubleMatrix ret = 
-				new DoubleMatrix(m.getRowCount(), m.getColumnCount());
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					ret.set(i, j, Mathematics.bound(v, min, max));
-				}
-			}
-		}
-
-		return ret;
-	}
-
-	//
-	// Arithmetic
-	//
-
-	/**
-	 * Multiply.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix multiply(final AnnotationMatrix m, double x) {
-		return new AnnotatableMatrix(m, multiply(m.getInnerMatrix(), x));
-	}
-
-	/**
-	 * Multiply.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix multiply(final Matrix m, double x) {
-		return apply(m, new MultFunction(x));
-	}
-
-	/**
-	 * Multiply.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix multiply(final DoubleMatrix m, double x) {
-		return apply(m, new MultFunction(x));
-	}
-
-	/**
-	 * Multiply.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix multiply(final MixedMatrix m, double x) {
-		return apply(m, new MultFunction(x));
-	}
-
-	/**
-	 * Multiply.
-	 *
-	 * @param m1 the m 1
-	 * @param m2 the m 2
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix multiply(Matrix m1, Matrix m2) {
-		int m = m2.getColumnCount();
-
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m1.getRowCount(), m1.getColumnCount());
-
-		for (int i = 0; i < m1.getRowCount(); ++i) {
-			for (int j = 0; j < m; ++j) {
-				double v = 0;
-
-				for (int k = 0; k < m; ++i) {
-					v += m1.getValue(i, k) * m2.getValue(k, j);
-				}
-
-				ret.set(i, j, v);
-			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m1 the m 1
-	 * @param m2 the m 2
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix dot(Matrix m1, Matrix m2) {
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m1);
-
-		for (int i = 0; i < m1.getRowCount(); ++i) {
-			for (int j = 0; j < m1.getColumnCount(); ++j) {
-				ret.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
-			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m1 the m 1
-	 * @param m2 the m 2
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix dot(DoubleMatrix m1, DoubleMatrix m2) {
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m1);
-
-		for (int i = 0; i < m1.mData.length; ++i) {
-			ret.mData[i] = m1.mData[i] * m2.mData[i];
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Divide.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix divide(final AnnotationMatrix m, double x) {
-		return new AnnotatableMatrix(m, divide(m.getInnerMatrix(), x));
-	}
-
-	/**
-	 * Divide.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static Matrix divide(final Matrix m, double x) {
-		return m.copy().divide(x);
-	}
-
-	/**
-	 * Divide.
-	 *
-	 * @param m the m
-	 * @param row the row
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix divide(final AnnotationMatrix m, 
-			int row, 
-			double x) {
-		return new AnnotatableMatrix(m, divide(m.getInnerMatrix(), row, x));
-	}
-
-	/**
-	 * Divide the values in a row by a given number.
-	 *
-	 * @param m the m
-	 * @param row the row
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix divide(final Matrix m, 
-			int row, 
-			double x) {
-		Matrix ret = new DoubleMatrix(m);
-
-		for (int i = 0; i < m.getColumnCount(); ++i) {
-			double v = m.getValue(row, i);
-
-			if (Mathematics.isValidNumber(v)) {
-				ret.set(row, i, v / x);
-			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Divide a matrix row by a number. The matrix will be modified.
-	 *
-	 * @param row the row
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void divide(int row, 
-			double x,
-			AnnotationMatrix m) {
-		divide(row, x, m.getInnerMatrix());
-	}
-
-	/**
-	 * Divide the values in a row by a given number.
-	 *
-	 * @param row the row
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void divide(int row, 
-			double x,
-			Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			divide(row, x, (DoubleMatrix)m);
-		} else {
-			for (int i = 0; i < m.getColumnCount(); ++i) {
-				double v = m.getValue(row, i);
-
-				if (Mathematics.isValidNumber(v)) {
-					m.set(row, i, v / x);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Divide.
-	 *
-	 * @param row the row
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void divide(int row, 
-			double x,
-			DoubleMatrix m) {
-
-		int c = m.getIndex(row, 0);
-
-		for (int i = 0; i < m.getColumnCount(); ++i) {
-			double v = m.getValue(row, i);
-
-			if (Mathematics.isValidNumber(v)) {
-				m.mData[i + c] = v / x;
-			}
-		}
-	}
-
-	/**
-	 * Adds the.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix add(AnnotationMatrix m, double x) {
-		return new AnnotatableMatrix(m, add(m.getInnerMatrix(), x));
-	}
-
-	/**
-	 * Adds the.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix add(Matrix m, double x) {
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m);
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					ret.set(i, j, v + x);
-				}
-			}
-		}
-
-		return ret;
-	}
-
-
-	/**
-	 * Adds the.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix add(DoubleMatrix m, double x) { 
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m);
-
-		for (int i = 0; i < m.mData.length; ++i) {
-			ret.mData[i] = m.mData[i] + x;
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Subtract.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix subtract(final AnnotationMatrix m, double x) {
-		return new AnnotatableMatrix(m, subtract(m.getInnerMatrix(), x));
-	}
-
-	/**
-	 * Subtract.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static Matrix subtract(Matrix m, double x) {
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m);
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					ret.set(i, j, v - x);
-				}
-			}
-		}
-
-		return ret;
-	}
-
-
-	/**
-	 * Subtract.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the matrix
-	 */
-	public static Matrix subtract(DoubleMatrix m, double x) { 
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m);
-
-		for (int i = 0; i < m.mData.length; ++i) {
-			ret.mData[i] = m.mData[i] - x;
-		}
-
-		return ret;
+		return m.applied(new ThresholdFunction(min, max));
 	}
 
 	//
 	// Min/Max
 	//
 
-	/**
-	 * Set all values lower than x to x.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the annotation matrix
-	 */
-	public static AnnotationMatrix min(AnnotationMatrix m, double x) {
-		return new AnnotatableMatrix(m, min(m.getInnerMatrix(), x));
-	}
-
-	/**
-	 * Min.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix min(Matrix m, double x) {
-		if (m instanceof DoubleMatrix) {
-			return min((DoubleMatrix)m, x);
-		} else {
-			DoubleMatrix ret = 
-					new DoubleMatrix(m.getRowCount(), m.getColumnCount());
-
-			for (int i = 0; i < m.getRowCount(); ++i) {
-				for (int j = 0; j < m.getColumnCount(); ++j) {
-					double v = m.getValue(i, j);
-
-					if (Mathematics.isValidNumber(v)) {
-						ret.set(i, j, Math.max(v, x));
-					}
-				}
-			}
-
-			return ret;
-		}
-	}
-
-	/**
-	 * Min.
-	 *
-	 * @param m the m
-	 * @param x the x
-	 * @return the double matrix
-	 */
-	public static DoubleMatrix min(DoubleMatrix m, double x) {
-		DoubleMatrix ret = 
-				new DoubleMatrix(m.getRowCount(), m.getColumnCount());
-
-		for (int i = 0; i < m.mData.length; ++i) {			
-			double v = m.mData[i];
-
-			if (Mathematics.isValidNumber(v)) {
-				ret.mData[i] = Math.max(v, x);
-			}
-		}
-
-		return ret;
-	}
 
 	/**
 	 * Min.
@@ -840,49 +397,9 @@ public class MatrixOperations {
 	 * @return the double
 	 */
 	public static double min(final Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			return min((DoubleMatrix)m);
-		}
-
-		double min = Double.MAX_VALUE;
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (!Mathematics.isValidNumber(v)) {
-					continue;
-				}
-
-				if (v < min) {
-					min = v;
-				}
-			}
-		}
-
-		return min;
-	}
-
-	/**
-	 * Min.
-	 *
-	 * @param m the m
-	 * @return the double
-	 */
-	public static double min(final DoubleMatrix m) {
-		double min = Double.MAX_VALUE;
-
-		for (double v : m.mData) {
-			if (!Mathematics.isValidNumber(v)) {
-				continue;
-			}
-
-			if (v < min) {
-				min = v;
-			}
-		}
-
-		return min;
+		m.stat(MIN_FUNCTION);
+		
+		return MIN_FUNCTION.getStat();
 	}
 
 	/**
@@ -895,52 +412,10 @@ public class MatrixOperations {
 		return max(m.getInnerMatrix());
 	}
 
-	/**
-	 * Returns the min value in a matrix.
-	 *
-	 * @param m the m
-	 * @return the double
-	 */
-	public static double max(Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			return max((DoubleMatrix)m);
-		}
-
-		double max = Double.MIN_VALUE;
-
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
-				double v = m.getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					if (v > max) {
-						max = v;
-					}
-				}
-			}
-		}
-
-		return max;
-	}
-
-	/**
-	 * Max.
-	 *
-	 * @param m the m
-	 * @return the double
-	 */
-	public static double max(DoubleMatrix m) {
-		double max = Double.MIN_VALUE;
-
-		for (double v : m.mData) {
-			if (Mathematics.isValidNumber(v)) {
-				if (v > max) {
-					max = v;
-				}
-			}
-		}
-
-		return max;
+	public static double max(final Matrix m) {
+		m.stat(MAX_FUNCTION);
+		
+		return MAX_FUNCTION.getStat();
 	}
 
 	//
@@ -2814,7 +2289,7 @@ public class MatrixOperations {
 	 * @return the double matrix
 	 */
 	public static DoubleMatrix apply(final DoubleMatrix m, Function f) {
-		DoubleMatrix ret = new DoubleMatrix(m);
+		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m);
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			ret.mData[i] = f.apply(m.mData[i]);
@@ -3120,5 +2595,29 @@ public class MatrixOperations {
 		for (Object v : values) {
 			m.mData[c++] = v.toString();
 		}
+	}
+
+	public static AnnotationMatrix divide(AnnotationMatrix m, double x) {
+		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+		
+		MatrixArithmetic.divide(x, ret);
+		
+		return ret;
+	}
+
+	public static AnnotationMatrix add(AnnotationMatrix m, double x) {
+		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+		
+		MatrixArithmetic.add(x, ret);
+		
+		return ret;
+	}
+
+	public static AnnotationMatrix subtract(AnnotationMatrix m, double x) {
+		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+		
+		MatrixArithmetic.subtract(x, ret);
+		
+		return ret;
 	}
 }

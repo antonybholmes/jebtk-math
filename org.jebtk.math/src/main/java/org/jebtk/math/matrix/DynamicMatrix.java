@@ -57,7 +57,7 @@ public abstract class DynamicMatrix<T> extends Matrix {
 	/**
 	 * Dynamically resizing map of maps to store text for each cell.
 	 */
-	protected MapMap<Integer, Integer, T> mData = null;
+	protected final MapMap<Integer, Integer, T> mData;
 
 	/**
 	 * The member cells.
@@ -262,14 +262,6 @@ public abstract class DynamicMatrix<T> extends Matrix {
 	 */
 	@Override
 	public void update(int row, int column, double v) {
-		updateSize(row, column);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#update(int, int, int)
-	 */
-	@Override
-	public void update(int row, int column, int v) {
 		updateSize(row, column);
 	}
 

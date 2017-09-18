@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016, Antony Holmes
+IntMatrix * Copyright (C) 2016, Antony Holmes
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,16 +33,17 @@ package org.jebtk.math.matrix;
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicTextMatrix extends DynamicMatrix<String> {
-
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
+public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 
 	/**
-	 * Instantiates a new dynamic text matrix.
+	 * The constant serialVersionUID.
 	 */
-	public DynamicTextMatrix() {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Instantiates a new dynamic double matrix.
+	 */
+	public DynamicIntMatrix() {
 		this(0, 0);
 	}
 
@@ -52,7 +53,7 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	 * @param rows the rows
 	 * @param columns the columns
 	 */
-	public DynamicTextMatrix(int rows, int columns) {
+	public DynamicIntMatrix(int rows, int columns) {
 		super(rows, columns);
 	}
 
@@ -63,7 +64,7 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	 * @param columns the columns
 	 * @param v the v
 	 */
-	public DynamicTextMatrix(int rows, int columns, String v) {
+	public DynamicIntMatrix(int rows, int columns, int v) {
 		super(rows, columns, v);
 	}
 
@@ -73,16 +74,8 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	 *
 	 * @param m the m
 	 */
-	public DynamicTextMatrix(Matrix m) {
+	public DynamicIntMatrix(Matrix m) {
 		super(m);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getType()
-	 */
-	@Override
-	public MatrixType getType() {
-		return MatrixType.TEXT;
 	}
 
 	/* (non-Javadoc)
@@ -90,77 +83,74 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	 */
 	@Override
 	public Matrix copy() {
-		return new DynamicTextMatrix(this);
+		return new DynamicIntMatrix(this);
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
+	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
 	 */
 	@Override
-	public void update(String v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
-				mData.put(i, j, v);
+	public void updateToNull(int row, int column) {
+		mData.put(row, column, NULL_INT_NUMBER);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
+	 */
+	@Override
+	public double getValue(int row, int column) {
+		Object v = mData.get(row, column);
+
+		if (v != null) {
+			int i = ((Integer)v).intValue();
+			
+			if (isValidMatrixNum(i)) {
+				return i;
+			} else {
+				return NULL_NUMBER;
+			}
+		} else {
+			return NULL_NUMBER;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.DynamicMatrix#getText(int, int)
+	 */
+	@Override
+	public String getText(int row, int column) {
+		Object v = mData.get(row, column);
+
+		if (v != null) {
+			return v.toString();
+		} else {
+			return null;
+		}
+	}
+	
+	@Override
+	public void apply(MatrixFunction f) {
+		for (int i = 0; i < getRowCount(); ++i) {
+			for (int j = 0; j < getColumnCount(); ++j) {
+				double v = f.apply(i, j, mData.get(i, j));
+				
+				if (isValidMatrixNum(v)) {
+					mData.put(i, j, (int)v);
+				} else {
+					mData.put(i, j, NULL_INT_NUMBER);
+				}
 			}
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.Object)
-	 */
-	@Override
-	public void update(int row, int column, Object v) {
-		if (v == null) {
-			return;
-		}
-		
-		if (v instanceof String) {
-			mData.put(row, column, (String)v);
-		} else {
-			mData.put(row, column, v.toString());
-		}
-
-		updateSize(row, column);
-	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.String)
-	 */
-	@Override
-	public void update(int row, int column, String v) {
-		mData.put(row, column, v);
-
-		updateSize(row, column);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int row, int column, double v) {
-		update(row, column, Double.toString(v));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
-	 */
-	@Override
-	public CellType getCellType(int row, int column) {
-		return CellType.TEXT;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#transpose()
-	 */
 	@Override
 	public Matrix transpose() {
 		return transpose(this);
 	}
 	
-	public static Matrix transpose(DynamicTextMatrix m) {
-		
-		// Return a fixed sized array where possible
-		TextMatrix ret = TextMatrix.createTextMatrix(m.getColumnCount(), m.getRowCount());
+	public static Matrix transpose(DynamicIntMatrix m) {
+		DynamicIntMatrix ret = 
+				createDynamicIntMatrix(m.getColumnCount(), m.getRowCount());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
@@ -168,20 +158,34 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
 			for (int j = 0; j < m.getColumnCount(); ++j) {
-				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
+				ret.set(j, i, m.get(i, j));
 			}
 		}
-		
+
 		return ret;
 	}
+
+	//
+	// Static methods
+	//
 	
+	/**
+	 * Creates the.
+	 *
+	 * @param rows the rows
+	 * @param columns the columns
+	 * @return the dynamic double matrix
+	 */
+	public static DynamicIntMatrix createDynamicIntMatrix(int rows, int columns) {
+		return new DynamicIntMatrix(rows, columns);
+	}
 	
 	/**
 	 * Creates the matrix.
 	 *
 	 * @return the matrix
 	 */
-	public static Matrix createMatrix() {
-		return new DynamicTextMatrix();
+	public static Matrix createDynamicIntMatrix() {
+		return new DynamicIntMatrix();
 	}
 }

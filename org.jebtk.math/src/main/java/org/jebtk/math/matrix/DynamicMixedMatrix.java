@@ -188,17 +188,21 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	 */
 	@Override
 	public Matrix transpose() {
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(DynamicMixedMatrix m) {
 		
 		// Return a fixed sized array where possible
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(getColumnCount(), getRowCount());
+		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getColumnCount(), m.getRowCount());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				ret.mData[ret.mRowOffsets[i] + j] = mData.get(i, j);
+		for (int i = 0; i < m.getRowCount(); ++i) {
+			for (int j = 0; j < m.getColumnCount(); ++j) {
+				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
 			}
 		}
 		

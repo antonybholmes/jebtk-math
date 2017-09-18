@@ -161,45 +161,39 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 		return Double.toString(getValue(index));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#add(double)
-	 */
 	@Override
-	public Matrix add(double v) {
-		for (int i = 0; i < mData.size(); ++i) {
-			mData.put(i, mData.get(i) + v);
+	public void apply(MatrixFunction f) {
+		for (int i : mData.keySet()) {
+			mData.put(i, f.apply(i, 0, mData.get(i)));
 		}
 
 		fireMatrixChanged();
-
-		return this;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#subtract(double)
-	 */
+	
+	
 	@Override
-	public Matrix subtract(double v) {
-		for (int i = 0; i < mData.size(); ++i) {
-			mData.put(i, mData.get(i) - v);
-		}
-
-		fireMatrixChanged();
-
-		return this;
+	public Matrix transpose() { 
+		return transpose(this);
 	}
+	
+	public static Matrix transpose(final SparseDoubleMatrix m) { 
+		SparseDoubleMatrix ret = new SparseDoubleMatrix(m.mCols, m.mRows);
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#multiply(double)
-	 */
-	@Override
-	public Matrix multiply(double v) {
-		for (int i = 0; i < mData.size(); ++i) {
-			mData.put(i, mData.get(i) * v);
+		int i2 = 0;
+		int c = 0;
+
+		for (int i : m.mData.keySet()) {
+			// Each time we end a row, reset i2 back to the next column
+			if (i % m.mCols == 0) {
+				i2 = c++;
+			}
+
+			ret.mData.put(i2, m.mData.get(i));
+
+			// Skip blocks
+			i2 += m.mRows;
 		}
 
-		fireMatrixChanged();
-
-		return this;
+		return ret;
 	}
 }

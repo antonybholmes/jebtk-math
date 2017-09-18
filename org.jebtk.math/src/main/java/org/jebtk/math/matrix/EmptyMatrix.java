@@ -51,4 +51,10 @@ public class EmptyMatrix extends RegularMatrix {
 	public EmptyMatrix(int rows, int columns) {
 		super(rows, columns);
 	}
+
+
+	@Override
+	public Matrix transpose() {
+		return this;
+	}
 }

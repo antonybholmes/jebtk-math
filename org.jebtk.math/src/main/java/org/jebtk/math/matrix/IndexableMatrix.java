@@ -44,9 +44,9 @@ public abstract class IndexableMatrix extends IndexMatrix {
 	/**
 	 * The offsets in the array where each new row begins.
 	 */
-	protected int[] mRowOffsets;
+	public int[] mRowOffsets;
 
-	
+
 	/**
 	 * Instantiates a new index matrix.
 	 *
@@ -56,17 +56,21 @@ public abstract class IndexableMatrix extends IndexMatrix {
 	public IndexableMatrix(int rows, int columns) {
 		super(rows, columns);
 
+		createOffsets();
+	}
+
+	private void createOffsets() {
 		// Cache the offsets to improve lookup times
-		mRowOffsets = new int[rows];
+		mRowOffsets = new int[mRows];
 
 		mRowOffsets[0] = 0;
-		
-		for (int i = 1; i < rows; ++i) {
+
+		for (int i = 1; i < mRows; ++i) {
 			// Use only additions
-			mRowOffsets[i] = mRowOffsets[i - 1] + columns; //i * columns;
+			mRowOffsets[i] = mRowOffsets[i - 1] + mCols; //i * columns;
 		}
 	}
-	
+
 	/**
 	 * Instantiates a new indexable matrix.
 	 *
@@ -74,9 +78,11 @@ public abstract class IndexableMatrix extends IndexMatrix {
 	 */
 	public IndexableMatrix(Matrix m) {
 		super(m);
+		
+		createOffsets();
 	}
-	
-	
+
+
 	/**
 	 * Instantiates a new indexable matrix.
 	 *
@@ -84,8 +90,10 @@ public abstract class IndexableMatrix extends IndexMatrix {
 	 */
 	public IndexableMatrix(IndexableMatrix m) {
 		super(m);
+
+		createOffsets();
 	}
-	
+
 	/**
 	 * Gets the index of a row cell lookup. This is the position in a 1D
 	 * row centric array corresponding to the cell indicated by row and

@@ -99,7 +99,7 @@ public class MathUtils {
 	 * @param values
 	 * @return
 	 */
-	public static double[] divide(double d, final double[] values) {
+	public static double[] divided(double d, final double[] values) {
 		int n = values.length;
 		
 		double[] ret = new double[n];
@@ -117,7 +117,7 @@ public class MathUtils {
 	 * @param d
 	 * @param values
 	 */
-	public static void divide2(double d, double[] values) {
+	public static void divide(double d, double[] values) {
 		for (int i = 0; i < values.length; ++i) {
 			values[i] = d / values[i];
 		}

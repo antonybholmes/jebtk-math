@@ -1,5 +1,7 @@
 package org.jebtk.math.matrix;
 
+import org.jebtk.math.matrix.utils.ColNumFunction;
+
 public abstract class ColMatrixFunction implements ColNumFunction {
 	private DoubleMatrix mMatrix;
 	private int mC;

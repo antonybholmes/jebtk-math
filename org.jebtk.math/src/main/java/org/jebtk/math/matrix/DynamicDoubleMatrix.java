@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016, Antony Holmes
+IntMatrix * Copyright (C) 2016, Antony Holmes
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -144,74 +144,26 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#transpose()
-	 */
 	@Override
 	public Matrix transpose() {
-		
-		// Return a fixed sized array where possible
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(getColumnCount(), getRowCount());
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(DynamicDoubleMatrix m) {
+		DynamicDoubleMatrix ret = 
+				createDynamicDoubleMatrix(m.getColumnCount(), m.getRowCount());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				ret.mData[ret.mRowOffsets[i] + j] = mData.get(i, j);
+		for (int i = 0; i < m.getRowCount(); ++i) {
+			for (int j = 0; j < m.getColumnCount(); ++j) {
+				ret.set(j, i, m.get(i, j));
 			}
 		}
-		
+
 		return ret;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#add(double)
-	 */
-	@Override
-	public Matrix add(double v) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				mData.put(i, j, mData.get(i, j) + v);
-			}
-		}
-		
-		fireMatrixChanged();
-		
-		return this;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#subtract(double)
-	 */
-	@Override
-	public Matrix subtract(double v) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				mData.put(i, j, mData.get(i, j) - v);
-			}
-		}
-		
-		fireMatrixChanged();
-		
-		return this;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#multiply(double)
-	 */
-	@Override
-	public Matrix multiply(double v) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				mData.put(i, j, mData.get(i, j) * v);
-			}
-		}
-		
-		fireMatrixChanged();
-		
-		return this;
 	}
 
 	//
@@ -225,7 +177,7 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 	 * @param columns the columns
 	 * @return the dynamic double matrix
 	 */
-	public static DynamicDoubleMatrix create(int rows, int columns) {
+	public static DynamicDoubleMatrix createDynamicDoubleMatrix(int rows, int columns) {
 		return new DynamicDoubleMatrix(rows, columns);
 	}
 	
@@ -234,7 +186,7 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 	 *
 	 * @return the matrix
 	 */
-	public static Matrix createMatrix() {
+	public static Matrix createDynamicDoubleMatrix() {
 		return new DynamicDoubleMatrix();
 	}
 }

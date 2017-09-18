@@ -117,14 +117,6 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, int)
-	 */
-	@Override
-	public void update(int index, int v) {
-		mData.put(index, v);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
 	 */
 	@Override
@@ -143,18 +135,10 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	 */
 	@Override
 	public double getValue(int index) {
-		return getIntValue(index);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getIntValue(int)
-	 */
-	@Override
-	public int getIntValue(int index) {
 		if (mData.containsKey(index)) {
 			return mData.get(index);
 		} else {
-			return 0;
+			return NULL_NUMBER;
 		}
 	}
 
@@ -164,5 +148,46 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	@Override
 	public String getText(int index) {
 		return Double.toString(getValue(index));
+	}
+
+	@Override
+	public void apply(MatrixFunction f) {
+		for (int i : mData.keySet()) {
+			double v = f.apply(i, 0, mData.get(i));
+			
+			if (isValidMatrixNum(v)) {
+				mData.put(i, (int)v);
+			} else {
+				mData.put(i, NULL_INT_NUMBER);
+			}
+		}
+
+		fireMatrixChanged();
+	}
+	
+	@Override
+	public Matrix transpose() { 
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final SparseIntMatrix m) { 
+		SparseIntMatrix ret = new SparseIntMatrix(m.mCols, m.mRows);
+
+		int i2 = 0;
+		int c = 0;
+
+		for (int i : m.mData.keySet()) {
+			// Each time we end a row, reset i2 back to the next column
+			if (i % m.mCols == 0) {
+				i2 = c++;
+			}
+
+			ret.mData.put(i2, m.mData.get(i));
+
+			// Skip blocks
+			i2 += m.mRows;
+		}
+
+		return ret;
 	}
 }

@@ -138,6 +138,18 @@ public class LongMatrix extends IndexableMatrix {
 		fireMatrixChanged();
 	}
 	
+	@Override
+	public void apply(MatrixFunction f) {
+		for (int i = 0; i < mData.length; ++i) {
+			double v = f.apply(i, 0, mData[i]);
+			
+			if (isValidMatrixNum(v)) {
+				mData[i] = (long)v;
+			} else {
+				mData[i] = NULL_LONG_NUMBER;
+			}
+		}
+	}
 	
 	
 	/* (non-Javadoc)
@@ -187,27 +199,11 @@ public class LongMatrix extends IndexableMatrix {
 	public double getValue(int index) {
 		long v = mData[index];
 		
-		if (v == Long.MIN_VALUE) {
-			return Double.NaN;
-		} else  {
+		if (isValidMatrixNum(v)) {
 			return v;
+		} else  {
+			return NULL_NUMBER;
 		}		
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getIntValue(int)
-	 */
-	@Override
-	public int getIntValue(int index) {
-		return (int)getLongValue(index);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getLongValue(int)
-	 */
-	@Override
-	public long getLongValue(int index) {
-		return mData[index];
 	}
 
 	/* (non-Javadoc)
@@ -215,11 +211,15 @@ public class LongMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void update(double v) {
-		//for (int i = 0; i < mData.length; ++i) {
-		//	mData[i] = v;
-		//}
+		long l;
+		
+		if (isValidMatrixNum(v)) {
+			l = (long)v;
+		} else {
+			l = NULL_LONG_NUMBER;
+		}
 
-		Arrays.fill(mData, (int)v);
+		Arrays.fill(mData, l);
 	}
 
 	/* (non-Javadoc)
@@ -227,14 +227,15 @@ public class LongMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void update(int index, double v) {
-		update(index, (int)v);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, int)
-	 */
-	public void update(int index, int v) {
-		mData[index] = v;
+		long l;
+		
+		if (isValidMatrixNum(v)) {
+			l = (long)v;
+		} else {
+			l = NULL_LONG_NUMBER;
+		}
+		
+		mData[index] = l;
 	}
 
 	/* (non-Javadoc)
@@ -334,28 +335,29 @@ public class LongMatrix extends IndexableMatrix {
 		fireMatrixChanged();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
-	 */
 	@Override
 	public Matrix transpose() { 
-		LongMatrix ret = createLongMatrix(mCols, mRows);
+		return transpose(this);
+	}
+	
+	public static Matrix transpose(final LongMatrix m) { 
+		LongMatrix ret = createLongMatrix(m.mCols, m.mRows);
 
 		int i2 = 0;
 		int c = 0;
-		
-		for (int i = 0; i < mData.length; ++i) {
+
+		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % mCols == 0) {
+			if (i % m.mCols == 0) {
 				i2 = c++;
 			}
-			
-			ret.mData[i2] = mData[i];
-		
+
+			ret.mData[i2] = m.mData[i];
+
 			// Skip blocks
-			i2 += mRows;
+			i2 += m.mRows;
 		}
-		
+
 		return ret;
 	}
 	
