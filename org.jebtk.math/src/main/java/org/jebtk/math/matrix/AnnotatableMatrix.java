@@ -621,7 +621,7 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	 * @see org.abh.common.math.matrix.AnnotationMatrix#columnAsList(int)
 	 */
 	@Override
-	public List<Object> columnAsList(int column) {
+	public Object[] columnAsList(int column) {
 		if (column < 0) {
 			return getRowAnnotations(getRowAnnotationNames().get(getRowAnnotationNames().size() + column)).rowAsList(0);
 		} else {
@@ -657,7 +657,7 @@ public class AnnotatableMatrix extends AnnotationMatrix {
 	 * @see org.abh.common.math.matrix.AnnotationMatrix#rowAsList(int)
 	 */
 	@Override
-	public List<Object> rowAsList(int column) {
+	public Object[] rowAsList(int column) {
 		if (column < 0) {
 			return getRowAnnotations(getRowAnnotationNames().get(getRowAnnotationNames().size() + column)).rowAsList(0);
 		} else {

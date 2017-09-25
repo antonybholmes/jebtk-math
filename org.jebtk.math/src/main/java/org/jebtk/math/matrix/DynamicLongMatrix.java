@@ -129,7 +129,7 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	}
 
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i = 0; i < getRowCount(); ++i) {
 			for (int j = 0; j < getColumnCount(); ++j) {
 				double v = f.apply(i, j, mData.get(i, j));

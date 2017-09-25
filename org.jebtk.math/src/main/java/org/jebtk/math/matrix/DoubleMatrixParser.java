@@ -27,7 +27,7 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.List;
+import java.util.Collection;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -46,7 +46,7 @@ public class DoubleMatrixParser extends MixedMatrixParser {
 	 * @param delimiter the delimiter
 	 */
 	public DoubleMatrixParser(boolean hasHeader,
-			List<String> skipMatches,
+			Collection<String> skipMatches,
 			int rowAnnotations, 
 			String delimiter) {
 		super(hasHeader, skipMatches, rowAnnotations, delimiter);

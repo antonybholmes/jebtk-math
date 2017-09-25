@@ -37,6 +37,12 @@ public class Transpose {
 
 	}
 
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public Matrix transpose(final AnnotationMatrix m) {
 		// Transpose the main matrix
 		Matrix innerM = transpose(m.getInnerMatrix());
@@ -61,6 +67,12 @@ public class Transpose {
 	}
 
 
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public Matrix transpose(final Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return transpose((DoubleMatrix)m);
@@ -86,6 +98,12 @@ public class Transpose {
 		}
 	}
 
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public static Matrix transpose(final IndexMatrix m) { 
 		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.mCols, m.mRows);
 
@@ -107,6 +125,12 @@ public class Transpose {
 		return ret;
 	}
 
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public static Matrix transpose(final DoubleMatrix m) { 
 		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mCols, m.mRows);
 
@@ -128,6 +152,12 @@ public class Transpose {
 		return ret;
 	}
 	
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public static Matrix transpose(final IntMatrix m) { 
 		IntMatrix ret = IntMatrix.createIntMatrix(m.mCols, m.mRows);
 

@@ -151,7 +151,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	}
 
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i : mData.keySet()) {
 			double v = f.apply(i, 0, mData.get(i));
 			

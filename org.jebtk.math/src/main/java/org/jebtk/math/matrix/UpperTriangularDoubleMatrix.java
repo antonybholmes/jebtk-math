@@ -158,7 +158,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	
 	
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = f.apply(i, 0, mData[i]);
 		}
@@ -167,12 +167,14 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	}
 	
 	@Override
-	public void stat(StatMatrixFunction f) {
+	public double stat(MatrixStatFunction f) {
 		f.init();
 		
 		for (int i = 0; i < mData.length; ++i) {
 			f.apply(i, 0, mData[i]);
 		}
+		
+		return f.getStat();
 	}
 	
 	//

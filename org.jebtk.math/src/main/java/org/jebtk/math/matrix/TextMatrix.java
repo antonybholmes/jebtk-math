@@ -351,7 +351,7 @@ public class TextMatrix extends IndexableMatrix {
 		return values;
 	}
 	
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		// Do nothing
 	}
 	

@@ -1,6 +1,6 @@
 package org.jebtk.math.matrix;
 
-public abstract class StatMatrixFunction {
+public abstract class MatrixStatFunction implements MatrixCellFunction {
 	
 	protected double mStat = Matrix.NULL_NUMBER;
 	
@@ -18,6 +18,4 @@ public abstract class StatMatrixFunction {
 	public double getStat() {
 		return mStat;
 	}
-	
-	public abstract void apply(int i, int j, double value);
 }

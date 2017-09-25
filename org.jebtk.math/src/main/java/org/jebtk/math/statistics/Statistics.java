@@ -429,7 +429,7 @@ public class Statistics {
 	 * @return the double
 	 */
 	public static final double mean(double[] values) {
-		return mean(values, 0, values.length - 1);
+		return mean(values, 0, values.length);
 	}
 
 	/**
@@ -440,12 +440,12 @@ public class Statistics {
 	 * @param endIndex the end index
 	 * @return the double
 	 */
-	public static final double mean(double[] values, int startIndex, int endIndex) {
+	public static final double mean(double[] values, int startIndex, int l) {
 		double mean = 0;
 		int size = 0;
 
-		for (int i = startIndex; i <= endIndex; ++i) {
-			double v = values[i];
+		for (int i = 0; i < l; ++i) {
+			double v = values[startIndex++];
 
 			if (Mathematics.isValidNumber(v)) {
 				mean += v;
@@ -532,6 +532,22 @@ public class Statistics {
 	 */
 	public static double median(final double[] values) {
 		return percentile(values, 50);
+	}
+	
+	/**
+	 * Returns the mode of a series of numbers.
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static double mode(final double[] values) {
+		CountMap<Double> countMap = CountMap.create();
+		
+		for (double v : values) {
+			countMap.put(v);
+		}
+		
+		return countMap.getMaxK();
 	}
 
 	/**

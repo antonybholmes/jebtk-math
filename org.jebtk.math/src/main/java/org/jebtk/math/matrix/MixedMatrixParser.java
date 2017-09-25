@@ -118,7 +118,7 @@ public class MixedMatrixParser implements MatrixParser {
 		// Work out if we need to skip annotation rows that should be
 		// ignored
 		
-		int skipLines = FileUtils.countHeaderLines(file, mSkipMatches);
+		int skipLines = ReaderUtils.countHeaderLines(file, mSkipMatches);
 		
 		//
 		// Count rows

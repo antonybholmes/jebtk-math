@@ -390,15 +390,15 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#columnAsList(int)
 	 */
 	@Override
-	public List<Object> columnAsList(int column) {
+	public Object[] columnAsList(int column) {
 		int r = getRowCount();
 
-		List<Object> values = new ArrayList<Object>(r);
+		Object[] values = new Object[r];
 
 		int i1 = getIndex(0, column);
 
 		for (int row = 0; row < r; ++row) {
-			values.add(get(i1));
+			values[row] = get(i1);
 
 			i1 += mCols;
 		}
@@ -450,15 +450,15 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#rowAsList(int)
 	 */
 	@Override
-	public List<Object> rowAsList(int row) {
+	public Object[] rowAsList(int row) {
 		int r = getColumnCount();
 
-		List<Object> values = new ArrayList<Object>(r);
+		Object[] values = new Object[r];
 
 		int i1 = getIndex(row, 0);
 
 		for (int col = 0; col < r; ++col) {
-			values.add(get(i1++));
+			values[col] = get(i1++);
 		}
 
 		return values;

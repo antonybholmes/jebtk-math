@@ -295,6 +295,12 @@ public class MatrixUtils {
 		return means;
 	}
 
+	/**
+	 * Row means.
+	 *
+	 * @param m the m
+	 * @return the double[]
+	 */
 	public static double[] rowMeans(DoubleMatrix m) {
 		double[] means = new double[m.mRows];
 

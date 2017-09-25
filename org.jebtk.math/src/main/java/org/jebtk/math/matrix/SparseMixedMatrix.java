@@ -193,7 +193,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	}
 	
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i : mData.keySet()) {
 			if (mData.get(i) instanceof Double) {
 				mData.put(i, f.apply(i, 0, (double)mData.get(i)));

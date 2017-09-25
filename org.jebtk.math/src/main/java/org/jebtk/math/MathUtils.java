@@ -118,8 +118,29 @@ public class MathUtils {
 	 * @param values
 	 */
 	public static void divide(double d, double[] values) {
+		divide(d, values, values);
+	}
+	
+	public static void divide(double d, double[] values, double[] ret) {
 		for (int i = 0; i < values.length; ++i) {
-			values[i] = d / values[i];
+			ret[i] = d / values[i];
+		}
+	}
+	
+	public static void divide(double[] values, double d) {
+		divide(values, d, values);
+	}
+	
+	/**
+	 * Divide values by d and put the results into ret.
+	 * 
+	 * @param values
+	 * @param d
+	 * @param ret
+	 */
+	public static void divide(double[] values, double d, double[] ret) {
+		for (int i = 0; i < values.length; ++i) {
+			ret[i] = values[i] / d;
 		}
 	}
 	
@@ -212,6 +233,129 @@ public class MathUtils {
 
 		return ret;
 	}
+	
+	
+	public static void multiply(double[] num, double[] denum) {
+		multiply(num, denum, num);
+	}
+	
+	public static void multiply(double[] num, double[] denum, double[] res) {
+		multiply(num, 0, 1, denum, 0, 1, res, 0, 1, num.length);
+	}
+	
+	public static void multiply(double[] num, 
+			int ns, 
+			int nk, 
+			double[] denum, 
+			int ds, 
+			int dk, 
+			int l) {
+		multiply(num, ns, nk, denum, ds, dk, num, num.length);
+	}
+	
+	/**
+	 * Divide num by denum and put results in res.
+	 * 
+	 * @param num
+	 * @param ns
+	 * @param nk
+	 * @param denum
+	 * @param ds
+	 * @param dk
+	 * @param l
+	 * @param res
+	 */
+	public static void multiply(final double[] num, 
+			int ns, 
+			int nk, 
+			final double[] denum, 
+			int ds, 
+			int dk, 
+			double[] res,
+			int l) {
+		multiply(num, ns, nk, denum, ds, dk, res, ns, nk, num.length);
+	}
 
+	public static void multiply(final double[] num, 
+			int ns, 
+			int nk, 
+			final double[] denum, 
+			int ds, 
+			int dk, 
+			double[] res,
+			int rs,
+			int rk,
+			int l) {
+		for (int i = 0; i < l; ++i) {
+			res[rs] = num[ns] * denum[ds];
+			
+			rs += rk;
+			ns += nk;
+			ds += dk;
+		}
+	}
+	
+	
+	
+
+	public static void divide(double[] num, double[] denum) {
+		divide(num, denum, num);
+	}
+	
+	public static void divide(double[] num, double[] denum, double[] res) {
+		divide(num, 0, 1, denum, 0, 1, res, 0, 1, num.length);
+	}
+	
+	public static void divide(double[] num, 
+			int ns, 
+			int nk, 
+			double[] denum, 
+			int ds, 
+			int dk, 
+			int l) {
+		divide(num, ns, nk, denum, ds, dk, num, num.length);
+	}
+	
+	/**
+	 * Divide num by denum and put results in res.
+	 * 
+	 * @param num
+	 * @param ns
+	 * @param nk
+	 * @param denum
+	 * @param ds
+	 * @param dk
+	 * @param l
+	 * @param res
+	 */
+	public static void divide(double[] num, 
+			int ns, 
+			int nk, 
+			double[] denum, 
+			int ds, 
+			int dk, 
+			double[] res,
+			int l) {
+		divide(num, ns, nk, denum, ds, dk, res, ns, nk, num.length);
+	}
+
+	public static void divide(double[] num, 
+			int ns, 
+			int nk, 
+			double[] denum, 
+			int ds, 
+			int dk, 
+			double[] res,
+			int rs,
+			int rk,
+			int l) {
+		for (int i = 0; i < l; ++i) {
+			res[rs] = num[ns] / denum[ds];
+			
+			rs += rk;
+			ns += nk;
+			ds += dk;
+		}
+	}
 	
 }

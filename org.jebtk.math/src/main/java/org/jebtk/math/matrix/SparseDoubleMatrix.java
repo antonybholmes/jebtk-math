@@ -162,7 +162,7 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	}
 
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i : mData.keySet()) {
 			mData.put(i, f.apply(i, 0, mData.get(i)));
 		}

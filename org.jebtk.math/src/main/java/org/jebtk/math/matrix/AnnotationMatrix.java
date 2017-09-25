@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jebtk.core.Indexed;
-import org.jebtk.core.Mathematics;
 import org.jebtk.core.NameProperty;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.io.FileUtils;
@@ -921,7 +920,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 * @see org.abh.common.math.matrix.Matrix#columnAsList(int)
 	 */
 	@Override
-	public List<Object> columnAsList(int column) {
+	public Object[] columnAsList(int column) {
 		if (column < 0) {
 			return getRowAnnotations(getRowAnnotationNames().get(getRowAnnotationNames().size() + column)).columnAsList(0);
 		} else {
@@ -957,7 +956,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 	 * @see org.abh.common.math.matrix.Matrix#rowAsList(int)
 	 */
 	@Override
-	public List<Object> rowAsList(int row) {
+	public Object[] rowAsList(int row) {
 		if (row >= 0) {
 			return getInnerMatrix().rowAsList(row);
 		} else {
@@ -989,8 +988,8 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		}
 	}
 	
-	
-	public Matrix applied(MatrixFunction f) {
+	@Override
+	public Matrix applied(MatrixCellFunction f) {
 		// Copy the matrix
 		AnnotationMatrix ret = new AnnotatableMatrix(this, true);
 
@@ -998,20 +997,91 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 
 		return ret;
 	}
+	
+	@Override
+	public Matrix rowApplied(MatrixCellFunction f, int index) {
+		// Copy the matrix
+		AnnotationMatrix ret = new AnnotatableMatrix(this, true);
 
-	public void apply(MatrixFunction f) {
+		ret.rowApply(f, index);
+
+		return ret;
+	}
+	
+	@Override
+	public Matrix colApplied(MatrixCellFunction f, int index) {
+		// Copy the matrix
+		AnnotationMatrix ret = new AnnotatableMatrix(this, true);
+
+		ret.colApply(f, index);
+
+		return ret;
+	}
+
+	@Override
+	public void apply(MatrixCellFunction f) {
 		getInnerMatrix().apply(f);
-		
-		fireMatrixChanged();
+	}
+	
+	@Override
+	public void rowApply(MatrixDimFunction f) {
+		getInnerMatrix().rowApply(f);
+	}
+	
+	@Override
+	public void rowApply(MatrixCellFunction f, int index) {
+		getInnerMatrix().rowApply(f, index);
+	}
+	
+	@Override
+	public void colApply(MatrixDimFunction f) {
+		getInnerMatrix().colApply(f);
+	}
+	
+	@Override
+	public void colApply(MatrixCellFunction f, int index) {
+		getInnerMatrix().colApply(f, index);
+	}
+	
+	@Override
+	public void rowEval(MatrixReduceFunction f, double[] ret) {
+		getInnerMatrix().rowEval(f, ret);
+	}
+	
+	@Override
+	public double rowEval(MatrixDimFunction f, int col, double[] ret) {
+		return getInnerMatrix().rowEval(f, col, ret);
+	}
+	
+	@Override
+	public void colEval(MatrixDimFunction f, double[] ret) {
+		getInnerMatrix().colEval(f, ret);
+	}
+	
+	@Override
+	public double colEval(MatrixDimFunction f, int col, double[] ret) {
+		return getInnerMatrix().colEval(f, col, ret);
 	}
 	
 	/**
 	 * Apply a stat function over a matrix.
 	 * 
 	 * @param f
+	 * @return 
 	 */
-	public void stat(StatMatrixFunction f) {
-		getInnerMatrix().stat(f);
+	@Override
+	public double stat(MatrixStatFunction f) {
+		return getInnerMatrix().stat(f);
+	}
+	
+	@Override
+	public double rowStat(MatrixStatFunction f, int index) {
+		return getInnerMatrix().rowStat(f, index);
+	}
+	
+	@Override
+	public double colStat(MatrixStatFunction f, int index) {
+		return getInnerMatrix().colStat(f, index);
 	}
 
 	/* (non-Javadoc)
@@ -1039,6 +1109,11 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 		}
 
 		return ret;
+	}
+	
+	@Override
+	public double[] toDouble() {
+		return getInnerMatrix().toDouble();
 	}
 
 	/**
@@ -1521,7 +1596,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			//co >= 0
 			// We are copying the row annotation of the from matrix to a
 			// column in the to matrix
-			List<Object> values = 
+			Object[] values = 
 					from.getColumnAnnotations(row).rowAsList(0);
 
 			//to.setRowAnnotation(from.getColumnAnnotationNames().get(0), row, );
@@ -1764,7 +1839,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			//co >= 0
 			// We are copying the row annotation of the from matrix to a
 			// column in the to matrix
-			List<Object> values = from.getRowAnnotations(column).rowAsList(0);
+			Object[] values = from.getRowAnnotations(column).rowAsList(0);
 
 			setColumnName(toColumn, from.getRowAnnotationName(column));
 			setColumn(toColumn, values);
@@ -1860,9 +1935,10 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			AnnotationMatrix to,
 			int toStart) {
 		for (String name : from.getColumnAnnotationNames()) {
-			List<Object> annotations = from.getColumnAnnotations(name).rowAsList(0);
+			Object[] annotations = from.getColumnAnnotations(name).rowAsList(0);
 
-			List<Object> subAnnotations = CollectionUtils.subList(annotations, fromStart, fromEnd - fromStart + 1);
+			Object[] subAnnotations = 
+					CollectionUtils.subList(annotations, fromStart, fromEnd - fromStart + 1);
 
 			int s = toStart;
 
@@ -1883,7 +1959,7 @@ public abstract class AnnotationMatrix extends Matrix implements NameProperty, M
 			AnnotationMatrix to,
 			int toStart) {
 		for (String name : from.getColumnAnnotationNames()) {
-			List<Object> annotations = 
+			Object[] annotations = 
 					from.getColumnAnnotations(name).rowAsList(0);
 
 			int s = toStart;

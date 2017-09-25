@@ -18,14 +18,14 @@ package org.jebtk.math.statistics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jebtk.core.Indexed;
 import org.jebtk.core.IndexedInt;
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
-import org.jebtk.core.collections.DefaultHashMap;
+import org.jebtk.core.collections.CountMap;
+import org.jebtk.core.sys.SysUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -61,10 +61,26 @@ public class Stats {
 	 * @param values the values
 	 */
 	public Stats(double[] values) {
-		mValues = new double[values.length];
+		this(values, 0, values.length);
+	}
+	
+	public Stats(double[] values, int s, int l) {
+		mValues = new double[l];
 
-		System.arraycopy(values, 0, mValues, 0, values.length);
+		System.arraycopy(values, s, mValues, 0, l);
 
+		// Ensure array is sorted for stats that assumed ordered data
+		Arrays.sort(mValues);
+
+		mN = mValues.length;
+		mEI = mN - 1;
+	}
+	
+	public Stats(double[] values, int s, int skip, int l) {
+		mValues = new double[l];
+
+		SysUtils.arraycopy(values, s, skip, mValues, 0, l);
+		
 		// Ensure array is sorted for stats that assumed ordered data
 		Arrays.sort(mValues);
 
@@ -195,6 +211,23 @@ public class Stats {
 	public double mean() {
 		return sum() / mN;
 	}
+	
+	public double geometricMean() {
+		int c = 0;
+		double sum = 1;
+		double v;
+
+		for (int i = 0; i < mN; ++i) {
+			v = mValues[i];
+			
+			if (v > 0) {
+				sum *= v;
+				++c;
+			}
+		}
+		
+		return Mathematics.nthRoot(sum, c);
+	}
 
 
 	/**
@@ -278,26 +311,16 @@ public class Stats {
 	 * @return the list
 	 */
 	public List<Double> mode() {
-		int max = -1;
-		int count;
-
-		Map<Double, Integer> occurences = 
-				DefaultHashMap.create(0);
+		CountMap<Double> occurences = CountMap.create();
 
 		for (double v : mValues) {
-			occurences.put(v, occurences.get(v) + 1);
-
-			count = occurences.get(v);
-
-			if (count > max) {
-				max = count;
-			}
+			occurences.put(v);
 		}
 
 		List <Double> modes = new ArrayList<Double>();
 
 		for (Entry<Double, Integer> entry : occurences.entrySet()) {
-			if (entry.getValue() == max) {
+			if (entry.getValue() == occurences.getMaxC()) {
 				modes.add(entry.getKey());
 			}
 		}
@@ -405,5 +428,9 @@ public class Stats {
 	 */
 	public double madStdDev() {
 		return 1.4826 * mad();
+	}
+
+	public double[] data() {
+		return mValues;
 	}
 }

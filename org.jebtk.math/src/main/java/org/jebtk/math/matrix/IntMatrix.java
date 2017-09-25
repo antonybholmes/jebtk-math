@@ -84,7 +84,7 @@ public class IntMatrix extends IndexableMatrix {
 		// Set the default value
 		update(v);
 	}
-	
+
 	/**
 	 * Inits the.
 	 */
@@ -137,7 +137,7 @@ public class IntMatrix extends IndexableMatrix {
 
 		fireMatrixChanged();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
 	 */
@@ -145,7 +145,7 @@ public class IntMatrix extends IndexableMatrix {
 	public void updateToNull(int index) {
 		mData[index] = NULL_INT_NUMBER;
 	}
-	
+
 
 
 	/**
@@ -187,7 +187,7 @@ public class IntMatrix extends IndexableMatrix {
 	@Override
 	public double getValue(int index) {
 		int v = mData[index];
-		
+
 		if (isValidMatrixNum(v)) {
 			return v;
 		} else  {
@@ -201,7 +201,7 @@ public class IntMatrix extends IndexableMatrix {
 	@Override
 	public void update(double v) {
 		int i;
-		
+
 		if (isValidMatrixNum(v)) {
 			i = (int)v;
 		} else {
@@ -217,13 +217,13 @@ public class IntMatrix extends IndexableMatrix {
 	@Override
 	public void update(int index, double v) {
 		int i;
-		
+
 		if (isValidMatrixNum(v)) {
 			i = (int)v;
 		} else {
 			i = NULL_INT_NUMBER;
 		}
-		
+
 		mData[index] = i;
 	}
 
@@ -240,17 +240,26 @@ public class IntMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void setValueColumn(int column, List<Double> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int ix = column;
 
-		int ix = getIndex(0, column);
-
-		for (int i = 0; i < r; ++i) {
+		for (int i = 0; i < mRows; ++i) {
 			mData[ix] = values.get(i).intValue();
 
 			ix += mCols;
 		}
 	}
 	
+	@Override
+	public void setColumn(int column, double[] values) {
+		int ix = column;
+
+		for (int i = 0; i < mRows; ++i) {
+			mData[ix] = (int)values[i];
+
+			ix += mCols;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.DoubleMatrix, int, int)
 	 */
@@ -261,7 +270,7 @@ public class IntMatrix extends IndexableMatrix {
 		//if (from.getRowCount() == 0 || getRowCount() == 0) {
 		//	return;
 		//}
-		
+
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
@@ -273,10 +282,10 @@ public class IntMatrix extends IndexableMatrix {
 			i1 += from.mCols;
 			i2 += mCols;
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
 	/**
 	 * Specialized instance of column copying for numerical matrices.
 	 *
@@ -290,7 +299,7 @@ public class IntMatrix extends IndexableMatrix {
 		//if (from.getRowCount() == 0 || getRowCount() == 0) {
 		//	return;
 		//}
-		
+
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
@@ -302,7 +311,7 @@ public class IntMatrix extends IndexableMatrix {
 			i1 += from.mCols;
 			i2 += mCols;
 		}
-		
+
 		fireMatrixChanged();
 	}
 
@@ -320,68 +329,120 @@ public class IntMatrix extends IndexableMatrix {
 		int c = Math.min(from.getColumnCount(), getColumnCount());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
-		
+
 		fireMatrixChanged();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
 	 */
 	@Override
 	public double[] columnAsDouble(int column) {
 		int r = getRowCount();
-		
+
 		double[] values = new double[r];
-		
+
 		int i1 = column;
-		
+
 		for (int row = 0; row < r; ++row) {
 			values[row] = mData[i1];
-			
+
 			i1 += mCols;
 		}
 
 		return values;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
 	 */
 	@Override
 	public double[] rowAsDouble(int row) {
 		int c = getColumnCount();
-		
+
 		double[] values = new double[c];
-		
+
 		int i1 = getIndex(row, 0);
-		
+
 		System.arraycopy(mData, i1, values, 0, c);
-		
+
 		return values;
 	}
-	
+
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
-			double v = f.apply(i, 0, mData[i]);
-			
-			if (isValidMatrixNum(v)) {
-				mData[i] = (int)v;
-			} else {
-				mData[i] = NULL_INT_NUMBER;
-			}
+			mData[i] = (int)f.apply(i, 0, mData[i]);
 		}
+
+		fireMatrixChanged();
 	}
-	
+
 	@Override
-	public void stat(StatMatrixFunction f) {
+	public void rowApply(MatrixCellFunction f, int index) {
+		int offset = mRowOffsets[index];
+
+		for (int i = 0; i < mCols; ++i) {
+			mData[offset] = (int)f.apply(i, 0, mData[offset]);
+
+			++offset;
+		}
+
+		fireMatrixChanged();
+	}
+
+	@Override
+	public void colApply(MatrixCellFunction f, int index) {
+		int offset = index;
+
+		for (int i = 0; i < mCols; ++i) {
+			mData[offset] = (int)f.apply(i, 0, mData[offset]);
+
+			offset += mCols;
+		}
+
+		fireMatrixChanged();
+	}
+
+	@Override
+	public double stat(MatrixStatFunction f) {
 		f.init();
-		
+
 		for (int i = 0; i < mData.length; ++i) {
 			f.apply(i, 0, mData[i]);
 		}
+
+		return f.getStat();
 	}
-	
+
+	@Override
+	public double rowStat(MatrixStatFunction f, int index) {
+		f.init();
+
+		int offset = mRowOffsets[index];
+
+		for (int i = 0; i < mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+
+			++offset;
+		}
+
+		return f.getStat();
+	}
+
+	@Override
+	public double colStat(MatrixStatFunction f, int index) {
+		int offset = index;
+
+		for (int i = 0; i < mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+
+			offset += mCols;
+		}
+
+		return f.getStat();
+	}
+
 	@Override
 	public Matrix dot(final Matrix m) {
 		if (m instanceof IntMatrix) {
@@ -390,7 +451,7 @@ public class IntMatrix extends IndexableMatrix {
 			return super.dot(m);
 		}
 	}
-	
+
 	public Matrix dot(final IntMatrix m) {
 		dot(this, m);
 
@@ -398,13 +459,13 @@ public class IntMatrix extends IndexableMatrix {
 
 		return this;
 	}
-	
+
 	public static void dot(IntMatrix m1, final IntMatrix m2) {
 		for (int i = 0; i < m1.mData.length; ++i) {
 			m1.mData[i] *= m2.mData[i];
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
 	 */
@@ -412,7 +473,7 @@ public class IntMatrix extends IndexableMatrix {
 	public Matrix transpose() { 
 		return transpose(this);
 	}
-	
+
 	public static Matrix transpose(final IntMatrix m) { 
 		IntMatrix ret = createIntMatrix(m.mCols, m.mRows);
 
@@ -433,7 +494,7 @@ public class IntMatrix extends IndexableMatrix {
 
 		return ret;
 	}
-	
+
 
 	//
 	// Static methods
@@ -449,7 +510,7 @@ public class IntMatrix extends IndexableMatrix {
 		if (m instanceof IntMatrix) {
 			return max((IntMatrix)m);
 		}
-		
+
 		double max = Double.MIN_VALUE;
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
@@ -468,7 +529,7 @@ public class IntMatrix extends IndexableMatrix {
 
 		return max;
 	}
-	
+
 	/**
 	 * Max.
 	 *
@@ -526,7 +587,7 @@ public class IntMatrix extends IndexableMatrix {
 		if (m instanceof IntMatrix) {
 			return min((IntMatrix)m);
 		}
-		
+
 		double min = Double.MAX_VALUE;
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
@@ -545,7 +606,7 @@ public class IntMatrix extends IndexableMatrix {
 
 		return min;
 	}
-	
+
 	/**
 	 * Min.
 	 *
@@ -567,10 +628,10 @@ public class IntMatrix extends IndexableMatrix {
 
 		return min;
 	}
-	
-	
-	
-	
+
+
+
+
 
 	/**
 	 * Finds the minimum in each row.
@@ -737,7 +798,7 @@ public class IntMatrix extends IndexableMatrix {
 			MatrixGroup g2,
 			boolean equalVariance) {
 		Matrix im = m.getInnerMatrix();
-		
+
 		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
 
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
@@ -1058,25 +1119,25 @@ public class IntMatrix extends IndexableMatrix {
 		} else {
 			int r = m.getRowCount();
 			int c = m.getColumnCount();
-			
+
 			double[] means = new double[c];
-			
+
 			for (int i = 0; i < c; ++i) {
 				double[] values = new double[r];
-					
+
 				for (int j = 0; j < r; ++j) {
 					values[j] = m.getValue(j, i);
 				}
-				
+
 				double mean = Statistics.mean(values);
-				
+
 				means[i] = mean;
 			}
-			
+
 			return means;
 		}
 	}
-	
+
 	/**
 	 * Return the means of the matrix columns.
 	 *
@@ -1086,28 +1147,28 @@ public class IntMatrix extends IndexableMatrix {
 	public static double[] columnMeans(IndexableMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] means = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.getValue(index);
-				
+
 				index += c;
 			}
-			
+
 			double mean = Statistics.mean(values);
-			
+
 			means[i] = mean;
 		}
-		
+
 		return means;
 	}
-	
+
 	/**
 	 * Column means.
 	 *
@@ -1117,28 +1178,28 @@ public class IntMatrix extends IndexableMatrix {
 	public static double[] columnMeans(IntMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] means = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.mData[index];
-				
+
 				index += c;
 			}
-			
+
 			double mean = Statistics.mean(values);
-			
+
 			means[i] = mean;
 		}
-		
+
 		return means;
 	}
-	
+
 	/**
 	 * Column pop std dev.
 	 *
@@ -1153,25 +1214,25 @@ public class IntMatrix extends IndexableMatrix {
 		} else {
 			int r = m.getRowCount();
 			int c = m.getColumnCount();
-			
+
 			double[] ret = new double[c];
-			
+
 			for (int i = 0; i < c; ++i) {
 				double[] values = new double[r];
-					
+
 				for (int j = 0; j < r; ++j) {
 					values[j] = m.getValue(j, i);
 				}
-				
+
 				double sd = Statistics.popStdDev(values);
-				
+
 				ret[i] = sd;
 			}
-			
+
 			return ret;
 		}
 	}
-	
+
 	/**
 	 * Return the means of the matrix columns.
 	 *
@@ -1181,28 +1242,28 @@ public class IntMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(IndexableMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] ret = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.getValue(index);
-				
+
 				index += c;
 			}
-			
+
 			double sd = Statistics.popStdDev(values);
-			
+
 			ret[i] = sd;
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Column pop std dev.
 	 *
@@ -1212,28 +1273,28 @@ public class IntMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(IntMatrix m) {
 		int r = m.getRowCount();
 		int c = m.getColumnCount();
-		
+
 		double[] ret = new double[c];
-		
+
 		for (int i = 0; i < c; ++i) {
 			double[] values = new double[r];
-			
+
 			int index = i;
-			
+
 			for (int j = 0; j < r; ++j) {
 				values[j] = m.mData[index];
-				
+
 				index += c;
 			}
-			
+
 			double sd = Statistics.popStdDev(values);
-			
+
 			ret[i] = sd;
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Returns a new empty matrix the same dimensions as the input matrix.
 	 *
@@ -1243,7 +1304,7 @@ public class IntMatrix extends IndexableMatrix {
 	public static IntMatrix createIntMatrix(Matrix m) {
 		return createIntMatrix(m.getRowCount(), m.getColumnCount());
 	}
-	
+
 	/**
 	 * Creates the int matrix.
 	 *

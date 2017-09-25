@@ -139,7 +139,7 @@ public class LongMatrix extends IndexableMatrix {
 	}
 	
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
 			double v = f.apply(i, 0, mData[i]);
 			

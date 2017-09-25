@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jebtk.core.Mathematics;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.statistics.Statistics;
 
@@ -161,6 +162,11 @@ public class DoubleMatrix extends IndexableMatrix {
 	public double[] getData() {
 		return mData;
 	}
+	
+	@Override
+	public double[] toDouble() {
+		return mData;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copy()
@@ -218,21 +224,39 @@ public class DoubleMatrix extends IndexableMatrix {
 		return Double.toString(mData[index]);
 	}
 
+	@Override
+	public void setRow(int row, double[] values) {
+		SysUtils.arraycopy(values, mData, mRowOffsets[row], mCols);
+		
+		fireMatrixChanged();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
 	 */
 	@Override
 	public void setValueColumn(int column, List<Double> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(mRows, values.size());
 
-		int ix = getIndex(0, column);
+		int ix = column;
 
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 
 			ix += mCols;
 		}
+		
+		fireMatrixChanged();
 	}
+	
+	@Override
+	public void setColumn(int column, double[] values) {
+		SysUtils.arraycopy(values, mData, column, mCols, mRows);
+		
+		fireMatrixChanged();
+	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#copyColumn(org.abh.common.math.matrix.Matrix, int, int)
@@ -307,48 +331,125 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
 	 */
 	@Override
-	public double[] columnAsDouble(int column) {
-		double[] values = new double[mRows];
-
+	public void columnAsDouble(int column, double[] ret) {
 		int i1 = column;
 
 		for (int row = 0; row < mRows; ++row) {
-			values[row] = mData[i1];
+			ret[row] = mData[i1];
 
 			i1 += mCols;
 		}
-
-		return values;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
 	 */
 	@Override
-	public double[] rowAsDouble(int row) {
-		double[] values = new double[mCols];
-
-		System.arraycopy(mData, mRowOffsets[row], values, 0, mCols);
-
-		return values;
+	public void rowAsDouble(int row, double[] ret) {
+		SysUtils.arraycopy(mData, mRowOffsets[row], ret, mCols);
 	}
 
 	@Override
-	public void apply(MatrixFunction f) {
+	public void apply(MatrixCellFunction f) {
+		int r = 0;
+		int c = 0;
+		
 		for (int i = 0; i < mData.length; ++i) {
-			mData[i] = f.apply(i, 0, mData[i]);
+			mData[i] = f.apply(r, c++, mData[i]);
+			
+			if (c == mCols) {
+				c = 0;
+				++r;
+			}
 		}
 		
 		fireMatrixChanged();
 	}
 	
 	@Override
-	public void stat(StatMatrixFunction f) {
+	public void rowApply(MatrixCellFunction f) {
+		for (int i = 0; i < mRows; ++i) {
+			rowApply(f, i);
+		}
+		
+		fireMatrixChanged();
+	}
+	
+	@Override
+	public void rowApply(MatrixCellFunction f, int index) {
+		int offset = mRowOffsets[index];
+		
+		for (int i = 0; i < mCols; ++i) {
+			mData[offset] = f.apply(i, 0, mData[offset]);
+			
+			++offset;
+		}
+		
+		fireMatrixChanged();
+	}
+	
+	@Override
+	public void colApply(MatrixCellFunction f, int col) {
+		int offset = col;
+		
+		for (int i = 0; i < mCols; ++i) {
+			mData[offset] = f.apply(i, 0, mData[offset]);
+			
+			offset += mCols;
+		}
+		
+		fireMatrixChanged();
+	}
+	
+	
+	@Override
+	public void rowEval(MatrixReduceFunction f, double[] ret) {
+		int offset = 0;
+		
+		for (int i = 0; i < mRows; ++i) {
+			ret[i] = f.apply(i, offset, mCols, mData);
+			
+			offset += mCols;
+		}
+	}
+	
+	@Override
+	public double stat(MatrixStatFunction f) {
 		f.init();
 		
 		for (int i = 0; i < mData.length; ++i) {
 			f.apply(i, 0, mData[i]);
 		}
+		
+		return f.getStat();
+	}
+	
+	@Override
+	public double rowStat(MatrixStatFunction f, int index) {
+		f.init();
+		
+		int offset = mRowOffsets[index];
+		
+		for (int i = 0; i < mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+			
+			++offset;
+		}
+		
+		return f.getStat();
+	}
+	
+	@Override
+	public double colStat(MatrixStatFunction f, int index) {
+		int offset = index;
+		
+		for (int i = 0; i < mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+			
+			offset += mCols;
+		}
+		
+		return f.getStat();
 	}
 
 	@Override

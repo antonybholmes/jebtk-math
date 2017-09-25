@@ -206,7 +206,7 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	 * @see org.abh.common.math.matrix.UpperTriangularMatrix#transpose()
 	 */
 	@Override
-	public Matrix transpose() { 
+	public Matrix transpose() {
 		return copy();
 	}
 }
