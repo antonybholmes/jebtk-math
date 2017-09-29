@@ -17,6 +17,7 @@ package org.jebtk.math.matrix.utils;
 
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixCellFunction;
+import org.jebtk.math.matrix.MatrixDimFunction;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -116,6 +117,43 @@ public class MatrixArithmetic {
 		}
 	}
 	
+	private static abstract class ArithDimFunc implements MatrixDimFunction {
+
+		/** The m V. */
+		protected double mV;
+
+		/**
+		 * Instantiates a new arith func.
+		 *
+		 * @param v the v
+		 */
+		public ArithDimFunc(double v) {
+			mV = v;
+		}
+	}
+	
+	private static class DivideDimFunc extends ArithDimFunc {
+		
+		/**
+		 * Instantiates a new divide func.
+		 *
+		 * @param v the v
+		 */
+		public DivideDimFunc(double v) {
+			super(v);
+		}
+
+		@Override
+		public double apply(int index, double[] data, double[] ret) {
+			for (int i = 0; i < data.length; ++i) {
+				ret[i] = data[i] / mV;
+			}
+			
+			return -1;
+		}
+	}
+	
+	
 	/**
 	 * Adds the.
 	 *
@@ -154,5 +192,10 @@ public class MatrixArithmetic {
 	 */
 	public static void divide(double x, Matrix m) {
 		m.apply(new DivideFunc(x));
+	}
+	
+	
+	public static void divide(int row, double x, Matrix m) {
+		m.rowApply(new DivideDimFunc(x), row);
 	}
 }

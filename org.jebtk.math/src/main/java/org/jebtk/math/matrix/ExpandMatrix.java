@@ -27,8 +27,10 @@
  */
 package org.jebtk.math.matrix;
 
-import org.jebtk.core.collections.DefaultHashMapMap;
-import org.jebtk.core.collections.MapMap;
+import java.util.List;
+
+import org.jebtk.core.collections.DefaultArrayList;
+import org.jebtk.core.collections.DefaultArrayListCreator;
 import org.jebtk.core.text.TextUtils;
 
 
@@ -44,7 +46,7 @@ import org.jebtk.core.text.TextUtils;
  * @author Antony Holmes Holmes
  * @param <T> the generic type
  */
-public abstract class DynamicMatrix<T> extends ResizableMatrix {
+public abstract class ExpandMatrix<T> extends ResizableMatrix {
 
 	/**
 	 * The constant serialVersionUID.
@@ -54,19 +56,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	/**
 	 * Dynamically resizing map of maps to store text for each cell.
 	 */
-	protected final MapMap<Integer, Integer, T> mData;
-
-	/**
-	 * Instantiates a new dynamic matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DynamicMatrix(int rows, int columns) {
-		super(rows, columns);
-
-		mData = DefaultHashMapMap.create(rows, columns);
-	}
+	protected final List<List<T>> mData;
 
 	/**
 	 * Instantiates a new mixed sparse matrix.
@@ -75,10 +65,10 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 * @param columns the columns
 	 * @param v the v
 	 */
-	public DynamicMatrix(int rows, int columns, T v) {
+	public ExpandMatrix(int rows, int columns, T v) {
 		super(rows, columns);
 
-		mData = DefaultHashMapMap.create(rows, columns, v);
+		mData = DefaultArrayList.create(new DefaultArrayListCreator<T>(v));
 
 		// update size uses the zero based row and column to calculate size
 		// so we need to adjust for this
@@ -91,8 +81,8 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public DynamicMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+	public ExpandMatrix(Matrix m, T v) {
+		this(m.getRowCount(), m.getColumnCount(), v);
 
 		update(m);
 	}
@@ -102,10 +92,8 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public DynamicMatrix(DynamicMatrix<T> m) {
-		super(m.getRowCount(), m.getColumnCount());
-
-		mData = DefaultHashMapMap.create(m.getRowCount(), m.getColumnCount());
+	public ExpandMatrix(ExpandMatrix<T> m, T v) {
+		this(m.getRowCount(), m.getColumnCount(), v);
 
 		update(m);
 	}
@@ -116,9 +104,9 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public void update(DynamicMatrix<T> m) {
-		for (int row : m.mData.keySet()) {
-			mData.put(row, m.mData.get(row));
+	public void update(ExpandMatrix<T> m) {
+		for (int i = 0; i < m.mData.size(); ++i) {
+			mData.get(i).addAll(m.mData.get(i));
 		}
 	}
 
@@ -128,7 +116,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 */
 	@Override
 	public double getValue(int row, int column) {
-		Object v = mData.get(row, column);
+		Object v = mData.get(row).get(column);
 
 		if (v != null && v instanceof Number) {
 			return ((Double)v).doubleValue();
@@ -142,7 +130,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 */
 	@Override
 	public String getText(int row, int column) {
-		Object v = mData.get(row, column);
+		Object v = mData.get(row).get(column);
 
 		if (v != null) {
 			if (v instanceof String) {
@@ -160,6 +148,6 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 */
 	@Override
 	public void updateToNull(int row, int column) {
-		mData.put(row, column, null);
+		mData.get(row).set(column, null);
 	}
 }
