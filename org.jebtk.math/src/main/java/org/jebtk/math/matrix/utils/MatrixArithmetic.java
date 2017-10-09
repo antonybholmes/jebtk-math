@@ -144,12 +144,10 @@ public class MatrixArithmetic {
 		}
 
 		@Override
-		public double apply(int index, double[] data, double[] ret) {
+		public void apply(int index, double[] data, double[] ret) {
 			for (int i = 0; i < data.length; ++i) {
 				ret[i] = data[i] / mV;
 			}
-			
-			return -1;
 		}
 	}
 	

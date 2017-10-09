@@ -945,20 +945,20 @@ public abstract class Matrix extends MatrixEventListeners {
 		for (int i = 0; i < getRowCount(); ++i) {
 			double[] data = rowAsDouble(i);
 
-			ret[i] = f.apply(i, 0, data.length, data);
+			ret[i] = f.apply(i, data);
 		}
 	}
 	
-	public double rowEval(MatrixDimFunction f, int row, double[] ret) {
+	public void rowEval(MatrixDimFunction f, int row, double[] ret) {
 		double[] data = rowAsDouble(row);
 		
-		return f.apply(row, data, ret);
+		f.apply(row, data, ret);
 	}
 	
-	public double colEval(MatrixDimFunction f, int col, double[] ret) {
+	public void colEval(MatrixDimFunction f, int col, double[] ret) {
 		double[] data = rowAsDouble(col);
 		
-		return f.apply(col, data, ret);
+		f.apply(col, data, ret);
 	}
 	
 	/**

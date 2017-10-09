@@ -401,18 +401,6 @@ public class DoubleMatrix extends IndexableMatrix {
 		fireMatrixChanged();
 	}
 	
-	
-	@Override
-	public void rowEval(MatrixReduceFunction f, double[] ret) {
-		int offset = 0;
-		
-		for (int i = 0; i < mRows; ++i) {
-			ret[i] = f.apply(i, offset, mCols, mData);
-			
-			offset += mCols;
-		}
-	}
-	
 	@Override
 	public double stat(MatrixStatFunction f) {
 		f.init();

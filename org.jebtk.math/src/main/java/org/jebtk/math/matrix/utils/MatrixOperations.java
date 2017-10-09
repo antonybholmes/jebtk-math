@@ -381,10 +381,10 @@ public class MatrixOperations {
 	private static MatrixReduceFunction ROW_MEDIAN_F = new MatrixRowMedianFunction();
 	private static MatrixReduceFunction ROW_MODE_F = new MatrixRowModeFunction();
 
-	public static class GeoMeans extends MatrixReduceFunction {
+	public static class GeoMeans implements MatrixReduceFunction {
 		@Override
-		public double apply(int index, int s, int l, double[] data) {
-			return new Stats(data, s, l).geometricMean();
+		public double apply(int index, double[] data) {
+			return new Stats(data).geometricMean();
 		}
 	}
 	
@@ -399,7 +399,7 @@ public class MatrixOperations {
 		}
 		
 		@Override
-		public double apply(int index, double[] data, double[] ret) {
+		public void apply(int index, double[] data, double[] ret) {
 			// Col median
 			
 			MathUtils.divide(data, mGeoMeans, mData);
@@ -413,8 +413,6 @@ public class MatrixOperations {
 			} else {
 				ret[index] = 1;
 			}
-			
-			return -1;
 		}
 	}
 	
