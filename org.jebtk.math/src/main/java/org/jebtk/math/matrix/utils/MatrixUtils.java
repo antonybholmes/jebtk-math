@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jebtk.core.Mathematics;
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IndexableMatrix;
 import org.jebtk.math.matrix.Matrix;
@@ -360,7 +360,7 @@ public class MatrixUtils {
 	 * @param m the m
 	 * @return the double
 	 */
-	public static double maxRowSum(AnnotationMatrix m) {
+	public static double maxRowSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
@@ -388,7 +388,7 @@ public class MatrixUtils {
 	 * @param m the m
 	 * @return the double
 	 */
-	public static double maxColSum(AnnotationMatrix m) {
+	public static double maxColSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
 		for (int i = 0; i < m.getColumnCount(); ++i) {
@@ -419,7 +419,7 @@ public class MatrixUtils {
 	 * @param equalVariance the equal variance
 	 * @return the list
 	 */
-	public static List<Double> tTest(AnnotationMatrix m, 
+	public static List<Double> tTest(DataFrame m, 
 			MatrixGroup g1,
 			MatrixGroup g2,
 			boolean equalVariance) {
@@ -468,13 +468,13 @@ public class MatrixUtils {
 	 * @param g2 the g 2
 	 * @return the list
 	 */
-	public static List<Double> logFoldChange(AnnotationMatrix matrix, 
+	public static List<Double> logFoldChange(DataFrame matrix, 
 			MatrixGroup g1, 
 			MatrixGroup g2) {
 		List<Integer> g11 = MatrixGroup.findColumnIndices(matrix, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(matrix, g2);
 
-		Matrix im = matrix.getInnerMatrix();
+		Matrix im = matrix.getMatrix();
 
 		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
 

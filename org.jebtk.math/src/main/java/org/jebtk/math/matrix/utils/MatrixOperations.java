@@ -42,9 +42,8 @@ import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultHashMap;
 import org.jebtk.core.text.Join;
 import org.jebtk.math.MathUtils;
-import org.jebtk.math.matrix.AnnotatableMatrix;
-import org.jebtk.math.matrix.AnnotationMatrix;
 import org.jebtk.math.matrix.CellType;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IntMatrix;
 import org.jebtk.math.matrix.Matrix;
@@ -460,9 +459,9 @@ public class MatrixOperations {
 	 * @param m
 	 * @return
 	 */
-	public static AnnotationMatrix medianRatio(final AnnotationMatrix m) {
+	public static DataFrame medianRatio(final DataFrame m) {
 		
-		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+		DataFrame ret = new DataFrame(m, true);
 		
 		double[] geometricMeans = new double[m.getRowCount()];
 		ret.rowEval(new GeoMeans(), geometricMeans);
@@ -485,8 +484,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix ln(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, ln(m.getInnerMatrix()));
+	public static DataFrame ln(final DataFrame m) {
+		return new DataFrame(m, ln(m.getMatrix()));
 	}
 
 	/**
@@ -507,8 +506,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix log2(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, log2(m.getInnerMatrix()));
+	public static DataFrame log2(final DataFrame m) {
+		return new DataFrame(m, log2(m.getMatrix()));
 	}
 
 	/**
@@ -527,8 +526,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix log10(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, log10(m.getInnerMatrix()));
+	public static DataFrame log10(final DataFrame m) {
+		return new DataFrame(m, log10(m.getMatrix()));
 	}
 
 	/**
@@ -548,8 +547,8 @@ public class MatrixOperations {
 	 * @param base the base
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix log(final AnnotationMatrix m, int base) {
-		return new AnnotatableMatrix(m, log(m.getInnerMatrix(), base));
+	public static DataFrame log(final DataFrame m, int base) {
+		return new DataFrame(m, log(m.getMatrix(), base));
 	}
 
 	/**
@@ -574,8 +573,8 @@ public class MatrixOperations {
 	 * @param min the min
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix min(final AnnotationMatrix m, double min) {
-		return new AnnotatableMatrix(m, min(m.getInnerMatrix(), min));
+	public static DataFrame min(final DataFrame m, double min) {
+		return new DataFrame(m, min(m.getMatrix(), min));
 	}
 
 	/**
@@ -597,10 +596,10 @@ public class MatrixOperations {
 	 * @param max the max
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix threshold(final AnnotationMatrix m, 
+	public static DataFrame threshold(final DataFrame m, 
 			double min,
 			double max) {
-		return new AnnotatableMatrix(m, threshold(m.getInnerMatrix(), min, max));
+		return new DataFrame(m, threshold(m.getMatrix(), min, max));
 	}
 
 	/**
@@ -661,8 +660,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix zscore(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, zscore(m.getInnerMatrix()));
+	public static DataFrame zscore(final DataFrame m) {
+		return new DataFrame(m, zscore(m.getMatrix()));
 	}
 
 	/**
@@ -841,8 +840,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix rowZscore(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, rowZscore(m.getInnerMatrix()));
+	public static DataFrame rowZscore(final DataFrame m) {
+		return new DataFrame(m, rowZscore(m.getMatrix()));
 	}
 
 	/**
@@ -897,8 +896,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix columnZscore(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, columnZscore(m.getInnerMatrix()));
+	public static DataFrame columnZscore(final DataFrame m) {
+		return new DataFrame(m, columnZscore(m.getMatrix()));
 	}
 
 	/**
@@ -952,14 +951,14 @@ public class MatrixOperations {
 	 * @param groups the groups
 	 * @return the numerical matrix
 	 */
-	public static <X extends MatrixGroup> AnnotationMatrix groupZScore(AnnotationMatrix m, 
+	public static <X extends MatrixGroup> DataFrame groupZScore(DataFrame m, 
 			List<X> groups) {
 		List<List<Integer>> newGroups = 
 				MatrixGroup.findColumnIndices(m, groups);
 
-		Matrix ret = groupZScore(m.getInnerMatrix(), newGroups);
+		Matrix ret = groupZScore(m.getMatrix(), newGroups);
 
-		return new AnnotatableMatrix(m, ret);
+		return new DataFrame(m, ret);
 	}
 
 	/**
@@ -1027,8 +1026,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix quantileNormalize(final AnnotationMatrix m) {
-		return new AnnotatableMatrix(m, quantileNormalize(m.getInnerMatrix()));
+	public static DataFrame quantileNormalize(final DataFrame m) {
+		return new DataFrame(m, quantileNormalize(m.getMatrix()));
 	}
 
 	/**
@@ -1113,7 +1112,7 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix normalize(final AnnotationMatrix m) {
+	public static DataFrame normalize(final DataFrame m) {
 		double min = min(m);
 		double max = max(m);
 
@@ -1128,11 +1127,11 @@ public class MatrixOperations {
 	 * @param max the max
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix normalize(final AnnotationMatrix m,
+	public static DataFrame normalize(final DataFrame m,
 			double min,
 			double max) {
 
-		return new AnnotatableMatrix(m, normalize(m.getInnerMatrix(), min, max));
+		return new DataFrame(m, normalize(m.getMatrix(), min, max));
 	}
 
 	/**
@@ -1157,11 +1156,11 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseMaxStdDev(AnnotationMatrix m, 
+	public static DataFrame collapseMaxStdDev(DataFrame m, 
 			String rowAnnotation) {
 		List<Integer> rows = maxStdev(m, rowAnnotation);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1171,7 +1170,7 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the list
 	 */
-	public static List<Integer> maxStdev(AnnotationMatrix m, 
+	public static List<Integer> maxStdev(DataFrame m, 
 			String rowAnnotation) {
 
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
@@ -1203,7 +1202,7 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseMaxMean(AnnotationMatrix m, 
+	public static DataFrame collapseMaxMean(DataFrame m, 
 			String rowAnnotation) {
 
 		Map<Integer, List<Integer>> rowToRows = 
@@ -1211,7 +1210,7 @@ public class MatrixOperations {
 
 		List<Integer> rows = maxMean(m, rowAnnotation, rowToRows);
 
-		AnnotationMatrix ret = AnnotatableMatrix.copyRows(m, rows);
+		DataFrame ret = DataFrame.copyRows(m, rows);
 
 		joinAnnotations(m,rowToRows, rowAnnotation, ret);
 
@@ -1232,10 +1231,10 @@ public class MatrixOperations {
 	 * 							This will not be joined
 	 * @param ret the ret
 	 */
-	private static void joinAnnotations(final AnnotationMatrix m,
+	private static void joinAnnotations(final DataFrame m,
 			Map<Integer, List<Integer>> rowToRows,
 			String rowAnnotation,
-			AnnotationMatrix ret) {
+			DataFrame ret) {
 		List<String> names = m.getRowAnnotationNames();
 
 		// Keep track of the current row in the new matrix we are editing
@@ -1287,7 +1286,7 @@ public class MatrixOperations {
 	 * 						rows it belonged to.
 	 * @return the list
 	 */
-	public static List<Integer> maxMean(final AnnotationMatrix m, 
+	public static List<Integer> maxMean(final DataFrame m, 
 			final String rowAnnotation,
 			Map<Integer, List<Integer>> rowToRows) {
 
@@ -1334,11 +1333,11 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseMaxMedian(AnnotationMatrix m, 
+	public static DataFrame collapseMaxMedian(DataFrame m, 
 			String rowAnnotation) {
 		List<Integer> rows = maxMedian(m, rowAnnotation);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1348,7 +1347,7 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the list
 	 */
-	public static List<Integer> maxMedian(AnnotationMatrix m, 
+	public static List<Integer> maxMedian(DataFrame m, 
 			String rowAnnotation) {
 
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
@@ -1380,11 +1379,11 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseMax(AnnotationMatrix m, 
+	public static DataFrame collapseMax(DataFrame m, 
 			String rowAnnotation) {
 		List<Integer> rows = max(m, rowAnnotation);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1395,7 +1394,7 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the list
 	 */
-	public static List<Integer> max(AnnotationMatrix m, String rowAnnotation) {
+	public static List<Integer> max(DataFrame m, String rowAnnotation) {
 
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
 		Map<String, Double> maxMap = new HashMap<String, Double>();
@@ -1428,7 +1427,7 @@ public class MatrixOperations {
 	 * @param group2 the group2
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseTTest(AnnotationMatrix m, 
+	public static DataFrame collapseTTest(DataFrame m, 
 			String rowAnnotation,
 			MatrixGroup group1,
 			MatrixGroup group2) {
@@ -1437,7 +1436,7 @@ public class MatrixOperations {
 				group1, 
 				group2);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1450,7 +1449,7 @@ public class MatrixOperations {
 	 * @param g2 the g2
 	 * @return the list
 	 */
-	public static List<Integer> minTTest(AnnotationMatrix m,
+	public static List<Integer> minTTest(DataFrame m,
 			String rowAnnotation,
 			MatrixGroup g1,
 			MatrixGroup g2) {
@@ -1510,7 +1509,7 @@ public class MatrixOperations {
 	 * @param g2 the g2
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addTStat(AnnotationMatrix m,
+	public static DataFrame addTStat(DataFrame m,
 			MatrixGroup g1,
 			MatrixGroup g2) {
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
@@ -1546,7 +1545,7 @@ public class MatrixOperations {
 			absTStats.add(Math.abs(p));
 		}
 
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+		DataFrame ret = new DataFrame(m);
 
 		ret.setNumRowAnnotations("T-Stat", tStats);
 		//ret.setRowAnnotation("Abs T-Stat", ArrayUtils.toObjects(absTStats));
@@ -1561,8 +1560,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addRowSums(AnnotationMatrix m) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+	public static DataFrame addRowSums(DataFrame m) {
+		DataFrame ret = new DataFrame(m);
 
 		double[] values = new double[m.getRowCount()];
 		m.rowEval(ROW_SUM_F, values);
@@ -1579,8 +1578,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addRowMeans(AnnotationMatrix m) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+	public static DataFrame addRowMeans(DataFrame m) {
+		DataFrame ret = new DataFrame(m);
 
 		double[] values = new double[m.getRowCount()];
 		m.rowEval(ROW_MEAN_F, values);
@@ -1596,8 +1595,8 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addRowMedians(AnnotationMatrix m) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+	public static DataFrame addRowMedians(DataFrame m) {
+		DataFrame ret = new DataFrame(m);
 
 		double[] values = new double[m.getRowCount()];
 		m.rowEval(ROW_MEDIAN_F, values);
@@ -1607,8 +1606,8 @@ public class MatrixOperations {
 		return ret;
 	}
 	
-	public static AnnotationMatrix addRowModes(AnnotationMatrix m) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+	public static DataFrame addRowModes(DataFrame m) {
+		DataFrame ret = new DataFrame(m);
 
 		double[] values = new double[m.getRowCount()];
 		m.rowEval(ROW_MODE_F, values);
@@ -1625,7 +1624,7 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addIQR(AnnotationMatrix m) {
+	public static DataFrame addIQR(DataFrame m) {
 		List<Double> iqrList = new ArrayList<Double>(m.getRowCount());
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
@@ -1636,7 +1635,7 @@ public class MatrixOperations {
 			iqrList.add(iqr);
 		}
 
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+		DataFrame ret = new DataFrame(m);
 
 		ret.setNumRowAnnotations("IQR", iqrList);
 
@@ -1649,7 +1648,7 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix addQuartCoeffDisp(AnnotationMatrix m) {
+	public static DataFrame addQuartCoeffDisp(DataFrame m) {
 		List<Double> iqrList = new ArrayList<Double>(m.getRowCount());
 
 		for (int i = 0; i < m.getRowCount(); ++i) {
@@ -1658,7 +1657,7 @@ public class MatrixOperations {
 			iqrList.add(iqr);
 		}
 
-		AnnotationMatrix ret = new AnnotatableMatrix(m);
+		DataFrame ret = new DataFrame(m);
 
 		ret.setNumRowAnnotations("QuartCoeffDisp", iqrList);
 
@@ -1673,7 +1672,7 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 * @throws ParseException the parse exception
 	 */
-	public static AnnotationMatrix collapseMaxTStat(AnnotationMatrix m, 
+	public static DataFrame collapseMaxTStat(DataFrame m, 
 			String rowAnnotation) throws ParseException {
 		return collapse(m, rowAnnotation, "T-Stat");
 	}
@@ -1687,7 +1686,7 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 * @throws ParseException the parse exception
 	 */
-	public static AnnotationMatrix collapseMaxIQR(AnnotationMatrix m, 
+	public static DataFrame collapseMaxIQR(DataFrame m, 
 			String rowAnnotation) throws ParseException {
 		return collapse(m, rowAnnotation, "IQR");
 	}
@@ -1700,7 +1699,7 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 * @throws ParseException the parse exception
 	 */
-	public static AnnotationMatrix collapseMaxQuartCoeffDisp(AnnotationMatrix m, 
+	public static DataFrame collapseMaxQuartCoeffDisp(DataFrame m, 
 			String rowAnnotation) throws ParseException {
 		return collapse(m, rowAnnotation, "QuartCoeffDisp");
 	}
@@ -1714,7 +1713,7 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 * @throws ParseException the parse exception
 	 */
-	public static AnnotationMatrix collapse(AnnotationMatrix m, 
+	public static DataFrame collapse(DataFrame m, 
 			String rowAnnotation,
 			String valuesName) throws ParseException {
 
@@ -1741,7 +1740,7 @@ public class MatrixOperations {
 
 		List<Integer> rows = CollectionUtils.sort(maxRows.values());
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1751,11 +1750,11 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix collapseMin(AnnotationMatrix m, 
+	public static DataFrame collapseMin(DataFrame m, 
 			String rowAnnotation) {
 		List<Integer> rows = min(m, rowAnnotation);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1766,7 +1765,7 @@ public class MatrixOperations {
 	 * @param rowAnnotation the row annotation
 	 * @return the list
 	 */
-	public static List<Integer> min(AnnotationMatrix m, String rowAnnotation) {
+	public static List<Integer> min(DataFrame m, String rowAnnotation) {
 
 		Map<String, Integer> minRow = new HashMap<String, Integer>();
 		Map<String, Double> minMap = new HashMap<String, Double>();
@@ -1798,7 +1797,7 @@ public class MatrixOperations {
 	 * @param regex the regex
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix filterRows(AnnotationMatrix m, 
+	public static DataFrame filterRows(DataFrame m, 
 			String rowAnnotation,
 			String regex) {
 		return filterRows(m, rowAnnotation, regex, true);
@@ -1813,7 +1812,7 @@ public class MatrixOperations {
 	 * @param keep the keep
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix filterRows(AnnotationMatrix m, 
+	public static DataFrame filterRows(DataFrame m, 
 			String rowAnnotation,
 			String regex,
 			boolean keep) {
@@ -1841,7 +1840,7 @@ public class MatrixOperations {
 			}
 		}
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1852,12 +1851,12 @@ public class MatrixOperations {
 	 * @param indices the indices
 	 * @return the annotation matrix
 	 */
-	public static <V1 extends Comparable<? super V1>> AnnotationMatrix filterRowsByIndex(AnnotationMatrix m, 
+	public static <V1 extends Comparable<? super V1>> DataFrame filterRowsByIndex(DataFrame m, 
 			List<Indexed<Integer, V1>> indices) {
 
 		List<Integer> rows = Indexed.indices(indices);
 
-		return AnnotatableMatrix.copyRows(m, rows);
+		return DataFrame.copyRows(m, rows);
 	}
 
 	/**
@@ -1867,7 +1866,7 @@ public class MatrixOperations {
 	 * @param min the min
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix stdDevFilter(AnnotationMatrix m, 
+	public static DataFrame stdDevFilter(DataFrame m, 
 			double min) {
 		double[] v = new double[m.getColumnCount()];
 
@@ -1891,7 +1890,7 @@ public class MatrixOperations {
 			}
 		}
 
-		return AnnotatableMatrix.copyRows(m, indices);
+		return DataFrame.copyRows(m, indices);
 	}
 
 	/**
@@ -1901,7 +1900,7 @@ public class MatrixOperations {
 	 * @param min the min
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix meanFilter(AnnotationMatrix m, 
+	public static DataFrame meanFilter(DataFrame m, 
 			double min) {
 		double[] v = new double[m.getColumnCount()];
 
@@ -1923,7 +1922,7 @@ public class MatrixOperations {
 			}
 		}
 
-		return AnnotatableMatrix.copyRows(m, indices);
+		return DataFrame.copyRows(m, indices);
 	}
 
 	/**
@@ -1932,7 +1931,7 @@ public class MatrixOperations {
 	 * @param m the m
 	 * @return the list
 	 */
-	public static List<Double> rowStdev(AnnotationMatrix m) {
+	public static List<Double> rowStdev(DataFrame m) {
 		double[] v = new double[m.getColumnCount()];
 
 		List<Double> sd = new ArrayList<Double>(m.getRowCount());
@@ -1956,7 +1955,7 @@ public class MatrixOperations {
 	 * @param minSamples the min samples
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix minExpFilter(AnnotationMatrix m, 
+	public static DataFrame minExpFilter(DataFrame m, 
 			double minExp, 
 			int minSamples) {
 		List<Integer> indices = new ArrayList<Integer>();
@@ -1979,7 +1978,7 @@ public class MatrixOperations {
 			}
 		}
 
-		return AnnotatableMatrix.copyRows(m, indices);
+		return DataFrame.copyRows(m, indices);
 	}
 
 	/**
@@ -2056,11 +2055,11 @@ public class MatrixOperations {
 	 * @param equalVariance the equal variance
 	 * @return the list
 	 */
-	public static List<Double> tTest(AnnotationMatrix m, 
+	public static List<Double> tTest(DataFrame m, 
 			MatrixGroup g1,
 			MatrixGroup g2,
 			boolean equalVariance) {
-		Matrix im = m.getInnerMatrix();
+		Matrix im = m.getMatrix();
 
 		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
 
@@ -2109,7 +2108,7 @@ public class MatrixOperations {
 	 * @param g2 the g 2
 	 * @return the list
 	 */
-	public static List<Double> mannWhitney(AnnotationMatrix m, 
+	public static List<Double> mannWhitney(DataFrame m, 
 			MatrixGroup g1,
 			MatrixGroup g2) {
 		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
@@ -2153,10 +2152,10 @@ public class MatrixOperations {
 	 * @param columns the columns
 	 * @return the list
 	 */
-	public static double[] rowToList(AnnotationMatrix m, 
+	public static double[] rowToList(DataFrame m, 
 			int row, 
 			final List<Integer> columns) {
-		return rowToList(m.getInnerMatrix(), row, columns);
+		return rowToList(m.getMatrix(), row, columns);
 	}
 
 	/**
@@ -2229,7 +2228,7 @@ public class MatrixOperations {
 	 * @param g the g
 	 * @return the double
 	 */
-	public static double max(AnnotationMatrix m, 
+	public static double max(DataFrame m, 
 			int row, 
 			MatrixGroup g) {
 		return max(m, row, MatrixGroup.findColumnIndices(m, g));
@@ -2302,8 +2301,8 @@ public class MatrixOperations {
 	 */
 	public static void toRow(final Collection<? extends Object> values, 
 			int row, 
-			AnnotationMatrix m) {
-		toRow(values, row, m.getInnerMatrix());
+			DataFrame m) {
+		toRow(values, row, m.getMatrix());
 	}
 
 	/**
@@ -2332,8 +2331,8 @@ public class MatrixOperations {
 	 */
 	public static void numToRow(final Collection<? extends Number> values, 
 			int row, 
-			AnnotationMatrix m) {
-		numToRow(values, row, m.getInnerMatrix());
+			DataFrame m) {
+		numToRow(values, row, m.getMatrix());
 	}
 
 	/**
@@ -2380,8 +2379,8 @@ public class MatrixOperations {
 	 */
 	public static void numToRow(final double[] values, 
 			int row, 
-			AnnotationMatrix m) {
-		numToRow(values, row, m.getInnerMatrix());
+			DataFrame m) {
+		numToRow(values, row, m.getMatrix());
 	}
 
 	/**
@@ -2431,8 +2430,8 @@ public class MatrixOperations {
 	 */
 	public static void numToRow(final int[] values, 
 			int row, 
-			AnnotationMatrix m) {
-		numToRow(values, row, m.getInnerMatrix());
+			DataFrame m) {
+		numToRow(values, row, m.getMatrix());
 	}
 
 	/**
@@ -2501,8 +2500,8 @@ public class MatrixOperations {
 	 */
 	public static void textToRow(final Collection<String> values, 
 			int row, 
-			AnnotationMatrix m) {
-		textToRow(values, row, m.getInnerMatrix());
+			DataFrame m) {
+		textToRow(values, row, m.getMatrix());
 	}
 
 	/**
@@ -2546,8 +2545,8 @@ public class MatrixOperations {
 	 * @param x the x
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix multiply(AnnotationMatrix m, double x) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+	public static DataFrame multiply(DataFrame m, double x) {
+		DataFrame ret = new DataFrame(m, true);
 
 		MatrixArithmetic.multiply(x, ret);
 
@@ -2561,8 +2560,8 @@ public class MatrixOperations {
 	 * @param x the x
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix divide(AnnotationMatrix m, double x) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+	public static DataFrame divide(DataFrame m, double x) {
+		DataFrame ret = new DataFrame(m, true);
 
 		MatrixArithmetic.divide(x, ret);
 
@@ -2576,8 +2575,8 @@ public class MatrixOperations {
 	 * @param x the x
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix add(AnnotationMatrix m, double x) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+	public static DataFrame add(DataFrame m, double x) {
+		DataFrame ret = new DataFrame(m, true);
 
 		MatrixArithmetic.add(x, ret);
 
@@ -2591,8 +2590,8 @@ public class MatrixOperations {
 	 * @param x the x
 	 * @return the annotation matrix
 	 */
-	public static AnnotationMatrix subtract(AnnotationMatrix m, double x) {
-		AnnotationMatrix ret = new AnnotatableMatrix(m, true);
+	public static DataFrame subtract(DataFrame m, double x) {
+		DataFrame ret = new DataFrame(m, true);
 
 		MatrixArithmetic.subtract(x, ret);
 

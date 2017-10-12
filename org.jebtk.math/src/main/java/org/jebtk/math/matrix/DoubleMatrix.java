@@ -657,7 +657,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param controlGroup the g2
 	 * @return the list
 	 */
-	public static List<Double> diffGroupZScores(AnnotationMatrix matrix, 
+	public static List<Double> diffGroupZScores(DataFrame matrix, 
 			MatrixGroup phenGroup, 
 			MatrixGroup controlGroup) {
 		List<Integer> phenIndices = 
@@ -666,7 +666,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		List<Integer> controlIndices = 
 				MatrixGroup.findColumnIndices(matrix, controlGroup);
 
-		Matrix im = matrix.getInnerMatrix();
+		Matrix im = matrix.getMatrix();
 
 		List<Double> zscores = new ArrayList<Double>(im.getRowCount());
 
@@ -714,13 +714,13 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param g2 the g2
 	 * @return the list
 	 */
-	public static List<Double> logFoldChange(AnnotationMatrix matrix, 
+	public static List<Double> logFoldChange(DataFrame matrix, 
 			MatrixGroup g1, 
 			MatrixGroup g2) {
 		List<Integer> g11 = MatrixGroup.findColumnIndices(matrix, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(matrix, g2);
 
-		Matrix im = matrix.getInnerMatrix();
+		Matrix im = matrix.getMatrix();
 
 		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
 
@@ -757,13 +757,13 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param g2 the g2
 	 * @return the list
 	 */
-	public static List<Double> foldChange(AnnotationMatrix matrix, 
+	public static List<Double> foldChange(DataFrame matrix, 
 			MatrixGroup g1, 
 			MatrixGroup g2) {
 		List<Integer> g11 = MatrixGroup.findColumnIndices(matrix, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(matrix, g2);
 
-		Matrix im = matrix.getInnerMatrix();
+		Matrix im = matrix.getMatrix();
 
 		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
 
@@ -812,7 +812,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the annotation matrix
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static AnnotationMatrix parseEstMatrix(Path file) throws IOException {
+	public static DataFrame parseEstMatrix(Path file) throws IOException {
 		return new EstDoubleMatrixParser().parse(file);
 	}
 
@@ -844,10 +844,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param g the g
 	 * @return the list
 	 */
-	public static List<Double> means(AnnotationMatrix m, MatrixGroup g) {
+	public static List<Double> means(DataFrame m, MatrixGroup g) {
 		List<Integer> g1 = MatrixGroup.findColumnIndices(m, g);
 
-		Matrix im = m.getInnerMatrix();
+		Matrix im = m.getMatrix();
 
 		List<Double> means = 
 				new ArrayList<Double>(im.getRowCount());
@@ -895,7 +895,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 * @return the double
 	 */
-	public static double maxRowSum(AnnotationMatrix m) {
+	public static double maxRowSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
 		for (int i = 0; i < m.getRowCount(); ++i) {

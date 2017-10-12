@@ -37,8 +37,8 @@ public class EstDoubleMatrixParser extends EstMatrixParser<Double> {
 	 * @see org.abh.lib.math.matrix.EstMatrixParser#createMatrix(int, int)
 	 */
 	@Override
-	protected AnnotationMatrix createMatrix(int rows, int columns) {
-		return new AnnotatableMatrix(DoubleMatrix.createDoubleMatrix(rows, columns));
+	protected DataFrame createMatrix(int rows, int columns) {
+		return new DataFrame(DoubleMatrix.createDoubleMatrix(rows, columns));
 	}
 
 	/* (non-Javadoc)

@@ -53,8 +53,9 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
 	 */
-	public AnnotationMatrix parse(Path file) throws IOException {
-		AnnotationMatrix matrix = null;
+	@Override
+	public DataFrame parse(Path file) throws IOException {
+		DataFrame matrix = null;
 		
 		if (!FileUtils.exists(file)) {
 			return null;
@@ -92,8 +93,8 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 	 * @return the annotation matrix
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private AnnotationMatrix parseV1(BufferedReader reader) throws IOException {
-		AnnotationMatrix matrix = null;
+	private DataFrame parseV1(BufferedReader reader) throws IOException {
+		DataFrame matrix = null;
 		
 		
 		int r = 0;
@@ -191,8 +192,8 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 	 * @return the annotation matrix
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private AnnotationMatrix parseV2(BufferedReader reader) throws IOException {
-		AnnotationMatrix matrix = null;
+	private DataFrame parseV2(BufferedReader reader) throws IOException {
+		DataFrame matrix = null;
 		
 		
 		int rows = 0;
@@ -298,7 +299,7 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 	 * @param columns the columns
 	 * @return the annotation matrix
 	 */
-	protected abstract AnnotationMatrix createMatrix(int rows, int columns);
+	protected abstract DataFrame createMatrix(int rows, int columns);
 	
 	/**
 	 * Convert the string value into one suitable for an array of type T.

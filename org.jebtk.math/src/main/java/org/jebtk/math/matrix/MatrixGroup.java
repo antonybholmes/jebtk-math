@@ -451,7 +451,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static List<MatrixGroup> loadGroups(Path file, 
-			AnnotationMatrix matrix) throws IOException {
+			DataFrame matrix) throws IOException {
 		if (file == null) {
 			return null;
 		}
@@ -475,7 +475,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static List<MatrixGroup> loadMgrp1(Path file, 
-			AnnotationMatrix matrix) throws IOException {
+			DataFrame matrix) throws IOException {
 		List<MatrixGroup> groups = new ArrayList<MatrixGroup>();
 		
 		String line;
@@ -539,7 +539,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static List<MatrixGroup> loadMgrp2(Path file, 
-			AnnotationMatrix matrix) throws IOException {
+			DataFrame matrix) throws IOException {
 		if (file == null) {
 			return null;
 		}
@@ -603,7 +603,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @return the list
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static List<MatrixGroup> createRowGroupsByName(Path file, AnnotationMatrix matrix) throws IOException {
+	public static List<MatrixGroup> createRowGroupsByName(Path file, DataFrame matrix) throws IOException {
 		List<MatrixGroup> groups = new ArrayList<MatrixGroup>();
 		
 		String line;
@@ -697,7 +697,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param groups the groups
 	 * @return the list
 	 */
-	public static List<List<Integer>> findRowIndices(AnnotationMatrix matrix, 
+	public static List<List<Integer>> findRowIndices(DataFrame matrix, 
 			List<MatrixGroup> groups) {
 		return findIndices(matrix.getRowNames(), groups);
 	}
@@ -709,7 +709,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param group the group
 	 * @return the list
 	 */
-	public static List<Integer> findRowIndices(AnnotationMatrix matrix, 
+	public static List<Integer> findRowIndices(DataFrame matrix, 
 			MatrixGroup group) {
 		return findIndices(matrix.getRowNames(), group);
 	}
@@ -722,7 +722,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param groups the groups
 	 * @return the list
 	 */
-	public static List<List<Integer>> findColumnIndices(AnnotationMatrix m, 
+	public static List<List<Integer>> findColumnIndices(DataFrame m, 
 			List<? extends MatrixGroup> groups) {
 		//return findIndices(matrix.getColumnNames(), groups);
 		
@@ -743,7 +743,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param group the group
 	 * @return the list
 	 */
-	public static  <X extends MatrixGroup> List<Integer> findColumnIndices(AnnotationMatrix m, 
+	public static  <X extends MatrixGroup> List<Integer> findColumnIndices(DataFrame m, 
 			X group) {
 		List<Integer> ret = new ArrayList<Integer>(m.getColumnCount());
 		
@@ -770,7 +770,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param groups the groups
 	 * @return the list
 	 */
-	public static List<Integer> findAllColumnIndices(AnnotationMatrix m, 
+	public static List<Integer> findAllColumnIndices(DataFrame m, 
 			List<? extends MatrixGroup> groups) {
 		List<Integer> ret = new UniqueArrayList<Integer>(m.getColumnCount());
 		
@@ -883,7 +883,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param groups the groups
 	 * @return the list
 	 */
-	public static List<MatrixGroup> orderGroups(AnnotationMatrix m, 
+	public static List<MatrixGroup> orderGroups(DataFrame m, 
 			List<MatrixGroup> groups) {
 		Map<Integer, List<MatrixGroup>> orderedGroups = 
 				arrangeGroupsByIndex(m, groups);
@@ -943,7 +943,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param groups the groups
 	 * @return the map
 	 */
-	public static Map<Integer, List<MatrixGroup>> arrangeGroupsByIndex(AnnotationMatrix m,
+	public static Map<Integer, List<MatrixGroup>> arrangeGroupsByIndex(DataFrame m,
 			List<? extends MatrixGroup> groups) {
 		
 		Map<Integer, List<MatrixGroup>> orderedGroups = 
@@ -969,7 +969,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 * @param rootCluster the root cluster
 	 * @return the map
 	 */
-	public static Map<Integer, List<MatrixGroup>> arrangeGroupsByCluster(AnnotationMatrix m,
+	public static Map<Integer, List<MatrixGroup>> arrangeGroupsByCluster(DataFrame m,
 			List<MatrixGroup> groups,
 			Cluster rootCluster) {
 		if (groups == null || groups.size() == 0 || rootCluster == null) {

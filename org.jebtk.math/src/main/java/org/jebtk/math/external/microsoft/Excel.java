@@ -62,8 +62,8 @@ import org.jebtk.core.io.FileUtils;
 import org.jebtk.core.io.Io;
 import org.jebtk.core.io.PathUtils;
 import org.jebtk.core.text.TextUtils;
-import org.jebtk.math.matrix.AnnotatableMatrix;
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
+import org.jebtk.math.matrix.DataFrame;
 import org.xml.sax.SAXException;
 
 // TODO: Auto-generated Javadoc
@@ -110,7 +110,7 @@ public class Excel {
 	 * @throws InvalidFormatException the invalid format exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static AnnotationMatrix convertToMatrix(Path file, 
+	public static DataFrame convertToMatrix(Path file, 
 			boolean hasHeader,
 			List<String> skipMatches,
 			int rowAnnotations, 
@@ -120,9 +120,9 @@ public class Excel {
 		} else if (ExcelPathUtils.ext().xls().test(file)) {
 			return convertXlsToMatrix(file, hasHeader, rowAnnotations);
 		} else if (PathUtils.ext().csv().test(file)) {
-			return AnnotationMatrix.parseCsvMatrix(file, hasHeader, skipMatches, rowAnnotations);
+			return DataFrame.parseCsvMatrix(file, hasHeader, skipMatches, rowAnnotations);
 		} else {
-			return AnnotationMatrix.parseTxtMatrix(file, hasHeader, skipMatches, rowAnnotations, delimiter);
+			return DataFrame.parseTxtMatrix(file, hasHeader, skipMatches, rowAnnotations, delimiter);
 		}
 	}
 	
@@ -165,12 +165,12 @@ public class Excel {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix convertXlsxToMatrix(Path file, 
+	public static DataFrame convertXlsxToMatrix(Path file, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		XSSFWorkbook workbook = createXlsxWorkbook(file);
 
-		AnnotationMatrix ret = convertXlsxToMatrix(workbook, 
+		DataFrame ret = convertXlsxToMatrix(workbook, 
 				hasHeader, 
 				rowAnnotations);
 
@@ -189,7 +189,7 @@ public class Excel {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix convertXlsxToMatrix(XSSFWorkbook workbook, 
+	public static DataFrame convertXlsxToMatrix(XSSFWorkbook workbook, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		hasHeader = hasHeader || rowAnnotations > 0;
@@ -205,8 +205,8 @@ public class Excel {
 
 		int cols = sheet.getRow(0).getPhysicalNumberOfCells() - rowAnnotations;
 
-		AnnotationMatrix matrix = 
-				AnnotatableMatrix.createAnnotatableMixedMatrix(rows, cols); //new MixedSparseMatrix(r, c);
+		DataFrame matrix = 
+				DataFrame.createMixedMatrix(rows, cols); //new MixedSparseMatrix(r, c);
 
 		// lets create some row headings
 
@@ -285,12 +285,12 @@ public class Excel {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix convertXlsToMatrix(Path file, 
+	public static DataFrame convertXlsToMatrix(Path file, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		HSSFWorkbook workbook = createXlsWorkbook(file);
 
-		AnnotationMatrix ret = convertXlsToMatrix(workbook, 
+		DataFrame ret = convertXlsToMatrix(workbook, 
 				hasHeader, 
 				rowAnnotations);
 
@@ -309,7 +309,7 @@ public class Excel {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix convertXlsToMatrix(HSSFWorkbook workbook, 
+	public static DataFrame convertXlsToMatrix(HSSFWorkbook workbook, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		hasHeader = hasHeader || rowAnnotations > 0;
@@ -325,7 +325,7 @@ public class Excel {
 
 		int cols = sheet.getRow(0).getPhysicalNumberOfCells() - rowAnnotations;
 
-		AnnotationMatrix matrix = AnnotatableMatrix.createDynamicMatrix(); //.createMatrix(rows, cols); //new MixedSparseMatrix(r, c);
+		DataFrame matrix = DataFrame.createDynamicMatrix(); //.createMatrix(rows, cols); //new MixedSparseMatrix(r, c);
 
 		// lets create some row headings
 
@@ -401,7 +401,7 @@ public class Excel {
 	 * @param file the file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void writeXlsx(AnnotationMatrix matrix, Path file) throws IOException {
+	public static void writeXlsx(DataFrame matrix, Path file) throws IOException {
 		XSSFWorkbook workbook = createWorkbook(matrix);
 
 		writeXlsx(workbook, file);
@@ -433,7 +433,7 @@ public class Excel {
 	 * @param file the file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void writeXls(AnnotationMatrix matrix, Path file) throws IOException {
+	public static void writeXls(DataFrame matrix, Path file) throws IOException {
 		HSSFWorkbook workbook = createXlsWorkbook(matrix);
 
 		writeXls(workbook, file);
@@ -534,7 +534,7 @@ public class Excel {
 	 * @param m the m
 	 * @return the XSSF workbook
 	 */
-	public static XSSFWorkbook createWorkbook(AnnotationMatrix m) {
+	public static XSSFWorkbook createWorkbook(DataFrame m) {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		createWorkSheet(m, workbook);
@@ -549,7 +549,7 @@ public class Excel {
 	 * @param workbook the workbook
 	 * @return the XSSF workbook
 	 */
-	public static XSSFWorkbook createWorkSheet(AnnotationMatrix m, 
+	public static XSSFWorkbook createWorkSheet(DataFrame m, 
 			XSSFWorkbook workbook) {
 		Sheet sheet = workbook.createSheet("Sheet" + (workbook.getNumberOfSheets() + 1));
 
@@ -676,7 +676,7 @@ public class Excel {
 	 * @param m the m
 	 * @return the XSSF workbook
 	 */
-	public static HSSFWorkbook createXlsWorkbook(AnnotationMatrix m) {
+	public static HSSFWorkbook createXlsWorkbook(DataFrame m) {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 
 		createXlsWorkSheet(m, workbook);
@@ -691,7 +691,7 @@ public class Excel {
 	 * @param workbook the workbook
 	 * @return the XSSF workbook
 	 */
-	public static HSSFWorkbook createXlsWorkSheet(AnnotationMatrix m, 
+	public static HSSFWorkbook createXlsWorkSheet(DataFrame m, 
 			HSSFWorkbook workbook) {
 		Sheet sheet = workbook.createSheet("Sheet" + (workbook.getNumberOfSheets() + 1));
 

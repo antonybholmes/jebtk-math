@@ -56,7 +56,7 @@ public class CsvDynamicMatrixParser extends CsvMatrixParser {
 	 * @see org.abh.common.math.matrix.CsvMatrixParser#createMatrix(int, int)
 	 */
 	@Override
-	public AnnotationMatrix createMatrix(int rows, int columns) {
-		return AnnotatableMatrix.createDynamicMatrix(); 
+	public DataFrame createMatrix(int rows, int columns) {
+		return DataFrame.createDynamicMatrix(); 
 	}
 }

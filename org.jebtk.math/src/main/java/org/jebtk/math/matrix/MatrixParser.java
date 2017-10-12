@@ -43,5 +43,5 @@ public interface MatrixParser {
 	 * @return the annotation matrix
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public AnnotationMatrix parse(Path file) throws IOException;
+	public DataFrame parse(Path file) throws IOException;
 }

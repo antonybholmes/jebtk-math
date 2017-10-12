@@ -16,8 +16,8 @@
 
 package org.jebtk.math.matrix.utils;
 
-import org.jebtk.math.matrix.AnnotatableMatrix;
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IndexMatrix;
 import org.jebtk.math.matrix.IntMatrix;
@@ -43,11 +43,11 @@ public class Transpose {
 	 * @param m the m
 	 * @return the matrix
 	 */
-	public Matrix transpose(final AnnotationMatrix m) {
+	public Matrix transpose(final DataFrame m) {
 		// Transpose the main matrix
-		Matrix innerM = transpose(m.getInnerMatrix());
+		Matrix innerM = transpose(m.getMatrix());
 
-		AnnotationMatrix ret = new AnnotatableMatrix(innerM);
+		DataFrame ret = new DataFrame(innerM);
 
 		// The first name is the row-name, which must be swapped for the
 		// column name so we only copy the annotation for names(1, end) 

@@ -56,7 +56,7 @@ public class DoubleMatrixParser extends MixedMatrixParser {
 	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
 	 */
 	@Override
-	public AnnotationMatrix createMatrix(int rows, int columns) {
-		return AnnotatableMatrix.createNumericalMatrix(rows, columns); 
+	public DataFrame createMatrix(int rows, int columns) {
+		return DataFrame.createNumericalMatrix(rows, columns); 
 	}
 }

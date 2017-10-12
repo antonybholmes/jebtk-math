@@ -29,7 +29,7 @@ import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.CountMap;
 import org.jebtk.core.tree.TreeNode;
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.MatrixGroup;
 
 // TODO: Auto-generated Javadoc
@@ -52,7 +52,7 @@ public class C45 {
 	 * @param groups the groups
 	 * @return the decision tree
 	 */
-	public static DecisionTree parseDouble(AnnotationMatrix m, 
+	public static DecisionTree parseDouble(DataFrame m, 
 			List<? extends MatrixGroup> groups) {
 		
 		List<String> labels = new ArrayList<String>(m.getColumnCount());

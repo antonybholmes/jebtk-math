@@ -57,8 +57,8 @@ public class TextMatrixParser extends MixedMatrixParser {
 	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
 	 */
 	@Override
-	public AnnotationMatrix createMatrix(int rows, int columns) {
-		return AnnotatableMatrix.createTextMatrix(rows, columns); 
+	public DataFrame createMatrix(int rows, int columns) {
+		return DataFrame.createTextMatrix(rows, columns); 
 	}
 	
 	/* (non-Javadoc)

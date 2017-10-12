@@ -114,8 +114,8 @@ public class CsvMatrixParser implements MatrixParser {
 	 * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
 	 */
 	@Override
-	public AnnotationMatrix parse(Path file) throws IOException {
-		AnnotationMatrix matrix = null;
+	public DataFrame parse(Path file) throws IOException {
+		DataFrame matrix = null;
 
 		BufferedReader reader = FileUtils.newBufferedReader(file);
 
@@ -196,7 +196,7 @@ public class CsvMatrixParser implements MatrixParser {
 	 * @param columns the columns
 	 * @return the annotation matrix
 	 */
-	public AnnotationMatrix createMatrix(int rows, int columns) {
-		return AnnotatableMatrix.createAnnotatableMatrix(rows, columns); 
+	public DataFrame createMatrix(int rows, int columns) {
+		return DataFrame.createDataFrame(rows, columns); 
 	}
 }

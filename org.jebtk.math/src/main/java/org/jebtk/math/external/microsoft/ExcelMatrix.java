@@ -27,8 +27,8 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jebtk.core.text.TextUtils;
-import org.jebtk.math.matrix.AnnotatableMatrix;
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.CellType;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixType;
@@ -191,12 +191,12 @@ public class ExcelMatrix extends RegularMatrix {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix xlsxAsMatrix(Path file, 
+	public static DataFrame xlsxAsMatrix(Path file, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		XSSFWorkbook workbook = Excel.createXlsxWorkbook(file);
 
-		AnnotationMatrix ret = xlsxAsMatrix(workbook, 
+		DataFrame ret = xlsxAsMatrix(workbook, 
 				hasHeader, 
 				rowAnnotations);
 
@@ -216,7 +216,7 @@ public class ExcelMatrix extends RegularMatrix {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InvalidFormatException the invalid format exception
 	 */
-	public static AnnotationMatrix xlsxAsMatrix(XSSFWorkbook workbook, 
+	public static DataFrame xlsxAsMatrix(XSSFWorkbook workbook, 
 			boolean hasHeader, 
 			int rowAnnotations) throws IOException, InvalidFormatException {
 		hasHeader = hasHeader || rowAnnotations > 0;
@@ -234,7 +234,7 @@ public class ExcelMatrix extends RegularMatrix {
 
 		ExcelMatrix excelMatrix = new ExcelMatrix(sheet, evaluator, hasHeader, rowAnnotations); //new MixedSparseMatrix(r, c);
 
-		AnnotationMatrix m = AnnotatableMatrix.createAnnotatableMatrix(excelMatrix);
+		DataFrame m = DataFrame.createDataFrame(excelMatrix);
 		
 		//
 		// Create the headings

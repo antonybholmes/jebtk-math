@@ -27,7 +27,7 @@
  */
 package org.jebtk.math.matrix.utils;
 
-import org.jebtk.math.matrix.AnnotationMatrix;
+import org.jebtk.math.matrix.DataFrame;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,7 +56,7 @@ public abstract class MatrixOperation {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public AnnotationMatrix to(AnnotationMatrix m) {
+	public DataFrame to(DataFrame m) {
 		return op(mPreviousOp.to(m));
 	}
 
@@ -66,7 +66,7 @@ public abstract class MatrixOperation {
 	 * @param m the m
 	 * @return the annotation matrix
 	 */
-	public abstract AnnotationMatrix op(AnnotationMatrix m);
+	public abstract DataFrame op(DataFrame m);
 
 
 
@@ -85,18 +85,18 @@ public abstract class MatrixOperation {
 		}
 
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#to(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#to(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix to(AnnotationMatrix m) {
+		public DataFrame to(DataFrame m) {
 			return m;
 		}
 
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
+		public DataFrame op(DataFrame m) {
 			return null;
 		}
 	}
@@ -134,10 +134,10 @@ public abstract class MatrixOperation {
 		}
 
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
+		public DataFrame op(DataFrame m) {
 			return MatrixOperations.min(m, mX);
 		}
 	}
@@ -171,10 +171,10 @@ public abstract class MatrixOperation {
 		}
 
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
+		public DataFrame op(DataFrame m) {
 			return MatrixOperations.log2(m);
 		}
 	}
@@ -203,10 +203,10 @@ public abstract class MatrixOperation {
 		}
 		
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
+		public DataFrame op(DataFrame m) {
 			return MatrixOperations.log10(m);
 		}
 	}
@@ -235,10 +235,10 @@ public abstract class MatrixOperation {
 		}
 		
 		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.AnnotationMatrix)
+		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
 		 */
 		@Override
-		public AnnotationMatrix op(AnnotationMatrix m) {
+		public DataFrame op(DataFrame m) {
 			return MatrixOperations.ln(m);
 		}
 	}
