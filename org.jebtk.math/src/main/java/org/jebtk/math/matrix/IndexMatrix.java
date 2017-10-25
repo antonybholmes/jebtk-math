@@ -376,11 +376,13 @@ public abstract class IndexMatrix extends RegularMatrix {
 		int r = Math.min(getRowCount(), values.size());
 
 		int ix = getIndex(0, column);
+		
+		int cols = getColumnCount();
 
 		for (int i = 0; i < r; ++i) {
 			set(ix, values.get(i));
 
-			ix += mCols;
+			ix += cols;
 		}
 
 		fireMatrixChanged();
@@ -397,10 +399,12 @@ public abstract class IndexMatrix extends RegularMatrix {
 
 		int i1 = getIndex(0, column);
 
+		int cols = getColumnCount();
+		
 		for (int row = 0; row < r; ++row) {
 			values[row] = get(i1);
 
-			i1 += mCols;
+			i1 += cols;
 		}
 
 		return values;
@@ -417,10 +421,12 @@ public abstract class IndexMatrix extends RegularMatrix {
 
 		int i1 = column;
 
+		int cols = getColumnCount();
+		
 		for (int row = 0; row < r; ++row) {
 			values[row] = getValue(i1);
 
-			i1 += mCols;
+			i1 += cols;
 		}
 
 		return values;
@@ -437,10 +443,12 @@ public abstract class IndexMatrix extends RegularMatrix {
 
 		int i1 = getIndex(0, column);
 
+		int cols = getColumnCount();
+		
 		for (int row = 0; row < r; ++row) {
 			values.add(getText(i1));
 
-			i1 += mCols;
+			i1 += cols;
 		}
 
 		return values;
@@ -511,10 +519,12 @@ public abstract class IndexMatrix extends RegularMatrix {
 
 		int i = getIndex(0, toColumn);
 
+		int cols = getColumnCount();
+		
 		for (int row = 0; row < r; ++row) {
 			update(i, from.get(row, column));
 
-			i += mCols;
+			i += cols;
 		}
 
 		fireMatrixChanged();

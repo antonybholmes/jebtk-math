@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.jebtk.core.Indexed;
 import org.jebtk.core.Mathematics;
+import org.jebtk.core.MinMax;
 import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultHashMap;
@@ -424,7 +425,11 @@ public class MatrixOperations {
 
 		@Override
 		public double apply(int row, int col, double value) {
-			return value / mFactors[row];
+			if (mFactors[row] != 0) {
+				return value / mFactors[row];
+			} else {
+				return 0;
+			}
 		}
 	}
 	
@@ -437,7 +442,11 @@ public class MatrixOperations {
 
 		@Override
 		public double apply(int row, int col, double value) {
-			return value / mFactors[col];
+			if (mFactors[col] != 0) {
+				return value / mFactors[col];
+			} else {
+				return 0;
+			}
 		}
 	}
 	
@@ -1119,6 +1128,11 @@ public class MatrixOperations {
 		return normalize(m, min, max);
 	}
 
+	public static DataFrame normalize(final DataFrame m, MinMax minMax) {
+		return normalize(m, minMax.getMin(), minMax.getMax());
+	}
+	
+	
 	/**
 	 * Normalize a matrix so values are between 0 and 1.
 	 *
@@ -2014,9 +2028,9 @@ public class MatrixOperations {
 	 * @return the double
 	 */
 	public static double mean(final DoubleMatrix m, int row) {
-		double[] data = new double[m.mCols];
+		double[] data = new double[m.mDim.mCols];
 
-		System.arraycopy(m.mData, m.mRowOffsets[row], data, 0, m.mCols);
+		System.arraycopy(m.mData, m.mRowOffsets[row], data, 0, m.mDim.mCols);
 
 		return Statistics.mean(data);
 	}
@@ -2362,7 +2376,7 @@ public class MatrixOperations {
 	public static void numToRow(final Collection<? extends Number> values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mCols;
+		int c = row * m.mDim.mCols;
 
 		for (Number v : values) {
 			m.mData[c++] = v.doubleValue();
@@ -2414,7 +2428,7 @@ public class MatrixOperations {
 	public static void numToRow(final double[] values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mCols;
+		int c = row * m.mDim.mCols;
 
 		for (double v : values) {
 			m.mData[c++] = v;
@@ -2467,7 +2481,7 @@ public class MatrixOperations {
 	public static void numToRow(final int[] values, 
 			int row, 
 			IntMatrix m) {
-		int c = row * m.mCols;
+		int c = row * m.mDim.mCols;
 
 		for (int v : values) {
 			m.mData[c++] = v;
@@ -2484,7 +2498,7 @@ public class MatrixOperations {
 	public static void numToRow(final int[] values, 
 			int row, 
 			DoubleMatrix m) {
-		int c = row * m.mCols;
+		int c = row * m.mDim.mCols;
 
 		for (int v : values) {
 			m.mData[c++] = v;
@@ -2531,7 +2545,7 @@ public class MatrixOperations {
 	public static void textToRow(final Collection<String> values, 
 			int row, 
 			TextMatrix m) {
-		int c = row * m.mCols;
+		int c = row * m.mDim.mCols;
 
 		for (Object v : values) {
 			m.mData[c++] = v.toString();

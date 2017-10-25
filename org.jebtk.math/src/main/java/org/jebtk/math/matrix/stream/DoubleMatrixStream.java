@@ -19,7 +19,7 @@ public class DoubleMatrixStream extends MatrixStream {
 		for (int i = 0; i < mDM.mData.length; ++i) {
 			mDM.mData[i] = apply(r, c++, mDM.mData[i]);
 			
-			if (c == mDM.mCols) {
+			if (c == mDM.mDim.mCols) {
 				c = 0;
 				++r;
 			}

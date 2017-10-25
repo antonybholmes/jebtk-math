@@ -1193,7 +1193,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int cn = m.mCols;
+		int cn = m.mDim.mCols;
 
 		for (int i = 0; i < cn; ++i) {
 			if (m.mCellType[i] == cellType) {
@@ -1205,7 +1205,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int rn = m.mRows;
+		int rn = m.mDim.mRows;
 
 		int c = columns.get(0);
 
@@ -1235,8 +1235,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static Matrix extractDoubleData(MixedMatrix m,
 			List<Integer> rows, 
 			List<Integer> columns) {
-		int rn = m.mRows;
-		int cn = m.mCols;
+		int rn = m.mDim.mRows;
+		int cn = m.mDim.mCols;
 		int cn2 = columns.size();
 
 		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(rows.size(), cn2);
@@ -1267,8 +1267,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static Matrix extractTextData(MixedMatrix m,
 			List<Integer> rows, 
 			List<Integer> columns) {
-		int rn = m.mRows;
-		int cn = m.mCols;
+		int rn = m.mDim.mRows;
+		int cn = m.mDim.mCols;
 		int cn2 = columns.size();
 
 		TextMatrix ret = TextMatrix.createTextMatrix(rows.size(), cn2);

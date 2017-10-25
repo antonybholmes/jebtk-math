@@ -28,12 +28,8 @@
 package org.jebtk.math.matrix;
 
 import java.text.ParseException;
-import java.util.List;
 
-import org.jebtk.core.collections.DefaultArrayList;
-import org.jebtk.core.collections.DefaultArrayListCreator;
 import org.jebtk.core.text.Parser;
-import org.jebtk.core.text.TextUtils;
 
 
 // TODO: Auto-generated Javadoc
@@ -61,10 +57,7 @@ public abstract class ResizableMatrix extends Matrix {
 	protected int mSize = 0;
 
 	/** The m rows. */
-	protected int mRows = 0;
-
-	/** The m columns. */
-	protected int mColumns = 0;
+	protected MatrixDim mDim = MatrixDim.DIM_ZERO;
 
 
 	/**
@@ -85,21 +78,21 @@ public abstract class ResizableMatrix extends Matrix {
 	 * @param row the row
 	 * @param column the column
 	 */
-	protected void updateSize(int row, int column) {
+	protected void updateSize(int row, int col) {
 		boolean changed = false;
 
-		if (row >= mRows) {
-			mRows = row + 1;
+		if (row >= mDim.mRows) {
 			changed = true;
 		}
 
-		if (column >= mColumns) {
-			mColumns = column + 1;
+		if (col >= mDim.mCols) {
 			changed = true;
 		}
 
 		if (changed) {
-			mSize = mRows * mColumns;
+			mDim = new MatrixDim(Math.max(mDim.mRows, row + 1), Math.max(mDim.mCols, col + 1));
+			
+			mSize = mDim.mRows * mDim.mCols;
 
 			//fireMatrixChanged();
 		}
@@ -138,8 +131,8 @@ public abstract class ResizableMatrix extends Matrix {
 	 */
 	@Override
 	public void update(double v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
 				update(i, j, v);
 			}
 		}
@@ -150,8 +143,8 @@ public abstract class ResizableMatrix extends Matrix {
 	 */
 	@Override
 	public void update(String v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
 				update(i, j, v);
 			}
 		}
@@ -186,7 +179,7 @@ public abstract class ResizableMatrix extends Matrix {
 	 */
 	@Override
 	public int getRowCount() {
-		return mRows;
+		return mDim.mRows;
 	}
 
 	/* (non-Javadoc)
@@ -194,6 +187,6 @@ public abstract class ResizableMatrix extends Matrix {
 	 */
 	@Override
 	public int getColumnCount() {
-		return mColumns;
+		return mDim.mCols;
 	}
 }

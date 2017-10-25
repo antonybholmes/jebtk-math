@@ -130,8 +130,8 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	 */
 	@Override
 	public void update(String v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
 				mData.put(i, j, v);
 			}
 		}
@@ -142,8 +142,8 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	 */
 	@Override
 	public void update(double v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
 				mData.put(i, j, v);
 			}
 		}

@@ -296,8 +296,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 	}
 
@@ -316,8 +316,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 	}
 
@@ -336,8 +336,8 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 	}
 
@@ -392,7 +392,7 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 	}
 
@@ -408,7 +408,7 @@ public class MixedMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			mData[ix] = values.get(row);
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 	}
 
@@ -421,21 +421,21 @@ public class MixedMatrix extends IndexableMatrix {
 	}
 
 	public static Matrix transpose(MixedMatrix m) {
-		MixedMatrix ret = createMixedMatrix(m.mCols, m.mRows);
+		MixedMatrix ret = createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 			
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;

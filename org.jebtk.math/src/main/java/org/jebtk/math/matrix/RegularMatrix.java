@@ -40,11 +40,7 @@ public abstract class RegularMatrix extends Matrix {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**  The number of rows in the matrix. */
-	public final int mRows;
-	
-	/**  The number of columns in the matrix. */
-	public final int mCols;
+	public final MatrixDim mDim;
 
 	/**
 	 * Create a new matrix defaulting to being entirely numeric.
@@ -55,8 +51,11 @@ public abstract class RegularMatrix extends Matrix {
 	public RegularMatrix(int rows, int columns) {
 		super(rows, columns);
 		
-		mRows = rows;
-		mCols = columns;
+		mDim = new MatrixDim(rows, columns);
+	}
+	
+	public MatrixDim getDim() {
+		return mDim;
 	}
 
 	/* (non-Javadoc)
@@ -64,7 +63,7 @@ public abstract class RegularMatrix extends Matrix {
 	 */
 	@Override
 	public int getRowCount() {
-		return mRows;
+		return mDim.getRows();
 	}
 
 	/* (non-Javadoc)
@@ -72,6 +71,6 @@ public abstract class RegularMatrix extends Matrix {
 	 */
 	@Override
 	public int getColumnCount() {
-		return mCols;
+		return mDim.getCols();
 	}
 }

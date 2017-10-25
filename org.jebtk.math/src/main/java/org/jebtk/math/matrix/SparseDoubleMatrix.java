@@ -177,21 +177,21 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	}
 	
 	public static Matrix transpose(final SparseDoubleMatrix m) { 
-		SparseDoubleMatrix ret = new SparseDoubleMatrix(m.mCols, m.mRows);
+		SparseDoubleMatrix ret = new SparseDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i : m.mData.keySet()) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData.put(i2, m.mData.get(i));
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;

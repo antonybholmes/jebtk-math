@@ -61,13 +61,13 @@ public abstract class IndexableMatrix extends IndexMatrix {
 
 	private void createOffsets() {
 		// Cache the offsets to improve lookup times
-		mRowOffsets = new int[mRows];
+		mRowOffsets = new int[mDim.mRows];
 
 		mRowOffsets[0] = 0;
 
-		for (int i = 1; i < mRows; ++i) {
+		for (int i = 1; i < mDim.mRows; ++i) {
 			// Use only additions
-			mRowOffsets[i] = mRowOffsets[i - 1] + mCols; //i * columns;
+			mRowOffsets[i] = mRowOffsets[i - 1] + mDim.mCols; //i * columns;
 		}
 	}
 

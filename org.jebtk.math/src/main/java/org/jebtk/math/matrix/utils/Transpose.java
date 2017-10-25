@@ -105,21 +105,21 @@ public class Transpose {
 	 * @return the matrix
 	 */
 	public static Matrix transpose(final IndexMatrix m) { 
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.mCols, m.mRows);
+		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.getNumCells(); ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.set(i2, m.get(i));
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;
@@ -132,21 +132,21 @@ public class Transpose {
 	 * @return the matrix
 	 */
 	public static Matrix transpose(final DoubleMatrix m) { 
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mCols, m.mRows);
+		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;
@@ -159,21 +159,21 @@ public class Transpose {
 	 * @return the matrix
 	 */
 	public static Matrix transpose(final IntMatrix m) { 
-		IntMatrix ret = IntMatrix.createIntMatrix(m.mCols, m.mRows);
+		IntMatrix ret = IntMatrix.createIntMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;

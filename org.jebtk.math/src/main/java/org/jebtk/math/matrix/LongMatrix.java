@@ -258,7 +258,7 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i).intValue();
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 	}
 
@@ -281,8 +281,8 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = (long)from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -310,8 +310,8 @@ public class LongMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -341,21 +341,21 @@ public class LongMatrix extends IndexableMatrix {
 	}
 	
 	public static Matrix transpose(final LongMatrix m) { 
-		LongMatrix ret = createLongMatrix(m.mCols, m.mRows);
+		LongMatrix ret = createLongMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;
@@ -375,7 +375,7 @@ public class LongMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			values[row] = mData[i1];
 			
-			i1 += mCols;
+			i1 += mDim.mCols;
 		}
 
 		return values;

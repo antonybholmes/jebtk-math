@@ -302,14 +302,14 @@ public class MatrixUtils {
 	 * @return the double[]
 	 */
 	public static double[] rowMeans(DoubleMatrix m) {
-		double[] means = new double[m.mRows];
+		double[] means = new double[m.mDim.mRows];
 
-		for (int i = 0; i < m.mRows; ++i) {
-			double[] values = new double[m.mCols];
+		for (int i = 0; i < m.mDim.mRows; ++i) {
+			double[] values = new double[m.mDim.mCols];
 
-			int index = i * m.mCols;
+			int index = i * m.mDim.mCols;
 
-			for (int j = 0; j < m.mCols; ++j) {
+			for (int j = 0; j < m.mDim.mCols; ++j) {
 				values[j] = m.getValue(index);
 
 				++index;

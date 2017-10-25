@@ -249,7 +249,7 @@ public class TextMatrix extends IndexableMatrix {
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getText(i, column);
 
-				i1 += mCols;
+				i1 += mDim.mCols;
 			}
 		}
 	}
@@ -273,8 +273,8 @@ public class TextMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 			
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -307,7 +307,7 @@ public class TextMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 			
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -327,7 +327,7 @@ public class TextMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			values.add(mData[i1]);
 			
-			i1 += mCols;
+			i1 += mDim.mCols;
 		}
 
 		return values;
@@ -364,19 +364,19 @@ public class TextMatrix extends IndexableMatrix {
 	}
 	
 	public static Matrix transpose(TextMatrix m) {
-		TextMatrix ret = new TextMatrix(m.mCols, m.mRows);
+		TextMatrix ret = new TextMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int c = 0;
 		int i2 = 0;
 		
 		for (int i = 0; i < m.mData.length; ++i) {
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 			
 			ret.mData[i2] = m.mData[i];
 			
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 		
 		return ret;

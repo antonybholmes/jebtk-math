@@ -226,7 +226,7 @@ public class DoubleMatrix extends IndexableMatrix {
 
 	@Override
 	public void setRow(int row, double[] values) {
-		SysUtils.arraycopy(values, mData, mRowOffsets[row], mCols);
+		SysUtils.arraycopy(values, mData, mRowOffsets[row], mDim.mCols);
 		
 		fireMatrixChanged();
 	}
@@ -236,14 +236,14 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void setValueColumn(int column, List<Double> values) {
-		int r = Math.min(mRows, values.size());
+		int r = Math.min(mDim.mRows, values.size());
 
 		int ix = column;
 
 		for (int i = 0; i < r; ++i) {
 			mData[ix] = values.get(i);
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -251,7 +251,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	
 	@Override
 	public void setColumn(int column, double[] values) {
-		SysUtils.arraycopy(values, mData, column, mCols, mRows);
+		SysUtils.arraycopy(values, mData, column, mDim.mCols, mDim.mRows);
 		
 		fireMatrixChanged();
 	}
@@ -277,7 +277,7 @@ public class DoubleMatrix extends IndexableMatrix {
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getValue(i, column);
 
-				i1 += mCols;
+				i1 += mDim.mCols;
 			}
 		}
 	}
@@ -305,8 +305,8 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 
 		fireMatrixChanged();
@@ -334,10 +334,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	public void columnAsDouble(int column, double[] ret) {
 		int i1 = column;
 
-		for (int row = 0; row < mRows; ++row) {
+		for (int row = 0; row < mDim.mRows; ++row) {
 			ret[row] = mData[i1];
 
-			i1 += mCols;
+			i1 += mDim.mCols;
 		}
 	}
 
@@ -346,7 +346,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void rowAsDouble(int row, double[] ret) {
-		SysUtils.arraycopy(mData, mRowOffsets[row], ret, mCols);
+		SysUtils.arraycopy(mData, mRowOffsets[row], ret, mDim.mCols);
 	}
 
 	@Override
@@ -357,7 +357,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = f.apply(r, c++, mData[i]);
 			
-			if (c == mCols) {
+			if (c == mDim.mCols) {
 				c = 0;
 				++r;
 			}
@@ -368,7 +368,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	
 	@Override
 	public void rowApply(MatrixCellFunction f) {
-		for (int i = 0; i < mRows; ++i) {
+		for (int i = 0; i < mDim.mRows; ++i) {
 			rowApply(f, i);
 		}
 		
@@ -379,7 +379,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public void rowApply(MatrixCellFunction f, int index) {
 		int offset = mRowOffsets[index];
 		
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = f.apply(i, 0, mData[offset]);
 			
 			++offset;
@@ -392,10 +392,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	public void colApply(MatrixCellFunction f, int col) {
 		int offset = col;
 		
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = f.apply(i, 0, mData[offset]);
 			
-			offset += mCols;
+			offset += mDim.mCols;
 		}
 		
 		fireMatrixChanged();
@@ -418,7 +418,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		
 		int offset = mRowOffsets[index];
 		
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			f.apply(i, 0, mData[offset]);
 			
 			++offset;
@@ -431,10 +431,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	public double colStat(MatrixStatFunction f, int index) {
 		int offset = index;
 		
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			f.apply(i, 0, mData[offset]);
 			
-			offset += mCols;
+			offset += mDim.mCols;
 		}
 		
 		return f.getStat();
@@ -472,21 +472,21 @@ public class DoubleMatrix extends IndexableMatrix {
 	}
 	
 	public static Matrix transpose(final DoubleMatrix m) { 
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mCols, m.mRows);
+		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;
@@ -988,8 +988,8 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] columnMeans(DoubleMatrix m) {
-		int r = m.mRows;
-		int c = m.mCols;
+		int r = m.mDim.mRows;
+		int c = m.mDim.mCols;
 
 		double[] means = new double[c];
 

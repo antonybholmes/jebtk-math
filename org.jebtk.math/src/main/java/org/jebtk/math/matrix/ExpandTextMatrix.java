@@ -98,8 +98,8 @@ public class ExpandTextMatrix extends ExpandMatrix<String> {
 	
 	@Override
 	public void update(String v) {
-		for (int i = 0; i < mRows; ++i) {
-			for (int j = 0; j < mColumns; ++j) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
 				mData.get(i).set(j, v);
 			}
 		}

@@ -149,11 +149,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	private Matrix mM;
 
 	/** The m rows. */
-	private int mRows;
-
-	/** The m cols. */
-	private int mCols;
-
+	private MatrixDim mDim;
 	/**
 	 * Instantiates a new annotable matrix.
 	 *
@@ -276,8 +272,8 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * Refresh.
 	 */
 	private void refresh() {
-		mRows = getMatrix().getRowCount() + getColumnAnnotationNames().size();
-		mCols = getMatrix().getColumnCount() + getRowAnnotationNames().size();
+		mDim = new MatrixDim(getMatrix().getRowCount() + getColumnAnnotationNames().size(),
+				getMatrix().getColumnCount() + getRowAnnotationNames().size());
 	}
 
 	/**
@@ -875,7 +871,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * @return		a row count.
 	 */
 	public int getExtRowCount() {
-		return mRows;
+		return mDim.mRows;
 	}
 
 	/**
@@ -884,7 +880,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * @return		a column count.
 	 */
 	public int getExtColumnCount() {
-		return mCols;
+		return mDim.mCols;
 	}
 
 	/* (non-Javadoc)
@@ -1714,7 +1710,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * @param columns the columns
 	 * @return the annotation matrix
 	 */
-	public static DataFrame createAnnotatableMatrixFromColumns(DataFrame m, 
+	public static DataFrame createAnnotatableMatrixFromCols(DataFrame m, 
 			List<Integer> columns) {
 		DataFrame ret = createDataFrame(m.getRowCount(), columns.size());
 		
@@ -2695,16 +2691,16 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * Copy columns.
 	 *
 	 * @param from the from
-	 * @param fromColumnStart the from column start
+	 * @param fromColstart the from column start
 	 * @param fromColumnEnd the from column end
 	 * @param to the to
 	 */
 	public static void copyColumns(DataFrame from,
-			int fromColumnStart,
+			int fromColstart,
 			int fromColumnEnd,
 			DataFrame to) {
 		copyColumns(from,
-				fromColumnStart,
+				fromColstart,
 				fromColumnEnd,
 				to,
 				0);
@@ -2731,14 +2727,14 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * beginning of the to matrix.
 	 *
 	 * @param from the from
-	 * @param fromColumnStart the from column start
+	 * @param fromColstart the from column start
 	 * @param to the to
 	 */
 	public static void copyColumns(DataFrame from,
-			int fromColumnStart,
+			int fromColstart,
 			DataFrame to) {
 		copyColumns(from,
-				fromColumnStart,
+				fromColstart,
 				to,
 				0);
 	}
@@ -2748,16 +2744,16 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * ability to offset the copy in the to matrix.
 	 *
 	 * @param from the from
-	 * @param fromColumnStart the from column start
+	 * @param fromColstart the from column start
 	 * @param to the to
 	 * @param toColOffset the to col offset
 	 */
 	public static void copyColumns(DataFrame from,
-			int fromColumnStart,
+			int fromColstart,
 			DataFrame to,
 			int toColOffset) {
 		copyColumns(from,
-				fromColumnStart,
+				fromColstart,
 				from.getColumnCount() - 1,
 				to,
 				toColOffset);
@@ -2767,20 +2763,20 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 * Copy columns.
 	 *
 	 * @param from 	The from matrix.
-	 * @param fromColumnStart 	The from column start column
+	 * @param fromColStart 	The from column start column
 	 * @param fromColumnEnd the from column end
 	 * @param to the to
 	 * @param toColOffset the to col offset
 	 */
 	public static void copyColumns(DataFrame from,
-			int fromColumnStart,
+			int fromColStart,
 			int fromColumnEnd,
 			DataFrame to,
 			int toColOffset) {
-		int cols = fromColumnEnd - fromColumnStart + 1;
+		int cols = fromColumnEnd - fromColStart + 1;
 
 		for (int j = 0; j < cols; ++j) {
-			to.copyColumn(from, j + fromColumnStart, j + toColOffset);
+			to.copyColumn(from, j + fromColStart, j + toColOffset);
 		}
 	}
 

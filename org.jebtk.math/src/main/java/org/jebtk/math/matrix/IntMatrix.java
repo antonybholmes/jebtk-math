@@ -242,10 +242,10 @@ public class IntMatrix extends IndexableMatrix {
 	public void setValueColumn(int column, List<Double> values) {
 		int ix = column;
 
-		for (int i = 0; i < mRows; ++i) {
+		for (int i = 0; i < mDim.mRows; ++i) {
 			mData[ix] = values.get(i).intValue();
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 	}
 	
@@ -253,10 +253,10 @@ public class IntMatrix extends IndexableMatrix {
 	public void setColumn(int column, double[] values) {
 		int ix = column;
 
-		for (int i = 0; i < mRows; ++i) {
+		for (int i = 0; i < mDim.mRows; ++i) {
 			mData[ix] = (int)values[i];
 
-			ix += mCols;
+			ix += mDim.mCols;
 		}
 	}
 
@@ -279,8 +279,8 @@ public class IntMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = (int)from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 
 		fireMatrixChanged();
@@ -308,8 +308,8 @@ public class IntMatrix extends IndexableMatrix {
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
 
-			i1 += from.mCols;
-			i2 += mCols;
+			i1 += from.mDim.mCols;
+			i2 += mDim.mCols;
 		}
 
 		fireMatrixChanged();
@@ -347,7 +347,7 @@ public class IntMatrix extends IndexableMatrix {
 		for (int row = 0; row < r; ++row) {
 			values[row] = mData[i1];
 
-			i1 += mCols;
+			i1 += mDim.mCols;
 		}
 
 		return values;
@@ -382,7 +382,7 @@ public class IntMatrix extends IndexableMatrix {
 	public void rowApply(MatrixCellFunction f, int index) {
 		int offset = mRowOffsets[index];
 
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = (int)f.apply(i, 0, mData[offset]);
 
 			++offset;
@@ -395,10 +395,10 @@ public class IntMatrix extends IndexableMatrix {
 	public void colApply(MatrixCellFunction f, int index) {
 		int offset = index;
 
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = (int)f.apply(i, 0, mData[offset]);
 
-			offset += mCols;
+			offset += mDim.mCols;
 		}
 
 		fireMatrixChanged();
@@ -421,7 +421,7 @@ public class IntMatrix extends IndexableMatrix {
 
 		int offset = mRowOffsets[index];
 
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			f.apply(i, 0, mData[offset]);
 
 			++offset;
@@ -434,10 +434,10 @@ public class IntMatrix extends IndexableMatrix {
 	public double colStat(MatrixStatFunction f, int index) {
 		int offset = index;
 
-		for (int i = 0; i < mCols; ++i) {
+		for (int i = 0; i < mDim.mCols; ++i) {
 			f.apply(i, 0, mData[offset]);
 
-			offset += mCols;
+			offset += mDim.mCols;
 		}
 
 		return f.getStat();
@@ -475,21 +475,21 @@ public class IntMatrix extends IndexableMatrix {
 	}
 
 	public static Matrix transpose(final IntMatrix m) { 
-		IntMatrix ret = createIntMatrix(m.mCols, m.mRows);
+		IntMatrix ret = createIntMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;
 
 		for (int i = 0; i < m.mData.length; ++i) {
 			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mCols == 0) {
+			if (i % m.mDim.mCols == 0) {
 				i2 = c++;
 			}
 
 			ret.mData[i2] = m.mData[i];
 
 			// Skip blocks
-			i2 += m.mRows;
+			i2 += m.mDim.mRows;
 		}
 
 		return ret;
