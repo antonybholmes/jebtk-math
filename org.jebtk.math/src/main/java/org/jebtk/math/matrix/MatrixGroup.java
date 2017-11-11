@@ -160,14 +160,10 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 		ge.setAttribute("name", getName());
 		ge.setAttribute("color", ColorUtils.toHtml(getColor()));
 		
-		System.err.println("gp " + getName());
-		
 		for (Pattern p : mRegexes) {
 			Element se = doc.createElement("search");
 			se.appendChild(doc.createCDATASection(p.toString()));
-			
-			System.err.println("gp " + getName() + " " + p);
-			
+
 			ge.appendChild(se);
 		}
 		
@@ -236,110 +232,118 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	public boolean getCaseSensitive() {
 		return mCaseSensitive;
 	}
-
-	/**
-	 * Add a column to the group.
-	 *
-	 * @param regex the new regex
-	 */
-	public void setRegex(String regex) {
-		setRegex(Pattern.compile(regex));
-	}
-	
-	/**
-	 * Sets the regex.
-	 *
-	 * @param regex the new regex
-	 */
-	public void setRegex(Pattern regex) {
-		mRegexes.clear();
-		
-		addRegex(regex);
-	}
 	
 	/**
 	 * Sets the regexes.
 	 *
 	 * @param regexes the new regexes
+	 * @return 
 	 */
-	public void setRegexes(String... regexes) {
+	public MatrixGroup setRegex(String regex, String... regexes) {
 		mRegexes.clear();
 		
-		addRegexes(regexes);
+		addRegex(regex, regexes);
+		
+		return this;
 	}
 
 	/**
 	 * Sets the regexes.
 	 *
 	 * @param regexes the new regexes
+	 * @return 
 	 */
-	public void setRegexes(Pattern... regexes) {
+	public MatrixGroup setRegex(Pattern regex, Pattern... regexes) {
 		mRegexes.clear();
 		
-		addRegexes(regexes);
+		addRegex(regex, regexes);
+		
+		return this;
 	}
 	
 	/**
 	 * Sets the regexes.
 	 *
 	 * @param regexes the new regexes
+	 * @return 
 	 */
-	public void setRegexes(Collection<Pattern> regexes) {
+	public MatrixGroup setRegexes(Collection<Pattern> regexes) {
 		
 		mRegexes.clear();
 		
 		addRegexes(regexes);
+		
+		return this;
 	}
 	
 	/**
 	 * Adds the regex.
 	 *
 	 * @param regex the regex
+	 * @return 
 	 */
-	public void addRegex(String regex) {
+	public MatrixGroup addRegex(String regex) {
 		// Remove characters that look like regex reserved characters
 		// before constructing pattern
-		addRegex(Pattern.compile(".*" + regex.replaceFirst("^\\.\\*", TextUtils.EMPTY_STRING).replaceFirst("\\.\\*$", TextUtils.EMPTY_STRING) + ".*"));
-	}
-	
-	/**
-	 * Adds the regex.
-	 *
-	 * @param regex the regex
-	 */
-	public void addRegex(Pattern regex) {
-		mRegexes.add(regex);
+		return addRegex(Pattern.compile(".*" + regex.replaceFirst("^\\.\\*", TextUtils.EMPTY_STRING).replaceFirst("\\.\\*$", TextUtils.EMPTY_STRING) + ".*"));
 	}
 	
 	/**
 	 * Adds the regexes.
 	 *
 	 * @param regexes the regexes
+	 * @return 
 	 */
-	public void addRegexes(String... regexes) {
-		for (String regex : regexes) {
-			addRegex(regex);
+	public MatrixGroup addRegex(String regex, String... regexes) {
+		addRegex(regex);
+		
+		for (String r : regexes) {
+			addRegex(r);
 		}
+		
+		return this;
 	}
 
 	/**
 	 * Adds the regexes.
 	 *
 	 * @param regexes the regexes
+	 * @return 
 	 */
-	public void addRegexes(Pattern... regexes) {
-		for (Pattern regex : regexes) {
-			addRegex(regex);
+	public MatrixGroup addRegex(Pattern regex, Pattern... regexes) {
+		mRegexes.add(regex);
+		
+		for (Pattern r : regexes) {
+			mRegexes.add(r);
 		}
+		
+		return this;
 	}
 	
 	/**
 	 * Adds the regexes.
 	 *
 	 * @param regexes the regexes
+	 * @return 
 	 */
-	public void addRegexes(Collection<Pattern> regexes) {
+	public MatrixGroup addRegexes(Collection<Pattern> regexes) {
 		mRegexes.addAll(regexes);
+		
+		return this;
+	}
+	
+	/**
+	 * Add the patterns from another group to this group.
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public MatrixGroup union(MatrixGroup g) {
+		for (Pattern p : g) {
+			addRegex(p);
+		}
+		
+		return this;
 	}
 
 	/* (non-Javadoc)
