@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jebtk.core.collections.CollectionUtils;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 
 // TODO: Auto-generated Javadoc
@@ -42,7 +43,7 @@ import org.jebtk.core.text.TextUtils;
  * 
  * @author Antony Holmes Holmes
  */
-public class TextMatrix extends IndexableMatrix {
+public class TextMatrix extends IndexRowMatrix {
 
 	/**
 	 * The constant serialVersionUID.
@@ -52,7 +53,7 @@ public class TextMatrix extends IndexableMatrix {
 	/**
 	 * The member data.
 	 */
-	public String[] mData = null;
+	public final String[] mData;
 
 	/**
 	 * Instantiates a new text matrix.
@@ -61,7 +62,10 @@ public class TextMatrix extends IndexableMatrix {
 	 * @param columns the columns
 	 */
 	public TextMatrix(int rows, int columns) {
-		this(rows, columns, TextUtils.EMPTY_STRING);
+		super(rows, columns);
+		
+		// We use a 1d array to store a 2d matrix for speed.
+		mData = new String[mSize];
 	}
 
 	/**
@@ -72,13 +76,8 @@ public class TextMatrix extends IndexableMatrix {
 	 * @param v the v
 	 */
 	public TextMatrix(int rows, int columns, String v) {
-		super(rows, columns);
+		this(rows, columns);
 
-		// We use a 1d array to store a 2d matrix for speed.
-		mData = new String[mSize];
-
-		//CollectionUtils.fill(TextUtils.EMPTY_STRING, mData);
-		
 		// Set the default value
 		set(v);
 	}
@@ -89,7 +88,7 @@ public class TextMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public TextMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 		
 		update(m);
 	}
@@ -100,7 +99,7 @@ public class TextMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public TextMatrix(TextMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -110,8 +109,8 @@ public class TextMatrix extends IndexableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public TextMatrix(IndexableMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+	public TextMatrix(IndexRowMatrix m) {
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -133,7 +132,7 @@ public class TextMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public void update(TextMatrix m) {
-		System.arraycopy(m.mData, 0, mData, 0, Math.min(m.mData.length, mData.length));
+		SysUtils.arraycopy(m.mData, mData);
 	}
 
 	/* (non-Javadoc)
@@ -152,6 +151,11 @@ public class TextMatrix extends IndexableMatrix {
 		return new TextMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return createTextMatrix(this);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
 	 */
@@ -161,19 +165,29 @@ public class TextMatrix extends IndexableMatrix {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
-	 */
-	@Override
-	public int getNumCells() {
-		return mData.length;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#updateValue(double)
 	 */
 	@Override
 	public void update(double v) {
 		update(Double.toString(v));
+	}
+	
+	@Override
+	public void update(long v) {
+		update(Long.toString(v));
+	}
+	
+	@Override
+	public void update(int v) {
+		update(Integer.toString(v));
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.abh.lib.math.matrix.Matrix#updateText(java.lang.String)
+	 */
+	@Override
+	public void update(String v) {
+		CollectionUtils.fill(v, mData);
 	}
 
 	/* (non-Javadoc)
@@ -184,6 +198,16 @@ public class TextMatrix extends IndexableMatrix {
 		update(index, Double.toString(v));
 	}
 	
+	@Override
+	public void update(int index, long v) {
+		update(index, Long.toString(v));
+	}
+	
+	@Override
+	public void update(int index, int v) {
+		update(index, Integer.toString(v));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
 	 */
@@ -192,26 +216,14 @@ public class TextMatrix extends IndexableMatrix {
 		mData[index] = TextUtils.EMPTY_STRING;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#updateText(java.lang.String)
-	 */
-	@Override
-	public void update(String v) {
-		//for (int i = 0; i < mData.length; ++i) {
-		////	updateText(i, v);
-		//}
-		
-		CollectionUtils.fill(v, mData);
-	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#updateText(int, java.lang.String)
 	 */
 	@Override
 	public void update(int index, String v) {
-		if (v != null) {
-			mData[index] = v;
-		}
+		mData[index] = v;
 	}
 
 	/* (non-Javadoc)
@@ -230,6 +242,11 @@ public class TextMatrix extends IndexableMatrix {
 		return getText(index);
 	}
 	
+	@Override
+	public boolean isValid(int index) {
+		return mData[index] == null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#copyColumn(org.abh.common.math.matrix.Matrix, int, int)
 	 */
@@ -244,7 +261,7 @@ public class TextMatrix extends IndexableMatrix {
 		} else {
 			int i1 = getIndex(0, toColumn);
 
-			int r = Math.min(from.getRowCount(), getRowCount());
+			int r = Math.min(from.getRows(), getRows());
 
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getText(i, column);
@@ -268,7 +285,7 @@ public class TextMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 		
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 		
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -288,7 +305,7 @@ public class TextMatrix extends IndexableMatrix {
 			int row,
 			int toRow) {
 		
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 		
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
 		
@@ -300,7 +317,7 @@ public class TextMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void setTextColumn(int column, List<String> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(getRows(), values.size());
 		
 		int ix = getIndex(0, column);
 		
@@ -318,7 +335,7 @@ public class TextMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public List<String> columnAsText(int column) {
-		int r = getRowCount();
+		int r = getRows();
 		
 		List<String> values = new ArrayList<String>(r);
 		
@@ -338,7 +355,7 @@ public class TextMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public List<String> rowAsText(int row) {
-		int c = getColumnCount();
+		int c = getCols();
 		
 		List<String> values = new ArrayList<String>(c);
 		
@@ -351,7 +368,7 @@ public class TextMatrix extends IndexableMatrix {
 		return values;
 	}
 	
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		// Do nothing
 	}
 	
@@ -382,6 +399,11 @@ public class TextMatrix extends IndexableMatrix {
 		return ret;
 	}
 	
+	@Override
+	public void toStringArray(String[] ret) {
+		SysUtils.arraycopy(mData, ret);
+	}
+	
 	//
 	// Static methods
 	//
@@ -393,7 +415,7 @@ public class TextMatrix extends IndexableMatrix {
 	 * @return the text matrix
 	 */
 	public static TextMatrix createTextMatrix(Matrix m) {
-		return createTextMatrix(m.getRowCount(), m.getColumnCount());
+		return createTextMatrix(m.getRows(), m.getCols());
 	}
 	
 	/**

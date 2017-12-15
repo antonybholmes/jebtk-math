@@ -82,14 +82,14 @@ public class Transpose {
 			return transpose((IndexMatrix)m);
 		} else {
 			MixedMatrix ret = 
-					MixedMatrix.createMixedMatrix(m.getColumnCount(), m.getRowCount());
+					MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
 
 			// Swap row and column indices. We use index lookup to reduce
 			// the number of number of times indices must be looked up to
 			// set cell elements.
 
-			for (int i = 0; i < m.getRowCount(); ++i) {
-				for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int i = 0; i < m.getRows(); ++i) {
+				for (int j = 0; j < m.getCols(); ++j) {
 					ret.set(j, i, m.get(i, j));
 				}
 			}
@@ -110,7 +110,7 @@ public class Transpose {
 		int i2 = 0;
 		int c = 0;
 
-		for (int i = 0; i < m.getNumCells(); ++i) {
+		for (int i = 0; i < m.size(); ++i) {
 			// Each time we end a row, reset i2 back to the next column
 			if (i % m.mDim.mCols == 0) {
 				i2 = c++;

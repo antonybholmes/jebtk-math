@@ -27,6 +27,9 @@ IntMatrix * Copyright (C) 2016, Antony Holmes
  */
 package org.jebtk.math.matrix;
 
+import org.jebtk.core.ForEach2D;
+import org.jebtk.core.IterUtils;
+
 // TODO: Auto-generated Javadoc
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
@@ -86,6 +89,11 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 		return new DynamicIntMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return new DynamicIntMatrix(mDim.mRows, mDim.mCols);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
 	 */
@@ -94,23 +102,31 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 		mData.put(row, column, NULL_INT_NUMBER);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
-	 */
 	@Override
-	public double getValue(int row, int column) {
+	public void update(int row, int column, double v) {
+		update(row, column, (int)v);
+	}
+	
+	@Override
+	public void update(int row, int column, long v) {
+		update(row, column, (int)v);
+	}
+	
+	@Override
+	public void update(int row, int column, int v) {
+		mData.put(row, column, v);
+
+		super.update(row, column, v);
+	}
+	
+	@Override
+	public int getInt(int row, int column) {
 		Object v = mData.get(row, column);
 
 		if (v != null) {
-			int i = ((Integer)v).intValue();
-			
-			if (isValidMatrixNum(i)) {
-				return i;
-			} else {
-				return NULL_NUMBER;
-			}
+			return (int)v;
 		} else {
-			return NULL_NUMBER;
+			return NULL_INT_NUMBER;
 		}
 	}
 	
@@ -129,9 +145,10 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 	}
 	
 	@Override
-	public void apply(MatrixCellFunction f) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
+	public void apply(final CellFunction f) {
+		IterUtils.forEach(getRows(), getCols(), new ForEach2D() {
+			@Override
+			public void loop(int i, int j) {
 				double v = f.apply(i, j, mData.get(i, j));
 				
 				if (isValidMatrixNum(v)) {
@@ -140,7 +157,7 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 					mData.put(i, j, NULL_INT_NUMBER);
 				}
 			}
-		}
+		});
 	}
 	
 	@Override
@@ -148,19 +165,20 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 		return transpose(this);
 	}
 	
-	public static Matrix transpose(DynamicIntMatrix m) {
-		DynamicIntMatrix ret = 
-				createDynamicIntMatrix(m.getColumnCount(), m.getRowCount());
+	public static Matrix transpose(final DynamicIntMatrix m) {
+		final DynamicIntMatrix ret = 
+				createDynamicIntMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		IterUtils.forEach(m.getRows(), m.getCols(), new ForEach2D() {
+			@Override
+			public void loop(int i, int j) {
 				ret.set(j, i, m.get(i, j));
 			}
-		}
+		});
 
 		return ret;
 	}

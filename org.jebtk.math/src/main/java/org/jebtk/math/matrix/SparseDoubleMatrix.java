@@ -58,7 +58,7 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	 * @param v the v
 	 */
 	public SparseDoubleMatrix(int rows, int columns, double v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -72,7 +72,7 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	 * @param v the v
 	 */
 	public SparseDoubleMatrix(int rows, int columns, String v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -93,7 +93,7 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	 *
 	 * @param m the m
 	 */
-	public SparseDoubleMatrix(IndexableMatrix m) {
+	public SparseDoubleMatrix(IndexRowMatrix m) {
 		super(m);
 	}
 
@@ -104,33 +104,36 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	public Matrix copy() {
 		return new SparseDoubleMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new SparseDoubleMatrix(mDim.mRows, mDim.mCols);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
 	 */
 	@Override
-	public int getNumCells() {
+	public int size() {
 		return mSize;
 	}
 
-	/**
-	 * Set a cell to null so that neither text nor number are valid.
-	 *
-	 * @param index the index
-	 */
 	@Override
-	public void updateToNull(int index) {
-		mData.remove(index);
+	public void update(int index, int v) {
+		update(index, (double)v);
 	}
-
+	
+	@Override
+	public void update(int index, long v) {
+		update(index, (double)v);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
 	 */
 	@Override
 	public void update(int index, double v) {
-		if (v != 0) {
-			mData.put(index, v);
-		}
+		mData.put(index, v);
 	}
 
 	/* (non-Javadoc)
@@ -162,7 +165,7 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	}
 
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		for (int i : mData.keySet()) {
 			mData.put(i, f.apply(i, 0, mData.get(i)));
 		}

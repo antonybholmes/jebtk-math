@@ -66,7 +66,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	/**
 	 * The member annotation.
 	 */
-	private Map<String, IndexableMatrix> mAnnotationMap;
+	private Map<String, IndexRowMatrix> mAnnotationMap;
 
 	/** The m size. */
 	private int mSize = 0;
@@ -79,7 +79,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	public Annotation(int size) {
 		mSize = size;
 
-		mAnnotationMap = new HashMap<String, IndexableMatrix>(10);
+		mAnnotationMap = new HashMap<String, IndexRowMatrix>(10);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param values the values
 	 */
 	public void setNumAnnotation(String name, int[] values) {
-		autoCreate(name, MatrixType.NUMBER, true);
+		autoCreate(name, MatrixType.NUMBER, NumberType.INT);
 
 		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
 	}
@@ -176,7 +176,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @return the matrix
 	 */
 	private Matrix autoCreate(String name, MatrixType type) {
-		return autoCreate(name, type, false);
+		return autoCreate(name, type, NumberType.DOUBLE);
 	}
 	
 	/**
@@ -187,14 +187,22 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @param intMode the int mode
 	 * @return the matrix
 	 */
-	private Matrix autoCreate(String name, MatrixType type, boolean intMode) {
+	private Matrix autoCreate(String name, 
+			MatrixType type,
+			NumberType numberType) {
 		if (!mAnnotationMap.containsKey(name)) {
 			switch(type) {
 			case NUMBER:
-				if (intMode) {
+				switch(numberType) {
+				case INT:
 					mAnnotationMap.put(name, new IntMatrix(1, mSize));
-				} else {
+					break;
+				case LONG:
+					mAnnotationMap.put(name, new LongMatrix(1, mSize));
+					break;
+				default:
 					mAnnotationMap.put(name, new DoubleMatrix(1, mSize));
+					break;
 				}
 
 				break;
@@ -253,7 +261,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 	 * @return the values
 	 */
 	public double[] getValues(String name) {
-		return mAnnotationMap.get(name).rowAsDouble(0);
+		return mAnnotationMap.get(name).rowToDoubleArray(0);
 	}
 
 	/**

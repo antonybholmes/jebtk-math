@@ -33,6 +33,7 @@ import org.jebtk.math.matrix.CellType;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixType;
 import org.jebtk.math.matrix.RegularMatrix;
+import org.jebtk.math.matrix.UpperTriangularMixedMatrix;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -89,6 +90,11 @@ public class ExcelMatrix extends RegularMatrix {
 	@Override
 	public Matrix transpose() {
 		return this;
+	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -253,7 +259,7 @@ public class ExcelMatrix extends RegularMatrix {
 				}
 			}
 
-			for (int i = 0; i < m.getColumnCount(); ++i) {
+			for (int i = 0; i < m.getCols(); ++i) {
 				XSSFCell cell = sheet.getRow(0).getCell(rowAnnotations + i);
 
 				if (cell != null) {
@@ -266,7 +272,7 @@ public class ExcelMatrix extends RegularMatrix {
 			}
 		}
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			// if there is a header, we must read from the next row
 			int r = i + (hasHeader ? 1 : 0);
 

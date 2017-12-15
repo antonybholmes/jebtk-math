@@ -49,10 +49,10 @@ public abstract class DistanceMetric {
 	 * @return the double
 	 */
 	public double columnDistance(final Matrix m, int c1, int c2) {
-		double[] d1 = new double[m.getRowCount()];
-		double[] d2 = new double[m.getRowCount()];
+		double[] d1 = new double[m.getRows()];
+		double[] d2 = new double[m.getRows()];
 		
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			d1[i] = m.getValue(i, c1);
 			d2[i] = m.getValue(i, c2);
 		}
@@ -69,7 +69,7 @@ public abstract class DistanceMetric {
 	 * @return the double
 	 */
 	public double rowDistance(final Matrix m, int r1, int r2) {
-		int c = m.getColumnCount();
+		int c = m.getCols();
 		
 		double[] d1 = new double[c];
 		double[] d2 = new double[c];

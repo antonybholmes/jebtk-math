@@ -88,6 +88,11 @@ public class ExpandTextMatrix extends ExpandMatrix<String> {
 		return new ExpandTextMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return new ExpandTextMatrix(mDim.mRows, mDim.mCols);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
 	 */
@@ -149,14 +154,14 @@ public class ExpandTextMatrix extends ExpandMatrix<String> {
 	
 	public static Matrix transpose(ExpandTextMatrix m) {
 		ExpandTextMatrix ret = 
-				createExpandTextMatrix(m.getColumnCount(), m.getRowCount());
+				createExpandTextMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret.set(j, i, m.get(i, j));
 			}
 		}

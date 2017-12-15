@@ -62,7 +62,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @param m the m
 	 */
 	public IndexMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -74,7 +74,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @param m the m
 	 */
 	public IndexMatrix(IndexMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -96,7 +96,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @param m the m
 	 */
 	public void update(IndexMatrix m) {
-		int r = Math.min(getNumCells(), m.getNumCells());
+		int r = Math.min(size(), m.size());
 
 		for (int i = 0; i < r; ++i) {
 			set(i, m.get(i));
@@ -123,6 +123,16 @@ public abstract class IndexMatrix extends RegularMatrix {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.Matrix#update(java.lang.String)
+	 */
+	@Override
+	public void update(String value) {
+		for (int i = 0; i < mSize; ++i) {
+			update(i, value);
+		}
+	}
+
+	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#updateValue(int, int, double)
 	 */
 	@Override
@@ -139,6 +149,40 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void update(int index, double v) {
 		// Do nothing
 	}
+
+	@Override
+	public void update(int row, int column, int v) {
+		update(getIndex(row, column), v);
+	}
+
+	/**
+	 * Update.
+	 *
+	 * @param index the index
+	 * @param v the v
+	 */
+	public void update(int index, int v) {
+		update(index, (double)v);
+	}
+
+
+	@Override
+	public void update(int row, int column, long v) {
+		update(getIndex(row, column), v);
+	}
+
+	/**
+	 * Update.
+	 *
+	 * @param index the index
+	 * @param v the v
+	 */
+	public void update(int index, long v) {
+		update(index, (double)v);
+	}
+
+
+
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#updateToNull(int, int)
@@ -166,17 +210,14 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	public abstract void updateToNull(int index);
 
-
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#update(java.lang.String)
-	 */
 	@Override
-	public void update(String value) {
+	public void updateToNull() {
 		for (int i = 0; i < mSize; ++i) {
-			update(i, value);
+			update(i, NULL_NUMBER);
 		}
 	}
+
+
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#updateText(int, int, java.lang.String)
@@ -230,6 +271,47 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @param index the index
 	 * @param v the v
 	 */
+	public void set(int index, double v) {
+		update(index, v);
+
+		fireMatrixChanged();
+	}
+
+	@Override
+	public void set(int row, int column, long v) {
+		set(getIndex(row, column), v);
+	}
+
+	public void set(int index, long v) {
+		update(index, v);
+
+		fireMatrixChanged();
+	}
+
+	@Override
+	public void set(int row, int column, int v) {
+		set(getIndex(row, column), v);
+	}
+
+
+	/**
+	 * Sets the.
+	 *
+	 * @param index the index
+	 * @param v the v
+	 */
+	public void set(int index, int v) {
+		update(index, v);
+
+		fireMatrixChanged();
+	}
+
+	/**
+	 * Sets the.
+	 *
+	 * @param index the index
+	 * @param v the v
+	 */
 	public void set(int index, Object v) {
 		update(index, v);
 
@@ -245,49 +327,21 @@ public abstract class IndexMatrix extends RegularMatrix {
 	}
 
 	/**
-	 * Sets the.
-	 *
-	 * @param index the index
-	 * @param v the v
-	 */
-	public void set(int index, double v) {
-		update(index, v);
-
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Sets the.
-	 *
-	 * @param index the index
-	 * @param v the v
-	 */
-	public void set(int index, int v) {
-		update(index, v);
-
-		fireMatrixChanged();
-	}
-
-	/**
 	 * Update.
 	 *
 	 * @param index the index
 	 * @param v the v
 	 */
 	public void update(int index, Object v) {
-		if (v == null) {
-			return;
-		}
-
-		if (v instanceof Number) {
-			update(index, ((Number)v).doubleValue());
-		} else {
-			String s = v.toString();
-
-			if (TextUtils.isNumber(s)) {
-				update(index, Double.parseDouble(s));
+		if (v != null) {
+			if (v instanceof Double) {
+				update(index, ((Double)v).doubleValue());
+			} else if (v instanceof Long) {
+				update(index, ((Long)v).longValue());
+			} else if (v instanceof Integer) {
+				update(index, ((Integer)v).intValue());
 			} else {
-				update(index, s);
+				update(index, v.toString());
 			}
 		}
 	}
@@ -332,6 +386,24 @@ public abstract class IndexMatrix extends RegularMatrix {
 		return NULL_NUMBER;
 	}
 
+	@Override
+	public int getInt(int row, int column) {
+		return getInt(getIndex(row, column));
+	}
+
+	public int getInt(int index) {
+		return (int)getValue(index);
+	}
+
+	@Override
+	public long getLong(int row, int column) {
+		return getLong(getIndex(row, column));
+	}
+
+	public long getLong(int index) {
+		return (long)getValue(index);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#getText(int, int)
 	 */
@@ -368,16 +440,48 @@ public abstract class IndexMatrix extends RegularMatrix {
 		return CellType.NUMBER;
 	}
 
+	@Override
+	public boolean isNull(int row, int column) {
+		return isValid(getIndex(row, column));
+	}
+
+	public boolean isValid(int index) {
+		return true;
+	}
+
+	@Override
+	public void f(CellFunction f, Matrix ret) {
+		if (ret instanceof IndexMatrix) {
+			f(f, (IndexMatrix)ret);
+		} else {
+			super.f(f, ret);
+		}
+	}
+
+	public void f(CellFunction f, IndexMatrix ret) {
+		int r = 0;
+		int c = 0;
+
+		for (int i = 0; i < size(); ++i) {
+			ret.set(i, f.apply(r, c++, getValue(i)));
+
+			if (c == mDim.mCols) {
+				c = 0;
+				++r;
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#setColumn(int, java.util.List)
 	 */
 	@Override
 	public void setColumn(int column, List<? extends Object> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(getRows(), values.size());
 
 		int ix = getIndex(0, column);
-		
-		int cols = getColumnCount();
+
+		int cols = getCols();
 
 		for (int i = 0; i < r; ++i) {
 			set(ix, values.get(i));
@@ -393,14 +497,14 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	@Override
 	public Object[] columnAsList(int column) {
-		int r = getRowCount();
+		int r = getRows();
 
 		Object[] values = new Object[r];
 
 		int i1 = getIndex(0, column);
 
-		int cols = getColumnCount();
-		
+		int cols = getCols();
+
 		for (int row = 0; row < r; ++row) {
 			values[row] = get(i1);
 
@@ -414,22 +518,19 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#columnAsDouble(int)
 	 */
 	@Override
-	public double[] columnAsDouble(int column) {
-		int r = getRowCount();
+	public void columnToDoubleArray(int col, double[] ret) {
 
-		double[] values = new double[r];
+		int r = getRows();
 
-		int i1 = column;
+		int i1 = col;
 
-		int cols = getColumnCount();
-		
+		int cols = getCols();
+
 		for (int row = 0; row < r; ++row) {
-			values[row] = getValue(i1);
+			ret[row] = getValue(i1);
 
 			i1 += cols;
 		}
-
-		return values;
 	}
 
 	/* (non-Javadoc)
@@ -437,14 +538,14 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	@Override
 	public List<String> columnAsText(int column) {
-		int r = getRowCount();
+		int r = getRows();
 
 		List<String> values = new ArrayList<String>(r);
 
 		int i1 = getIndex(0, column);
 
-		int cols = getColumnCount();
-		
+		int cols = getCols();
+
 		for (int row = 0; row < r; ++row) {
 			values.add(getText(i1));
 
@@ -459,7 +560,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	@Override
 	public Object[] rowAsList(int row) {
-		int r = getColumnCount();
+		int r = getCols();
 
 		Object[] values = new Object[r];
 
@@ -476,18 +577,14 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#rowAsDouble(int)
 	 */
 	@Override
-	public double[] rowAsDouble(int row) {
-		int c = getColumnCount();
-
-		double[] ret = new double[c];
+	public void rowToDoubleArray(int row, double[] ret) {
+		int c = getCols();
 
 		int i1 = getIndex(row, 0);
 
 		for (int col = 0; col < c; ++col) {
 			ret[col] = getValue(i1++);
 		}
-
-		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -495,7 +592,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	@Override
 	public List<String> rowAsText(int row) {
-		int c = getColumnCount();
+		int c = getCols();
 
 		List<String> values = new ArrayList<String>(c);
 
@@ -515,12 +612,12 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void copyColumn(final Matrix from, 
 			int column,
 			int toColumn) {
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		int i = getIndex(0, toColumn);
 
-		int cols = getColumnCount();
-		
+		int cols = getCols();
+
 		for (int row = 0; row < r; ++row) {
 			update(i, from.get(row, column));
 
@@ -537,7 +634,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	public void copyRow(final Matrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 
 		int i = getIndex(toRow, 0);

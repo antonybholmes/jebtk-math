@@ -105,6 +105,11 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 		return new DynamicMixedMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return newDynamicMixedMatrix(this);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.Object)
 	 */
@@ -158,6 +163,20 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 
 		super.update(row, column, v);
 	}
+	
+	@Override
+	public void update(int row, int column, int v) {
+		mData.put(row, column, v);
+
+		super.update(row, column, v);
+	}
+	
+	@Override
+	public void update(int row, int column, long v) {
+		mData.put(row, column, v);
+
+		super.update(row, column, v);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.String)
@@ -168,6 +187,8 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 
 		super.update(row, column, v);
 	}
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
@@ -194,14 +215,14 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	public static Matrix transpose(DynamicMixedMatrix m) {
 		
 		// Return a fixed sized array where possible
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getColumnCount(), m.getRowCount());
+		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
 			}
 		}
@@ -209,6 +230,9 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 		return ret;
 	}
 	
+	public DynamicMixedMatrix newDynamicMixedMatrix(Matrix m) {
+		return new DynamicMixedMatrix(m.getRows(), m.getCols());
+	}
 	
 	/**
 	 * Creates the dynamic mixed matrix.
@@ -217,7 +241,7 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	 * @param columns the columns
 	 * @return the dynamic mixed matrix
 	 */
-	public DynamicMixedMatrix createDynamicMixedMatrix(int rows, int columns) {
+	public DynamicMixedMatrix newDynamicMixedMatrix(int rows, int columns) {
 		return new DynamicMixedMatrix(rows, columns);
 	}
 
@@ -226,7 +250,7 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	 *
 	 * @return the matrix
 	 */
-	public static Matrix createDynamicMixedMatrix() {
+	public static Matrix newDynamicMixedMatrix() {
 		return new DynamicMixedMatrix();
 	}
 }

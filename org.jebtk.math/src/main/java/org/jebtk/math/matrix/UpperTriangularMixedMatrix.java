@@ -27,6 +27,10 @@
  */
 package org.jebtk.math.matrix;
 
+import java.util.Arrays;
+
+import org.jebtk.core.text.TextUtils;
+
 // TODO: Auto-generated Javadoc
 /**
  * Representation of an upper triangular square matrix.
@@ -39,16 +43,16 @@ package org.jebtk.math.matrix;
  *
  */
 public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
-	
+
 	/**
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * The member data.
 	 */
-	protected Object[] mData = null;
+	public final Object[] mData;
 
 	/**
 	 * Instantiates a new distance matrix.
@@ -57,10 +61,10 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	 */
 	public UpperTriangularMixedMatrix(int size) {
 		super(size);
-		
+
 		mData = new Object[mOccupied];
 	}
-	
+
 	/**
 	 * Instantiates a new upper triangular mixed matrix.
 	 *
@@ -68,10 +72,10 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	 */
 	public UpperTriangularMixedMatrix(UpperTriangularMixedMatrix m) {
 		this(m.mSize);
-		
+
 		System.arraycopy(m.mData, 0, mData, 0, mSize);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#getType()
 	 */
@@ -79,13 +83,18 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	public MatrixType getType() {
 		return MatrixType.MIXED;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copy()
 	 */
 	@Override
 	public Matrix copy() {
 		return new UpperTriangularMixedMatrix(this);
+	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new UpperTriangularMixedMatrix(mSize);
 	}
 
 	/* (non-Javadoc)
@@ -94,12 +103,14 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	@Override
 	public double getValue(int index) {
 		Object v = mData[index];
-		
+
 		if (v != null) {
 			if (v instanceof Double) {
-				return (Double)v;
+				return (double)v;
+			} else if (v instanceof Long) {
+				return (long)v;
 			} else if (v instanceof Integer) {
-				return (Integer)v;
+				return (int)v;
 			} else {
 				return NULL_NUMBER;
 			}
@@ -108,21 +119,55 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 		}
 	}
 	
+	@Override
+	public long getLong(int index) {
+		Object v = mData[index];
+		
+		if (v != null) {
+			if (v instanceof Double) {
+				return ((Double)v).longValue();
+			} else if (v instanceof Long) {
+				return (long)v;
+			} else if (v instanceof Integer) {
+				return ((Integer)v).longValue();
+			} else {
+				return NULL_LONG_NUMBER;
+			}
+		} else {
+			return NULL_LONG_NUMBER;
+		}
+	}
+	
+	@Override
+	public int getInt(int index) {
+		Object v = mData[index];
+		
+		if (v != null) {
+			if (v instanceof Double) {
+				return ((Double)v).intValue();
+			} else if (v instanceof Long) {
+				return ((Long)v).intValue();
+			} else if (v instanceof Integer) {
+				return (int)v;
+			} else {
+				return NULL_INT_NUMBER;
+			}
+		} else {
+			return NULL_INT_NUMBER;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
 	 */
 	@Override
 	public String getText(int index) {
 		Object v = mData[index];
-		
+
 		if (v != null) {
-			if (v instanceof String) {
-				return (String)v;
-			} else {
-				return v.toString();
-			}
+			return v.toString();
 		} else {
-			return null;
+			return TextUtils.EMPTY_STRING;
 		}
 	}
 
@@ -133,7 +178,7 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	public Object get(int index) {
 		return mData[index];
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#getCellType(int, int)
 	 */
@@ -147,35 +192,25 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 			return CellType.TEXT;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
 	 */
 	@Override
 	public void update(int index, Object v) {
-		if (v == null) {
-			return;
+		if (v != null) {
+			if (v instanceof Double) {
+				mData[index] = (double)v;
+			} else if (v instanceof Long) {
+				mData[index] = (long)v;
+			} else if (v instanceof Integer) {
+				mData[index] = (int)v;
+			} else {
+				mData[index] = v.toString();
+			}
 		}
+	}
 
-		if (v instanceof Double) {
-			mData[index] = (Double)v;
-		} else if (v instanceof Number) {
-			mData[index] = ((Number)v).doubleValue();
-		} else if (v instanceof String) {
-			mData[index] = (String)v;
-		} else {
-			mData[index] = v.toString();
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int index, double value) {
-		mData[index] = value;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, java.lang.String)
 	 */
@@ -183,7 +218,25 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	public void update(int index, String value) {
 		mData[index] = value;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
+	 */
+	@Override
+	public void update(int index, double value) {
+		mData[index] = value;
+	}
+
+	@Override
+	public void update(int index, int value) {
+		mData[index] = value;
+	}
+
+	@Override
+	public void update(int index, long value) {
+		mData[index] = value;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#update(java.lang.String)
 	 */
@@ -193,7 +246,7 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 			mData[i] = value;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
 	 */
@@ -202,6 +255,11 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 		mData[index] = null;
 	}
 	
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, null);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.UpperTriangularMatrix#transpose()
 	 */

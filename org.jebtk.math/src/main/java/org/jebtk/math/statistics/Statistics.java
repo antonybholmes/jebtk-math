@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
+import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.jebtk.core.Indexed;
 import org.jebtk.core.IndexedInt;
 import org.jebtk.core.Mathematics;
@@ -1569,5 +1571,13 @@ public class Statistics {
 		}
 		
 		return Mathematics.nthRoot(sum, c);
+	}
+	
+	public static double correlation(double[] v1, double[] v2) {
+		return new PearsonsCorrelation().correlation(v1, v2);
+	}
+	
+	public static double spearmanCorrelation(double[] v1, double[] v2) {
+		return new SpearmansCorrelation().correlation(v1, v2);
 	}
 }

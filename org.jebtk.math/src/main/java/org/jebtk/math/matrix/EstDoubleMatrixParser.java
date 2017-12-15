@@ -46,6 +46,6 @@ public class EstDoubleMatrixParser extends EstMatrixParser<Double> {
 	 */
 	@Override
 	protected void set(Matrix matrix, int row, int column, String value) {
-		matrix.set(row, column, DoubleMatrix.parseValue(value));
+		matrix.set(row, column, DoubleMatrix.parseDouble(value));
 	}
 }

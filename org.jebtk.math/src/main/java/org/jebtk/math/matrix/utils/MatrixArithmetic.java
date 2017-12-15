@@ -15,8 +15,9 @@
  */
 package org.jebtk.math.matrix.utils;
 
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.Matrix;
-import org.jebtk.math.matrix.MatrixCellFunction;
+import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.MatrixDimFunction;
 
 // TODO: Auto-generated Javadoc
@@ -33,7 +34,7 @@ public class MatrixArithmetic {
 	/**
 	 * The Class ArithFunc.
 	 */
-	private static abstract class ArithFunc implements MatrixCellFunction {
+	private static abstract class ArithFunc implements CellFunction {
 
 		/** The m V. */
 		protected double mV;
@@ -153,13 +154,28 @@ public class MatrixArithmetic {
 	
 	
 	/**
-	 * Adds the.
+	 * Adds x to the matrix.
 	 *
 	 * @param x the x
 	 * @param m the m
 	 */
 	public static void add(double x, Matrix m) {
 		m.apply(new AddFunc(x));
+	}
+	
+	/**
+	 * Copy a matrix and add x to each cell.
+	 * 
+	 * @param m
+	 * @param x
+	 * @return
+	 */
+	public static Matrix add(DataFrame m, double x) {
+		return new DataFrame(m, add(m.getMatrix(), x));
+	}
+	
+	public static Matrix add(Matrix m, double x) {
+		return m.applied(new AddFunc(x));
 	}
 	
 	/**

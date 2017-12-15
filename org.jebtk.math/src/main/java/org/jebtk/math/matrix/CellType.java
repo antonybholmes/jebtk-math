@@ -35,11 +35,11 @@ public enum CellType {
 	
 	NUMBER,
 	
-	DOUBLE,
+	//DOUBLE,
 	
-	INT,
+	//INT,
 	
-	LONG,
+	//LONG,
 	
 	/**
 	 * The text.

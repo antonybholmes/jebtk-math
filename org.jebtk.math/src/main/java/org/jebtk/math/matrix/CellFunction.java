@@ -1,6 +1,6 @@
 package org.jebtk.math.matrix;
 
-public interface MatrixCellFunction {
+public interface CellFunction {
 	/**
 	 * Apply a function to a matrix cell.
 	 * 

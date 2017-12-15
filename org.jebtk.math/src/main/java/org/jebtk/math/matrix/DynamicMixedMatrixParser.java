@@ -27,84 +27,36 @@
  */
 package org.jebtk.math.matrix;
 
+import java.util.Collection;
+
+
 // TODO: Auto-generated Javadoc
 /**
- * For matrices that use an index approach to store values in a 1D array
- * with appropriate offset calculations.
+ * Parses a text file and creates a matrix from it.
  * 
  * @author Antony Holmes Holmes
  */
-public abstract class IndexableMatrix extends IndexMatrix {
-
+public class DynamicMixedMatrixParser extends MixedMatrixParser {
+	
 	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * The offsets in the array where each new row begins.
-	 */
-	public int[] mRowOffsets;
-
-
-	/**
-	 * Instantiates a new index matrix.
+	 * Instantiates a new dynamic matrix parser.
 	 *
-	 * @param rows the rows
-	 * @param columns the columns
+	 * @param hasHeader the has header
+	 * @param skipMatches the skip matches
+	 * @param rowAnnotations the row annotations
+	 * @param delimiter the delimiter
 	 */
-	public IndexableMatrix(int rows, int columns) {
-		super(rows, columns);
-
-		createOffsets();
+	public DynamicMixedMatrixParser(Collection<String> skipMatches,
+			int rowAnnotations, 
+			String delimiter) {
+		super(false, skipMatches, rowAnnotations, delimiter);
 	}
 
-	private void createOffsets() {
-		// Cache the offsets to improve lookup times
-		mRowOffsets = new int[mDim.mRows];
-
-		mRowOffsets[0] = 0;
-
-		for (int i = 1; i < mDim.mRows; ++i) {
-			// Use only additions
-			mRowOffsets[i] = mRowOffsets[i - 1] + mDim.mCols; //i * columns;
-		}
-	}
-
-	/**
-	 * Instantiates a new indexable matrix.
-	 *
-	 * @param m the m
-	 */
-	public IndexableMatrix(Matrix m) {
-		super(m);
-		
-		createOffsets();
-	}
-
-
-	/**
-	 * Instantiates a new indexable matrix.
-	 *
-	 * @param m the m
-	 */
-	public IndexableMatrix(IndexableMatrix m) {
-		super(m);
-
-		createOffsets();
-	}
-
-	/**
-	 * Gets the index of a row cell lookup. This is the position in a 1D
-	 * row centric array corresponding to the cell indicated by row and
-	 * column.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the index
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
 	 */
 	@Override
-	public int getIndex(int row, int column) {
-		return mRowOffsets[row] + column;
+	public DataFrame createMatrix(int rows, int columns) {
+		return DataFrame.createDynamicMatrix(); 
 	}
 }

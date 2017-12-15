@@ -27,9 +27,11 @@
  */
 package org.jebtk.math.matrix;
 
+import org.jebtk.core.Mathematics;
+
 // TODO: Auto-generated Javadoc
 /**
- * A conventional matrix with fixed rows and columns.
+ * A conventional matrix with a fixed number of rows and columns.
  * 
  * @author Antony Holmes Holmes
  */
@@ -42,6 +44,8 @@ public abstract class RegularMatrix extends Matrix {
 	
 	public final MatrixDim mDim;
 
+	public final int mSize;
+
 	/**
 	 * Create a new matrix defaulting to being entirely numeric.
 	 *
@@ -52,25 +56,63 @@ public abstract class RegularMatrix extends Matrix {
 		super(rows, columns);
 		
 		mDim = new MatrixDim(rows, columns);
+		
+		mSize = rows * columns;
 	}
 	
-	public MatrixDim getDim() {
+	@Override
+	public MatrixDim getShape() {
 		return mDim;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getRowCount()
-	 */
-	@Override
-	public int getRowCount() {
-		return mDim.getRows();
+	
+	public int size() {
+		return mSize;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getColumnCount()
-	 */
+	
 	@Override
-	public int getColumnCount() {
-		return mDim.getCols();
+	public void f(CellFunction f, Matrix ret) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
+				double v = getValue(i, j);
+
+				ret.set(i, j, f.apply(i, j, v));
+			}
+		}
+	}
+	
+	@Override
+	public double[] toDoubleArray() {
+		double[] ret = new double[mSize];
+		
+		toDoubleArray(ret);
+		
+		return ret;
+	}
+	
+	@Override
+	public int[] toIntArray() {
+		int[] ret = new int[mSize];
+		
+		toIntArray(ret);
+		
+		return ret;
+	}
+	
+	@Override
+	public long[] toLongArray() {
+		long[] ret = new long[mSize];
+		
+		toLongArray(ret);
+		
+		return ret;
+	}
+	
+	@Override
+	public String[] toStringArray() {
+		String[] ret = new String[mSize];
+		
+		toStringArray(ret);
+		
+		return ret;
 	}
 }

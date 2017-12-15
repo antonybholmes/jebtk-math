@@ -93,6 +93,11 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 		return new DynamicTextMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return new DynamicTextMatrix(mDim.mRows, mDim.mCols);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
 	 */
@@ -141,6 +146,16 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 		update(row, column, Double.toString(v));
 	}
 	
+	@Override
+	public void update(int row, int column, int v) {
+		update(row, column, Integer.toString(v));
+	}
+	
+	@Override
+	public void update(int row, int column, long v) {
+		update(row, column, Long.toString(v));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
 	 */
@@ -160,14 +175,14 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	public static Matrix transpose(DynamicTextMatrix m) {
 		
 		// Return a fixed sized array where possible
-		TextMatrix ret = TextMatrix.createTextMatrix(m.getColumnCount(), m.getRowCount());
+		TextMatrix ret = TextMatrix.createTextMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
 			}
 		}

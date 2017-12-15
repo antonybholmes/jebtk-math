@@ -29,6 +29,8 @@ package org.jebtk.math.matrix;
 
 import java.util.Collection;
 
+import org.jebtk.core.text.TextUtils;
+
 // TODO: Auto-generated Javadoc
 /**
  * Parses a text file and creates a matrix from it.
@@ -36,6 +38,12 @@ import java.util.Collection;
  * @author Antony Holmes Holmes
  */
 public class DoubleMatrixParser extends MixedMatrixParser {
+	
+	public DoubleMatrixParser(boolean hasHeader,
+			int rowAnnotations, 
+			String delimiter) {
+		super(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+	}
 	
 	/**
 	 * Instantiates a new text matrix parser.

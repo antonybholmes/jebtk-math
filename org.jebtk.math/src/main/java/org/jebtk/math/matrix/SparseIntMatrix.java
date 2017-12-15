@@ -61,7 +61,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	 * @param v the v
 	 */
 	public SparseIntMatrix(int rows, int columns, double v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -96,7 +96,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	 *
 	 * @param m the m
 	 */
-	public SparseIntMatrix(IndexableMatrix m) {
+	public SparseIntMatrix(IndexRowMatrix m) {
 		super(m);
 	}
 
@@ -107,6 +107,11 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	public Matrix copy() {
 		return new SparseIntMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new SparseIntMatrix(mDim.mRows, mDim.mCols);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
@@ -114,6 +119,16 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	@Override
 	public void update(int index, double v) {
 		update(index, (int)v);
+	}
+	
+	@Override
+	public void update(int index, long v) {
+		update(index, (int)v);
+	}
+	
+	@Override
+	public void update(int index, int v) {
+		mData.put(index, v);
 	}
 
 	/* (non-Javadoc)
@@ -129,16 +144,13 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 			return null;
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
-	 */
+	
 	@Override
-	public double getValue(int index) {
+	public int getInt(int index) {
 		if (mData.containsKey(index)) {
 			return mData.get(index);
 		} else {
-			return NULL_NUMBER;
+			return NULL_INT_NUMBER;
 		}
 	}
 
@@ -151,7 +163,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	}
 
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		for (int i : mData.keySet()) {
 			double v = f.apply(i, 0, mData.get(i));
 			

@@ -65,6 +65,9 @@ public class MixedMatrixParser implements MatrixParser {
 
 	/** The m skip matches. */
 	private Collection<String> mSkipMatches;
+	
+	//private DataFrameCreator mDataFrameCreator =
+	//		new DataFrameCreator();
 
 
 	/**
@@ -231,16 +234,8 @@ public class MixedMatrixParser implements MatrixParser {
 
 		return matrix;
 	}
-
-	/**
-	 * Creates the matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @return the annotation matrix
-	 */
+	
 	public DataFrame createMatrix(int rows, int columns) {
 		return DataFrame.createDataFrame(rows, columns); 
 	}
-
 }

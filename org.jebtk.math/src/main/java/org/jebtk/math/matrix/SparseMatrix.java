@@ -40,7 +40,7 @@ import org.jebtk.core.text.TextUtils;
  * @author Antony Holmes Holmes
  * @param <T> the generic type
  */
-public abstract class SparseMatrix<T> extends IndexableMatrix {
+public abstract class SparseMatrix<T> extends IndexRowMatrix {
 
 	/**
 	 * The constant serialVersionUID.
@@ -71,13 +71,12 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 		super(m);
 	}
 	
-	
 	/**
 	 * Instantiates a new sparse matrix.
 	 *
 	 * @param m the m
 	 */
-	public SparseMatrix(IndexableMatrix m) {
+	public SparseMatrix(IndexRowMatrix m) {
 		super(m);
 	}
 	
@@ -85,8 +84,8 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.Matrix#createData(int, int, int)
 	 */
 	@Override
-	protected void createData(int rows, int columns, int n) {
-		mData = new HashMap<Integer, T>(n);
+	protected void createData(int rows, int columns) {
+		mData = new HashMap<Integer, T>(rows * columns);
 	}
 	
 	/**
@@ -107,21 +106,10 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 	public void updateToNull(int index) {
 		mData.remove(index);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		// Do nothing
-	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#updateText(int, java.lang.String)
-	 */
 	@Override
-	public void update(int index, String v) {
-		// Do nothing
+	public void updateToNull() {
+		mData.clear();
 	}
 
 	/* (non-Javadoc)
@@ -135,6 +123,39 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 			return ((Number)v).doubleValue();
 		} else {
 			return NULL_NUMBER;
+		}
+	}
+	
+	@Override
+	public double getValue(int index) {
+		Object v = mData.get(index);
+
+		if (v != null && v instanceof Number) {
+			return ((Number)v).doubleValue();
+		} else {
+			return NULL_NUMBER;
+		}
+	}
+	
+	@Override
+	public int getInt(int index) {
+		Object v = mData.get(index);
+
+		if (v != null && v instanceof Number) {
+			return ((Number)v).intValue();
+		} else {
+			return NULL_INT_NUMBER;
+		}
+	}
+	
+	@Override
+	public long getLong(int index) {
+		Object v = mData.get(index);
+
+		if (v != null && v instanceof Number) {
+			return ((Number)v).longValue();
+		} else {
+			return NULL_LONG_NUMBER;
 		}
 	}
 
@@ -154,5 +175,10 @@ public abstract class SparseMatrix<T> extends IndexableMatrix {
 		} else {
 			return TextUtils.EMPTY_STRING;
 		}
+	}
+	
+	@Override
+	public boolean isValid(int index) {
+		return mData.get(index) == null;
 	}
 }

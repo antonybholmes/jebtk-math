@@ -27,76 +27,84 @@
  */
 package org.jebtk.math.matrix;
 
-import org.jebtk.core.Mathematics;
-
 // TODO: Auto-generated Javadoc
 /**
- * Representation of an upper triangular square matrix.
- * This stores only the upper half of the matrix so
- * scales better with size and reduces redundancy
- * in a symmetrical matrix. There is a small time penalty
- * since lookups are not conventional.
+ * For matrices that use an index approach to store values in a 1D array
+ * with appropriate offset calculations. This is column wise so accessing
+ * a whole column is faster than a row.
  * 
  * @author Antony Holmes Holmes
- *
  */
-public abstract class UpperTriangularMatrix extends IndexMatrix {
-	
+public abstract class IndexColMatrix extends IndexMatrix {
+
 	/**
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/** Pre compute the row offset required to find an element. */
-	public final int[] mOffsets;
-
 	/**
-	 * How many elements out of the square matrix are in use (since approx
-	 * one half is empty to save space).
+	 * The offsets in the array where each new row begins.
 	 */
-	public final int mOccupied;
+	public final int[] mColOffsets;
+
 
 	/**
-	 * Instantiates a new distance matrix.
+	 * Instantiates a new index matrix.
 	 *
-	 * @param size the size
+	 * @param rows the rows
+	 * @param columns the columns
 	 */
-	public UpperTriangularMatrix(int size) {
-		super(size, size);
+	public IndexColMatrix(int rows, int columns) {
+		super(rows, columns);
+
+		// Cache the offsets to improve lookup times
+		mColOffsets = new int[mDim.mCols];
 		
-		mOccupied = Mathematics.sum(size);
-		
-		mOffsets = new int[size];
-		
-		int c = 1;
-		
-		mOffsets[0] = 0;
-		
-		for (int i = 1; i < size; ++i) {
-			//mOffsets[i] = i * size - Mathematics.sum(i);
-			mOffsets[i] = mOffsets[i - 1] + size - c++;
-			
-			//System.err.println("offset " + i + " " + mOffsets[i]);
+		createOffsets();
+	}
+
+	private void createOffsets() {
+		mColOffsets[0] = 0;
+
+		for (int i = 1; i < mDim.mCols; ++i) {
+			// Use only additions
+			mColOffsets[i] = mColOffsets[i - 1] + mDim.mRows; //i * columns;
 		}
 	}
-	
+
 	/**
-	 * Returns the number of occupied cells in the UT matrix, i.e. how many
-	 * cells are actually in use to create the matrix, rather than 
-	 * rows * columns.
+	 * Instantiates a new indexable matrix.
 	 *
-	 * @return the num occupied cells
+	 * @param m the m
 	 */
-	public int getNumOccupiedCells() {
-		return mOccupied;
+	public IndexColMatrix(Matrix m) {
+		super(m);
+		
+		// Cache the offsets to improve lookup times
+		mColOffsets = new int[mDim.mCols];
+		
+		createOffsets();
 	}
-	
+
+
 	/**
-	 * Returns the index position corresponding to
-	 * the row and column. Since the matrix is
-	 * in upper triangular form. The row is
-	 * always the smaller of the parameters and
-	 * the column the largest.
+	 * Instantiates a new indexable matrix.
+	 *
+	 * @param m the m
+	 */
+	public IndexColMatrix(IndexColMatrix m) {
+		super(m);
+		
+		// Cache the offsets to improve lookup times
+		mColOffsets = new int[mDim.mCols];
+
+		createOffsets();
+	}
+
+	/**
+	 * Gets the index of a row cell lookup. This is the position in a 1D
+	 * row centric array corresponding to the cell indicated by row and
+	 * column.
 	 *
 	 * @param row the row
 	 * @param column the column
@@ -104,19 +112,6 @@ public abstract class UpperTriangularMatrix extends IndexMatrix {
 	 */
 	@Override
 	public int getIndex(int row, int column) {
-		//int r = Math.min(row, column);
-		//int c = Math.max(row, column);
-		
-		//return mOffsets[r] + c;
-		
-		if (row > column) {
-			// Referencing in the lower triangle, so swap to use the upper
-			// triangle
-			return mOffsets[column] + row;
-		} else {
-			// In the upper triangle
-			return mOffsets[row] + column;
-		}
+		return mColOffsets[column] + row;
 	}
-	
 }

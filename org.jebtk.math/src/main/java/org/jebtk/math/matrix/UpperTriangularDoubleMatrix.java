@@ -27,6 +27,10 @@
  */
 package org.jebtk.math.matrix;
 
+import java.util.Arrays;
+
+import org.jebtk.core.sys.SysUtils;
+
 // TODO: Auto-generated Javadoc
 /**
  * Representation of an upper triangular square matrix.
@@ -48,7 +52,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	/**
 	 * The member data.
 	 */
-	protected double[] mData = null;
+	public final double[] mData;
 	
 	/**
 	 * Instantiates a new distance matrix.
@@ -69,7 +73,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	public UpperTriangularDoubleMatrix(UpperTriangularDoubleMatrix m) {
 		this(m.mSize);
 		
-		System.arraycopy(m.mData, 0, mData, 0, mSize);
+		SysUtils.arraycopy(m.mData, mData);
 	}
 	
 	/* (non-Javadoc)
@@ -78,6 +82,11 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	@Override
 	public Matrix copy() {
 		return new UpperTriangularDoubleMatrix(this);
+	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new UpperTriangularDoubleMatrix(mSize);
 	}
 	
 	/**
@@ -116,20 +125,22 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 		return getValue(index);
 	}
 	
+	@Override
+	public void update(int index, int value) {
+		update(index, (double)value);
+	}
+	
+	@Override
+	public void update(int index, long value) {
+		update(index, (double)value);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
 	 */
 	@Override
 	public void update(int index, double value) {
 		mData[index] = value;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, java.lang.String)
-	 */
-	@Override
-	public void update(int index, String value) {
-		// Do nothing
 	}
 	
 	/* (non-Javadoc)
@@ -145,7 +156,12 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 */
 	@Override
 	public void updateToNull(int index) {
-		mData[index] = Matrix.NULL_NUMBER;
+		mData[index] = NULL_NUMBER;
+	}
+	
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, NULL_NUMBER);
 	}
 	
 	/* (non-Javadoc)
@@ -158,7 +174,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	
 	
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = f.apply(i, 0, mData[i]);
 		}
@@ -188,7 +204,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 * @return the upper triangular double matrix
 	 */
 	public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(Matrix m) {
-		return createUpperTriangularMatrix(m.getRowCount());
+		return createUpperTriangularMatrix(m.getRows());
 	}
 	
 	/**

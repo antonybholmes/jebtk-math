@@ -38,13 +38,13 @@ import org.jebtk.core.sys.SysUtils;
 public class Stats {
 	
 	/** The m values. */
-	private double[] mValues;
+	public final double[] mData;
 	
 	/** The m N. */
-	private int mN;
+	private final int mN;
 	
 	/** The m EI. */
-	private int mEI;
+	private final int mEI;
 
 	/**
 	 * Instantiates a new stats.
@@ -65,26 +65,26 @@ public class Stats {
 	}
 	
 	public Stats(double[] values, int s, int l) {
-		mValues = new double[l];
+		mData = new double[l];
 
-		System.arraycopy(values, s, mValues, 0, l);
+		System.arraycopy(values, s, mData, 0, l);
 
 		// Ensure array is sorted for stats that assumed ordered data
-		Arrays.sort(mValues);
+		Arrays.sort(mData);
 
-		mN = mValues.length;
+		mN = mData.length;
 		mEI = mN - 1;
 	}
 	
 	public Stats(double[] values, int s, int skip, int l) {
-		mValues = new double[l];
+		mData = new double[l];
 
-		SysUtils.arraycopy(values, s, skip, mValues, 0, l);
+		SysUtils.arraycopy(values, s, skip, mData, 0, l);
 		
 		// Ensure array is sorted for stats that assumed ordered data
-		Arrays.sort(mValues);
+		Arrays.sort(mData);
 
-		mN = mValues.length;
+		mN = mData.length;
 		mEI = mN - 1;
 	}
 
@@ -135,7 +135,7 @@ public class Stats {
 	 */
 	public double percentile(int percentile) {
 		if (mN == 1) {
-			return mValues[0];
+			return mData[0];
 		}
 
 		//int p = Mathematics.bound(percentile, 1, 100);
@@ -143,17 +143,17 @@ public class Stats {
 		double rank = percentile * (mN + 1) / 100.0;
 
 		if (rank < 1) {
-			return mValues[0];
+			return mData[0];
 		} else if (rank >= mN) {
-			return mValues[mEI];
+			return mData[mEI];
 		} else {
 			int fp = (int)rank;
 			double d = rank - fp;
 
 			int i = fp - 1;
 
-			double lower = mValues[i];
-			double upper = mValues[i + 1];
+			double lower = mData[i];
+			double upper = mData[i + 1];
 
 			//System.err.println(rank + " " + fp + " " + d + " " + lower + " " + upper + " " + Arrays.toString(mValues));
 
@@ -197,7 +197,7 @@ public class Stats {
 		double sum = 0;
 
 		for (int i = 0; i < mN; ++i) {
-			sum += mValues[i];
+			sum += mData[i];
 		}
 
 		return sum;
@@ -218,7 +218,7 @@ public class Stats {
 		double v;
 
 		for (int i = 0; i < mN; ++i) {
-			v = mValues[i];
+			v = mData[i];
 			
 			if (v > 0) {
 				sum *= v;
@@ -243,7 +243,7 @@ public class Stats {
 		double d;
 
 		for (int i = 0; i < mN; ++i) {
-			double v = mValues[i];
+			double v = mData[i];
 
 			d = v - mean;
 
@@ -280,7 +280,7 @@ public class Stats {
 		double d;
 
 		for (int i = 0; i < mN; ++i) {
-			double v = mValues[i];
+			double v = mData[i];
 
 			d = v - mean;
 
@@ -313,7 +313,7 @@ public class Stats {
 	public List<Double> mode() {
 		CountMap<Double> occurences = CountMap.create();
 
-		for (double v : mValues) {
+		for (double v : mData) {
 			occurences.put(v);
 		}
 
@@ -343,7 +343,7 @@ public class Stats {
 		// First index the list so we can keep track of which p-value
 		// gets which ranking
 		List<Indexed<Integer, Double>> indexedP = 
-				IndexedInt.index(mValues);
+				IndexedInt.index(mData);
 
 		double [] fdrs = new double[mN];
 
@@ -410,12 +410,12 @@ public class Stats {
 	 * @return the double
 	 */
 	public double mad() {
-		double[] a = new double[mValues.length];
+		double[] a = new double[mData.length];
 
 		double m = median();
 
 		for (int i = 0; i < mN; ++i) {
-			a[i] = Math.abs(mValues[i] - m);
+			a[i] = Math.abs(mData[i] - m);
 		}
 
 		return Statistics.median(a);
@@ -431,6 +431,14 @@ public class Stats {
 	}
 
 	public double[] data() {
-		return mValues;
+		return mData;
+	}
+	
+	public double correlation(Stats s2) {
+		return Statistics.correlation(mData, s2.mData);
+	}
+	
+	public double spearmanCorrelation(Stats s2) {
+		return Statistics.spearmanCorrelation(mData, s2.mData);
 	}
 }

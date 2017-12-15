@@ -86,6 +86,11 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 		return new DynamicDoubleMatrix(this);
 	}
 	
+	@Override
+	public Matrix ofSameType() {
+		return new DynamicDoubleMatrix(mDim.mRows, mDim.mCols);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
 	 */
@@ -124,9 +129,9 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 		Object v = mData.get(row, column);
 
 		if (v != null) {
-			return ((Double)v).doubleValue();
+			return (double)v;
 		} else {
-			return Matrix.NULL_NUMBER;
+			return NULL_NUMBER;
 		}
 	}
 	
@@ -151,14 +156,14 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 	
 	public static Matrix transpose(DynamicDoubleMatrix m) {
 		DynamicDoubleMatrix ret = 
-				createDynamicDoubleMatrix(m.getColumnCount(), m.getRowCount());
+				createDynamicDoubleMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret.set(j, i, m.get(i, j));
 			}
 		}

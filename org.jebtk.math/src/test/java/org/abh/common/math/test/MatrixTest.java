@@ -15,6 +15,10 @@
  */
 package org.abh.common.math.test;
 
+import java.util.Arrays;
+
+import org.jebtk.math.matrix.DoubleColMatrix;
+import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.UpperTriangularDoubleMatrix;
 import org.junit.Assert;
@@ -50,5 +54,22 @@ public class MatrixTest {
 		matrix.set(41, 41, 4);
 		
 		Assert.assertEquals("UT matrix (41, 41) = 4", 4, matrix.getValue(41, 41), 0);
+	}
+	
+	@Test
+	public void colTest() {
+		Matrix matrix = 
+				DoubleMatrix.createDoubleMatrix(2, 2, 1, 2, 3, 4);
+		
+		System.err.println("regular " + matrix.getValue(1, 1));
+		
+		DoubleColMatrix m2 = DoubleColMatrix.createDoubleColMatrix(2, 2);
+		
+		m2.set(0, 1, 2);
+		m2.set(1, 1, 4);
+		
+		System.err.println("col " + m2.getValue(0, 1));
+		
+		System.err.println("v " + Arrays.toString(m2.columnToDoubleArray(1)));
 	}
 }

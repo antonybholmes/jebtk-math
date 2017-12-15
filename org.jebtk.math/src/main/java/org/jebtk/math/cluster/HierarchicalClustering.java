@@ -56,7 +56,7 @@ public class HierarchicalClustering {
 	 */
 	public static DistanceMatrix createRowDistanceMatrix(Matrix m, DistanceMetric d) {
 		//to account for the new clusters
-		int c = m.getRowCount();
+		int c = m.getRows();
 		
 		int s = 2 * c - 1;
 		
@@ -84,7 +84,7 @@ public class HierarchicalClustering {
 	 * @return the distance matrix
 	 */
 	public static DistanceMatrix createColumnDistanceMatrix(Matrix m, DistanceMetric d) {
-		int c = m.getColumnCount();
+		int c = m.getCols();
 		
 		
 		// The total number of clusters we will create
@@ -118,7 +118,7 @@ public class HierarchicalClustering {
 			boolean optimalLeafOrder) {
 		DistanceMatrix distance = createRowDistanceMatrix(m, distanceMetric);
 		
-		return cluster(l, m.getRowCount(), optimalLeafOrder, distance);
+		return cluster(l, m.getRows(), optimalLeafOrder, distance);
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class HierarchicalClustering {
 		
 		DistanceMatrix distance = createColumnDistanceMatrix(m, distanceMetric);
 		
-		return cluster(l, m.getColumnCount(), optimalLeafOrder, distance);
+		return cluster(l, m.getCols(), optimalLeafOrder, distance);
 	}
 	
 	/**
@@ -336,10 +336,10 @@ public class HierarchicalClustering {
 		
 		Map<Integer, Double> cumDistanceMap = new HashMap<Integer, Double>();
 		
-		for (int i = 0; i < distanceMatrix.getRowCount(); ++i) {
+		for (int i = 0; i < distanceMatrix.getRows(); ++i) {
 			double sum = 0;
 			
-			for (int j = i + 1; j < distanceMatrix.getRowCount(); ++j) {
+			for (int j = i + 1; j < distanceMatrix.getRows(); ++j) {
 				sum += distanceMatrix.getValue(i, j);
 			}
 			
@@ -409,7 +409,7 @@ public class HierarchicalClustering {
 			final DistanceMatrix distanceMatrix, 
 			final Cluster rootCluster) {
 		
-		int n = distanceMatrix.getColumnCount();
+		int n = distanceMatrix.getCols();
 		
 		Cluster optCluster = null;
 

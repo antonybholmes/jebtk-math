@@ -27,6 +27,10 @@ IntMatrix * Copyright (C) 2016, Antony Holmes
  */
 package org.jebtk.math.matrix;
 
+import org.jebtk.core.ForEach2D;
+import org.jebtk.core.IterUtils;
+import org.jebtk.core.Range;
+
 // TODO: Auto-generated Javadoc
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
@@ -85,6 +89,11 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	public Matrix copy() {
 		return new DynamicLongMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new DynamicLongMatrix(mDim.mRows, mDim.mCols);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
@@ -93,24 +102,32 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	public void updateToNull(int row, int column) {
 		mData.put(row, column, NULL_LONG_NUMBER);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
-	 */
+	
 	@Override
-	public double getValue(int row, int column) {
+	public void update(int row, int column, double v) {
+		update(row, column, (long)v);
+	}
+	
+	@Override
+	public void update(int row, int column, int v) {
+		update(row, column, (long)v);
+	}
+	
+	@Override
+	public void update(int row, int column, long v) {
+		mData.put(row, column, v);
+
+		super.update(row, column, v);
+	}
+
+	@Override
+	public long getLong(int row, int column) {
 		Object v = mData.get(row, column);
 
 		if (v != null) {
-			long i = ((Long)v).longValue();
-
-			if (isValidMatrixNum(i)) {
-				return i;
-			} else {
-				return NULL_NUMBER;
-			}
+			return (long)v;
 		} else {
-			return NULL_NUMBER;
+			return NULL_LONG_NUMBER;
 		}
 	}
 
@@ -129,9 +146,9 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	}
 
 	@Override
-	public void apply(MatrixCellFunction f) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
+	public void apply(CellFunction f) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
 				double v = f.apply(i, j, mData.get(i, j));
 				
 				if (isValidMatrixNum(v)) {
@@ -148,19 +165,19 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 		return transpose(this);
 	}
 	
-	public static Matrix transpose(DynamicLongMatrix m) {
-		DynamicLongMatrix ret = 
-				createDynamicLongMatrix(m.getColumnCount(), m.getRowCount());
+	public static Matrix transpose(final DynamicLongMatrix m) {
+		final DynamicLongMatrix ret = 
+				createDynamicLongMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		IterUtils.forEach(m.getRows(), m.getCols(), new ForEach2D() {
+			@Override
+			public void loop(int i, int j) {
 				ret.set(j, i, m.get(i, j));
-			}
-		}
+			}});
 
 		return ret;
 	}

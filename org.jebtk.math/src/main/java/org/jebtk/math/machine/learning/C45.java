@@ -55,7 +55,7 @@ public class C45 {
 	public static DecisionTree parseDouble(DataFrame m, 
 			List<? extends MatrixGroup> groups) {
 		
-		List<String> labels = new ArrayList<String>(m.getColumnCount());
+		List<String> labels = new ArrayList<String>(m.getCols());
 		
 		Map<Integer, List<MatrixGroup>> indexMap = 
 				MatrixGroup.arrangeGroupsByIndex(m, groups);
@@ -72,7 +72,7 @@ public class C45 {
 		Deque<DecisionTree> tQueue = new ArrayDeque<DecisionTree>();
 		
 		// Start will all the columns (S)
-		sQueue.push(Mathematics.sequence(0, m.getColumnCount() - 1));
+		sQueue.push(Mathematics.sequence(0, m.getCols() - 1));
 		
 		DecisionTree root = null;
 		

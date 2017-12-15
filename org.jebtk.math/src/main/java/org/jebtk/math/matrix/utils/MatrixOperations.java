@@ -48,7 +48,7 @@ import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IntMatrix;
 import org.jebtk.math.matrix.Matrix;
-import org.jebtk.math.matrix.MatrixCellFunction;
+import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.MatrixDimFunction;
 import org.jebtk.math.matrix.MatrixGroup;
 import org.jebtk.math.matrix.MatrixReduceFunction;
@@ -68,7 +68,7 @@ public class MatrixOperations {
 	/**
 	 * The Class PowerFunction.
 	 */
-	private static class XMPowerFunction implements MatrixCellFunction {
+	private static class XMPowerFunction implements CellFunction {
 
 		/** The m power. */
 		private int mPower;
@@ -91,7 +91,7 @@ public class MatrixOperations {
 		}
 	}
 
-	private static class EMFunction implements MatrixCellFunction {
+	private static class EMFunction implements CellFunction {
 		/* (non-Javadoc)
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
@@ -101,7 +101,7 @@ public class MatrixOperations {
 		}
 	}
 
-	private static class MXPowerFunction implements MatrixCellFunction {
+	private static class MXPowerFunction implements CellFunction {
 
 		/** The m power. */
 		private int mPower;
@@ -127,7 +127,7 @@ public class MatrixOperations {
 	/**
 	 * The Class LogFunction.
 	 */
-	private static class LogFunction implements MatrixCellFunction {
+	private static class LogFunction implements CellFunction {
 
 		/** The m base. */
 		private int mBase;
@@ -153,7 +153,7 @@ public class MatrixOperations {
 	/**
 	 * The Class MinThresholdFunction.
 	 */
-	private static class MinThresholdFunction implements MatrixCellFunction {
+	private static class MinThresholdFunction implements CellFunction {
 
 		/** The m X. */
 		private double mX;
@@ -297,7 +297,7 @@ public class MatrixOperations {
 	/**
 	 * The Class ThresholdFunction.
 	 */
-	private static class ThresholdFunction implements MatrixCellFunction {
+	private static class ThresholdFunction implements CellFunction {
 
 		/** The m min. */
 		private double mMin;
@@ -328,7 +328,7 @@ public class MatrixOperations {
 	/**
 	 * The Class NormalizeFunction.
 	 */
-	private static class NormalizeFunction implements MatrixCellFunction {
+	private static class NormalizeFunction implements CellFunction {
 
 		/** The m min. */
 		private double mMin;
@@ -357,7 +357,7 @@ public class MatrixOperations {
 
 
 	/** The ln function. */
-	private static MatrixCellFunction LN_FUNCTION = new MatrixCellFunction() {
+	private static CellFunction LN_FUNCTION = new CellFunction() {
 		@Override public double apply(int row, int col, double v) {
 			return Math.log(v);
 		}};
@@ -374,7 +374,7 @@ public class MatrixOperations {
 
 	private static MatrixStatFunction MEAN_FUNCTION = new MeanFunction();
 
-	private static MatrixCellFunction EM_FUNCTION = new EMFunction();
+	private static CellFunction EM_FUNCTION = new EMFunction();
 	
 	private static MatrixReduceFunction ROW_SUM_F = new MatrixRowSumFunction();
 	private static MatrixReduceFunction ROW_MEAN_F = new MatrixRowMeanFunction();
@@ -416,7 +416,7 @@ public class MatrixOperations {
 		}
 	}
 	
-	public static class RowScale implements MatrixCellFunction {
+	public static class RowScale implements CellFunction {
 		private double[] mFactors;
 		
 		public RowScale(double[] factors) {
@@ -433,7 +433,7 @@ public class MatrixOperations {
 		}
 	}
 	
-	public static class ColScale implements MatrixCellFunction {
+	public static class ColScale implements CellFunction {
 		private double[] mFactors;
 		
 		public ColScale(double[] factors) {
@@ -472,10 +472,10 @@ public class MatrixOperations {
 		
 		DataFrame ret = new DataFrame(m, true);
 		
-		double[] geometricMeans = new double[m.getRowCount()];
+		double[] geometricMeans = new double[m.getRows()];
 		ret.rowEval(new GeoMeans(), geometricMeans);
 		
-		double[] medians = new double[ret.getColumnCount()];
+		double[] medians = new double[ret.getCols()];
 		ret.colEval(new MedianFactors(geometricMeans), medians);
 		
 		ret.apply(new ColScale(medians));
@@ -568,7 +568,7 @@ public class MatrixOperations {
 	 * @return the matrix
 	 */
 	public static Matrix log(Matrix m, int base) {
-		return m.applied(new LogFunction(base));
+		return m.f(new LogFunction(base));
 	}
 
 	//
@@ -622,7 +622,7 @@ public class MatrixOperations {
 	public static Matrix threshold(final Matrix m, 
 			double min,
 			double max) {
-		return m.applied(new ThresholdFunction(min, max));
+		return m.f(new ThresholdFunction(min, max));
 	}
 
 	//
@@ -695,10 +695,10 @@ public class MatrixOperations {
 				ret = DoubleMatrix.createDoubleMatrix(m);
 			}
 
-			List<Double> values = new ArrayList<Double>(m.getNumCells());
+			List<Double> values = new ArrayList<Double>(m.size());
 
-			for (int i = 0; i < m.getRowCount(); ++i) {
-				for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int i = 0; i < m.getRows(); ++i) {
+				for (int j = 0; j < m.getCols(); ++j) {
 					double v = m.getValue(i, j);
 
 					if (Mathematics.isValidNumber(v)) {
@@ -710,8 +710,8 @@ public class MatrixOperations {
 			double mean = Statistics.mean(values);
 			double sd = Statistics.popStdDev(values);
 
-			for (int i = 0; i < m.getRowCount(); ++i) {
-				for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int i = 0; i < m.getRows(); ++i) {
+				for (int j = 0; j < m.getCols(); ++j) {
 					if (m.getCellType(i, j) == CellType.NUMBER) {
 
 						double v = m.getValue(i, j);
@@ -752,10 +752,10 @@ public class MatrixOperations {
 		if (keepText) {
 			MixedMatrix ret = MixedMatrix.createMixedMatrix(m);
 
-			List<Double> values = new ArrayList<Double>(m.getNumCells());
+			List<Double> values = new ArrayList<Double>(m.size());
 
 			for (int i = 0; i < m.mData.length; ++i) {
-				if (m.mCellType[i] == CellType.NUMBER) {
+				if (m.getCellType(i) == CellType.NUMBER) {
 					double v = ((Number)m.mData[i]).doubleValue();
 
 					if (Matrix.isValidMatrixNum(v)) {
@@ -770,7 +770,7 @@ public class MatrixOperations {
 			for (int i = 0; i < m.mData.length; ++i) {
 				Object v = m.mData[i];
 
-				if (m.mCellType[i] == CellType.NUMBER) {
+				if (m.getCellType(i) == CellType.NUMBER) {
 					if (sd != 0) {
 						ret.set(i, (((Number)v).doubleValue() - mean) / sd);
 					} else {
@@ -783,7 +783,7 @@ public class MatrixOperations {
 
 			return ret;
 		} else {
-			List<Double> values = new ArrayList<Double>(m.getNumCells());
+			List<Double> values = new ArrayList<Double>(m.size());
 
 			for (int i = 0; i < m.mData.length; ++i) {
 				double v = ((Number)m.mData[i]).doubleValue();
@@ -861,8 +861,8 @@ public class MatrixOperations {
 	 */
 	public static DoubleMatrix rowZscore(Matrix m) {
 
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] mean = new double[r];
 		double[] sd = new double[r];
@@ -875,9 +875,7 @@ public class MatrixOperations {
 			}
 
 			mean[i] = Statistics.mean(values);
-			sd[i] = Statistics.popStdDev(values); // Statistics.sampleStandardDeviation(v);
-
-			//if (sd[i])
+			sd[i] = Statistics.popStdDev(values);
 		}
 
 		DoubleMatrix zm = DoubleMatrix.createDoubleMatrix(m);
@@ -917,8 +915,8 @@ public class MatrixOperations {
 	 */
 	public static DoubleMatrix columnZscore(Matrix m) {
 
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] mean = new double[c];
 		double[] sd = new double[c];
@@ -981,10 +979,10 @@ public class MatrixOperations {
 	public static <X extends MatrixGroup> Matrix groupZScore(Matrix m, 
 			List<List<Integer>> newGroups) {
 
-		double[] means = new double[m.getRowCount()];
-		double[] sds = new double[m.getRowCount()];
+		double[] means = new double[m.getRows()];
+		double[] sds = new double[m.getRows()];
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			double mean = 0;
 			double s = 0;
 
@@ -1013,8 +1011,8 @@ public class MatrixOperations {
 
 		DoubleMatrix zm = DoubleMatrix.createDoubleMatrix(m);
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = 0;
 
 				if (sds[i] != 0) {
@@ -1048,10 +1046,10 @@ public class MatrixOperations {
 	public static DoubleMatrix quantileNormalize(Matrix m) {
 
 		List<List<Indexed<Integer, Double>>> indexedColumns =
-				new ArrayList<List<Indexed<Integer, Double>>>(m.getColumnCount());
+				new ArrayList<List<Indexed<Integer, Double>>>(m.getCols());
 
-		for (int i = 0; i < m.getColumnCount(); ++i) {
-			double[] values = m.columnAsDouble(i);
+		for (int i = 0; i < m.getCols(); ++i) {
+			double[] values = m.columnToDoubleArray(i);
 
 			List<Indexed<Integer, Double>> sorted = 
 					Indexed.intIndex(values);
@@ -1061,14 +1059,14 @@ public class MatrixOperations {
 			indexedColumns.add(sorted);
 		}
 
-		List<Double> rowMeans = new ArrayList<Double>(m.getRowCount());
+		List<Double> rowMeans = new ArrayList<Double>(m.getRows());
 
 		// get the mean of the values of each row when each column is sorted
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			List<Double> values = new ArrayList<Double>(m.getColumnCount());
+		for (int i = 0; i < m.getRows(); ++i) {
+			List<Double> values = new ArrayList<Double>(m.getCols());
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				values.add(indexedColumns.get(j).get(i).getValue());
 			}
 
@@ -1081,10 +1079,10 @@ public class MatrixOperations {
 		// the column rank of that index
 
 		DoubleMatrix zq = 
-				new DoubleMatrix(m.getRowCount(), m.getColumnCount());
+				new DoubleMatrix(m.getRows(), m.getCols());
 
-		for (int column = 0; column < m.getColumnCount(); ++column) {
-			double[] values = m.columnAsDouble(column);
+		for (int column = 0; column < m.getCols(); ++column) {
+			double[] values = m.columnToDoubleArray(column);
 
 			// the ranks of the values we have
 			double[] valueRanks = Mathematics.tiedRank(values);
@@ -1190,10 +1188,10 @@ public class MatrixOperations {
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
 		Map<String, Double> maxStd = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
-			double std = Statistics.popStdDev(m.rowAsDouble(i));
+			double std = Statistics.popStdDev(m.rowToDoubleArray(i));
 
 			if (maxRow.containsKey(id)) {
 				if (std > maxStd.get(id)) {
@@ -1256,7 +1254,7 @@ public class MatrixOperations {
 
 		Join join = Join.onSemiColon();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			// i is the index in the old matrix
 
 			// Skip if this row was not collapsed on
@@ -1307,10 +1305,10 @@ public class MatrixOperations {
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
 		Map<String, Double> maxMean = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
-			double std = Statistics.mean(m.rowAsDouble(i));
+			double std = Statistics.mean(m.rowToDoubleArray(i));
 
 			if (maxRow.containsKey(id)) {
 				if (std > maxMean.get(id)) {
@@ -1323,7 +1321,7 @@ public class MatrixOperations {
 			}
 		}
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
 			if (maxRow.containsKey(id)) {
@@ -1367,10 +1365,10 @@ public class MatrixOperations {
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
 		Map<String, Double> maxMedian = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
-			double std = Statistics.median(m.rowAsDouble(i));
+			double std = Statistics.median(m.rowToDoubleArray(i));
 
 			if (maxRow.containsKey(id)) {
 				if (std > maxMedian.get(id)) {
@@ -1413,10 +1411,10 @@ public class MatrixOperations {
 		Map<String, Integer> maxRow = new HashMap<String, Integer>();
 		Map<String, Double> maxMap = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
-			double max = Mathematics.max(m.rowAsDouble(i));
+			double max = Mathematics.max(m.rowToDoubleArray(i));
 
 			if (maxRow.containsKey(id)) {
 				if (max > maxMap.get(id)) {
@@ -1474,7 +1472,7 @@ public class MatrixOperations {
 		Map<String, Integer> minRow = new HashMap<String, Integer>();
 		Map<String, Double> maxP = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
 
@@ -1529,10 +1527,10 @@ public class MatrixOperations {
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
 		List<Integer> g21 = MatrixGroup.findColumnIndices(m, g2);
 
-		List<Double> tStats = new ArrayList<Double>(m.getRowCount());
-		List<Double> absTStats = new ArrayList<Double>(m.getRowCount());
+		List<Double> tStats = new ArrayList<Double>(m.getRows());
+		List<Double> absTStats = new ArrayList<Double>(m.getRows());
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			List<Double> p1 = new ArrayList<Double>();
 
 			for (int c : g11) {
@@ -1577,7 +1575,7 @@ public class MatrixOperations {
 	public static DataFrame addRowSums(DataFrame m) {
 		DataFrame ret = new DataFrame(m);
 
-		double[] values = new double[m.getRowCount()];
+		double[] values = new double[m.getRows()];
 		m.rowEval(ROW_SUM_F, values);
 
 		ret.setNumRowAnnotations("Sum", values);
@@ -1595,7 +1593,7 @@ public class MatrixOperations {
 	public static DataFrame addRowMeans(DataFrame m) {
 		DataFrame ret = new DataFrame(m);
 
-		double[] values = new double[m.getRowCount()];
+		double[] values = new double[m.getRows()];
 		m.rowEval(ROW_MEAN_F, values);
 
 		ret.setNumRowAnnotations("Mean", values);
@@ -1612,7 +1610,7 @@ public class MatrixOperations {
 	public static DataFrame addRowMedians(DataFrame m) {
 		DataFrame ret = new DataFrame(m);
 
-		double[] values = new double[m.getRowCount()];
+		double[] values = new double[m.getRows()];
 		m.rowEval(ROW_MEDIAN_F, values);
 
 		ret.setNumRowAnnotations("Median", values);
@@ -1623,7 +1621,7 @@ public class MatrixOperations {
 	public static DataFrame addRowModes(DataFrame m) {
 		DataFrame ret = new DataFrame(m);
 
-		double[] values = new double[m.getRowCount()];
+		double[] values = new double[m.getRows()];
 		m.rowEval(ROW_MODE_F, values);
 
 		ret.setNumRowAnnotations("Mode", values);
@@ -1639,10 +1637,10 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 */
 	public static DataFrame addIQR(DataFrame m) {
-		List<Double> iqrList = new ArrayList<Double>(m.getRowCount());
+		List<Double> iqrList = new ArrayList<Double>(m.getRows());
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			double iqr = new Stats(m.rowAsDouble(i)).iqr();
+		for (int i = 0; i < m.getRows(); ++i) {
+			double iqr = new Stats(m.rowToDoubleArray(i)).iqr();
 
 			//System.err.println("iqr " + iqr);
 
@@ -1663,10 +1661,10 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 */
 	public static DataFrame addQuartCoeffDisp(DataFrame m) {
-		List<Double> iqrList = new ArrayList<Double>(m.getRowCount());
+		List<Double> iqrList = new ArrayList<Double>(m.getRows());
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			double iqr = new Stats(m.rowAsDouble(i)).quartCoeffDisp();
+		for (int i = 0; i < m.getRows(); ++i) {
+			double iqr = new Stats(m.rowToDoubleArray(i)).quartCoeffDisp();
 
 			iqrList.add(iqr);
 		}
@@ -1736,7 +1734,7 @@ public class MatrixOperations {
 
 		double[] iqrList = m.getRowAnnotationValues(valuesName);
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
 			double iqr = Math.abs(iqrList[i]);
@@ -1784,10 +1782,10 @@ public class MatrixOperations {
 		Map<String, Integer> minRow = new HashMap<String, Integer>();
 		Map<String, Double> minMap = new HashMap<String, Double>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			String id = m.getRowAnnotationText(rowAnnotation, i);
 
-			double min = Mathematics.min(m.rowAsDouble(i));
+			double min = Mathematics.min(m.rowToDoubleArray(i));
 
 			if (minRow.containsKey(id)) {
 				if (min < minMap.get(id)) {
@@ -1837,7 +1835,7 @@ public class MatrixOperations {
 		List<Integer> rows = new ArrayList<Integer>();
 
 		if (keep) {
-			for (int i = 0; i < m.getRowCount(); ++i) {
+			for (int i = 0; i < m.getRows(); ++i) {
 				String id = annotations.get(i);
 
 				if (id.matches(regex)) {
@@ -1845,7 +1843,7 @@ public class MatrixOperations {
 				}
 			}
 		} else {
-			for (int i = 0; i < m.getRowCount(); ++i) {
+			for (int i = 0; i < m.getRows(); ++i) {
 				String id = annotations.get(i);
 
 				if (!id.matches(regex)) {
@@ -1882,12 +1880,12 @@ public class MatrixOperations {
 	 */
 	public static DataFrame stdDevFilter(DataFrame m, 
 			double min) {
-		double[] v = new double[m.getColumnCount()];
+		double[] v = new double[m.getCols()];
 
-		double[] sd = new double[m.getRowCount()];
+		double[] sd = new double[m.getRows()];
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				v[j] = m.getValue(i, j);
 			}
 
@@ -1896,7 +1894,7 @@ public class MatrixOperations {
 
 		List<Integer> indices = new ArrayList<Integer>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			//System.err.println("filter sd " + i + " " + sd[i] + " " + min);
 
 			if (sd[i] >= min) {
@@ -1916,12 +1914,12 @@ public class MatrixOperations {
 	 */
 	public static DataFrame meanFilter(DataFrame m, 
 			double min) {
-		double[] v = new double[m.getColumnCount()];
+		double[] v = new double[m.getCols()];
 
-		double[] sd = new double[m.getRowCount()];
+		double[] sd = new double[m.getRows()];
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				v[j] = m.getValue(i, j);
 			}
 
@@ -1930,7 +1928,7 @@ public class MatrixOperations {
 
 		List<Integer> indices = new ArrayList<Integer>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			if (sd[i] >= min) {
 				indices.add(i);
 			}
@@ -1946,12 +1944,12 @@ public class MatrixOperations {
 	 * @return the list
 	 */
 	public static List<Double> rowStdev(DataFrame m) {
-		double[] v = new double[m.getColumnCount()];
+		double[] v = new double[m.getCols()];
 
-		List<Double> sd = new ArrayList<Double>(m.getRowCount());
+		List<Double> sd = new ArrayList<Double>(m.getRows());
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				v[j] = m.getValue(i, j);
 			}
 
@@ -1974,10 +1972,10 @@ public class MatrixOperations {
 			int minSamples) {
 		List<Integer> indices = new ArrayList<Integer>();
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			int sampleSum = 0;
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -2043,7 +2041,7 @@ public class MatrixOperations {
 	 * @return the double
 	 */
 	public static double median(final Matrix m, int row) {
-		return Statistics.median(m.rowAsDouble(row));
+		return Statistics.median(m.rowToDoubleArray(row));
 	}
 
 	/**
@@ -2053,11 +2051,11 @@ public class MatrixOperations {
 	 * @return the double
 	 */
 	public static double median(final Matrix m) {
-		return Statistics.median(m.toDouble());
+		return Statistics.median(m.toDoubleArray());
 	}
 
 	public static double mode(final Matrix m) {
-		return Statistics.mode(m.toDouble());
+		return Statistics.mode(m.toDoubleArray());
 	}
 
 	/**
@@ -2075,12 +2073,12 @@ public class MatrixOperations {
 			boolean equalVariance) {
 		Matrix im = m.getMatrix();
 
-		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
+		List<Double> pvalues = new ArrayList<Double>(m.getRows());
 
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> p1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -2125,12 +2123,12 @@ public class MatrixOperations {
 	public static List<Double> mannWhitney(DataFrame m, 
 			MatrixGroup g1,
 			MatrixGroup g2) {
-		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
+		List<Double> pvalues = new ArrayList<Double>(m.getRows());
 
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			List<Double> p1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -2287,6 +2285,10 @@ public class MatrixOperations {
 		return m.rowStat(SUM_FUNCTION, row);
 	}
 
+	public static DataFrame power(final DataFrame m, int power) {
+		return new DataFrame(m, power(m.getMatrix(), power));
+	}
+	
 	/**
 	 * Power.
 	 *
@@ -2295,15 +2297,23 @@ public class MatrixOperations {
 	 * @return the matrix
 	 */
 	public static Matrix power(final Matrix m, int power) {
-		return m.applied(new MXPowerFunction(power));
+		return m.f(new MXPowerFunction(power));
+	}
+	
+	public static DataFrame power(int power, final DataFrame m) {
+		return new DataFrame(m, power(power, m.getMatrix()));
 	}
 
 	public static Matrix power(int power, final Matrix m) {
-		return m.applied(new XMPowerFunction(power));
+		return m.f(new XMPowerFunction(power));
 	}
 
+	public static DataFrame em(final DataFrame m) {
+		return new DataFrame(m, em(m.getMatrix()));
+	}
+	
 	public static Matrix em(final Matrix m) {
-		return m.applied(EM_FUNCTION);
+		return m.f(EM_FUNCTION);
 	}
 
 	/**
@@ -2410,7 +2420,7 @@ public class MatrixOperations {
 		if (m instanceof DoubleMatrix) {
 			numToRow(values, row, (DoubleMatrix)m);
 		} else {
-			int c = m.getColumnCount();
+			int c = m.getCols();
 
 			for (int i = 0; i < c; ++i) {
 				m.set(row, i, values[i]);
@@ -2463,7 +2473,7 @@ public class MatrixOperations {
 		} else if (m instanceof DoubleMatrix) {
 			numToRow(values, row, (DoubleMatrix)m);
 		} else {
-			int c = m.getColumnCount();
+			int c = m.getCols();
 
 			for (int i = 0; i < c; ++i) {
 				m.set(row, i, values[i]);
@@ -2583,18 +2593,18 @@ public class MatrixOperations {
 	}
 
 	/**
-	 * Adds the.
+	 * Adds a value to every element.
 	 *
 	 * @param m the m
 	 * @param x the x
 	 * @return the annotation matrix
 	 */
 	public static DataFrame add(DataFrame m, double x) {
-		DataFrame ret = new DataFrame(m, true);
-
-		MatrixArithmetic.add(x, ret);
-
-		return ret;
+		return new DataFrame(m, add(m.getMatrix(), x));
+	}
+	
+	public static Matrix add(Matrix m, double x) {
+		return MatrixArithmetic.add(m, x);
 	}
 
 	/**

@@ -2,11 +2,11 @@ package org.jebtk.math.matrix.stream;
 
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.matrix.Matrix;
-import org.jebtk.math.matrix.MatrixCellFunction;
+import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.MatrixDimFunction;
 import org.jebtk.math.matrix.MatrixReduceFunction;
 
-public class MatrixStream implements MatrixCellFunction, MatrixDimFunction, MatrixReduceFunction {
+public class MatrixStream implements CellFunction, MatrixDimFunction, MatrixReduceFunction {
 
 	private Matrix mM;
 
@@ -23,8 +23,8 @@ public class MatrixStream implements MatrixCellFunction, MatrixDimFunction, Matr
 	}
 	
 	public void apply() {
-		for (int i = 0; i < mM.getRowCount(); ++i) {
-			for (int j = 0; j < mM.getColumnCount(); ++j) {
+		for (int i = 0; i < mM.getRows(); ++i) {
+			for (int j = 0; j < mM.getCols(); ++j) {
 				double v = mM.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {

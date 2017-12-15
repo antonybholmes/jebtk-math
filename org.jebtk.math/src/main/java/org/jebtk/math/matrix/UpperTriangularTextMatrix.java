@@ -27,6 +27,11 @@
  */
 package org.jebtk.math.matrix;
 
+import java.util.Arrays;
+
+import org.jebtk.core.sys.SysUtils;
+import org.jebtk.core.text.TextUtils;
+
 // TODO: Auto-generated Javadoc
 /**
  * Representation of an upper triangular square matrix.
@@ -48,7 +53,7 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	/**
 	 * The member data.
 	 */
-	protected String[] mData = null;
+	public final String[] mData;
 	
 	/**
 	 * Instantiates a new distance matrix.
@@ -69,7 +74,7 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	public UpperTriangularTextMatrix(UpperTriangularTextMatrix m) {
 		this(m.mSize);
 		
-		System.arraycopy(m.mData, 0, mData, 0, mSize);
+		SysUtils.arraycopy(m.mData, mData);
 	}
 	
 	/* (non-Javadoc)
@@ -86,6 +91,11 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	@Override
 	public Matrix copy() {
 		return new UpperTriangularTextMatrix(this);
+	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new UpperTriangularTextMatrix(mSize);
 	}
 	
 	/**
@@ -107,7 +117,13 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	 */
 	@Override
 	public String getText(int index) {
-		return mData[index];
+		String ret = mData[index];
+		
+		if (ret != null) {
+			return ret;
+		} else {
+			return TextUtils.EMPTY_STRING;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -158,6 +174,11 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	@Override
 	public void updateToNull(int index) {
 		mData[index] = null;
+	}
+	
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, null);
 	}
 	
 	/* (non-Javadoc)

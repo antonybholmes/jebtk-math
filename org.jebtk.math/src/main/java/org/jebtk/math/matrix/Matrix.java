@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,7 +43,8 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Basis for a numerical matrix. Note that Double.NaN is used
  * to indicate an unset/absent value, so valid matrices should not contain
- * this value (it is ignored by matrix operations).
+ * this value (it is ignored by matrix operations). Matrices support double
+ * long, int, and String types only.
  *
  * @author Antony Holmes Holmes
  */
@@ -72,27 +72,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			CollectionUtils.toSet(CellType.TEXT);
 
 
-
-
-	/** The m size. */
-	protected int mSize;
-
-
-	/**
-	 * Gets the row count.
-	 *
-	 * @return the row count
-	 */
-	public abstract int getRowCount();
-
-	/**
-	 * Gets the column count.
-	 *
-	 * @return the column count
-	 */
-	public abstract int getColumnCount();
-
-
+	
 	/**
 	 * Instantiates a new matrix.
 	 *
@@ -100,9 +80,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param columns the columns
 	 */
 	public Matrix(int rows, int columns) {
-		mSize = rows * columns;
-
-		createData(rows, columns, mSize);
+		createData(rows, columns);
 	}
 
 	/**
@@ -113,8 +91,23 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param columns the columns
 	 * @param size 		The number of elements (rows x columns).
 	 */
-	protected void createData(int rows, int columns, int size) {
+	protected void createData(int rows, int columns) {
 		// Do nothing
+	}
+	
+	/**
+	 * Returns the dimensions of the matrix.
+	 * 
+	 * @return
+	 */
+	public abstract MatrixDim getShape();
+
+	public int getRows() {
+		return getShape().getRows();
+	}
+
+	public int getCols() {
+		return getShape().getCols();
 	}
 
 	/**
@@ -132,9 +125,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 *
 	 * @return the num cells
 	 */
-	public int getNumCells() {
-		return mSize;
-	}
+	public abstract int size();
 
 	/**
 	 * Returns a copy the matrix.
@@ -146,7 +137,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 
 	/**
-	 * Sets the value.
+	 * Set a cell to a given value.
 	 *
 	 * @param row the row
 	 * @param column the column
@@ -163,37 +154,167 @@ public abstract class Matrix extends MatrixEventListeners {
 	 *
 	 * @param row the row
 	 * @param column the column
-	 * @param value the value
+	 * @param mValue the value
 	 */
 	public void update(int row, int column, double v) {
+		// Do nothing
+	}
+	
+	public void set(int row, int column, int v) {
+		update(row, column, v);
+
 		fireMatrixChanged();
 	}
+	
+	public void update(int row, int column, int v) {
+		update(row, column, (double)v);
+	}
+	
+	public void set(int row, int column, long v) {
+		update(row, column, v);
 
+		fireMatrixChanged();
+	}
+	
+	public void update(int row, int column, long v) {
+		update(row, column, (double)v);
+	}
+
+	public void set(double v) {
+		update(v);
+
+		fireMatrixChanged();
+	}
+	
 	/**
 	 * Update value.
 	 *
 	 * @param value the value
 	 */
 	public void update(double value) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
 				update(i, j, value);
 			}
 		}
-		
-		fireMatrixChanged();
 	}
-
-	/**
-	 * Sets the all values in the matrix to a given number and triggers
-	 * a change event.
-	 *
-	 * @param v the new value
-	 */
-	public void set(double v) {
+	
+	public void set(int v) {
 		update(v);
 
 		fireMatrixChanged();
+	}
+	
+	/**
+	 * Update text.
+	 *
+	 * @param value the value
+	 */
+	public void update(int value) {
+		update((double)value);
+	}
+	
+	public void set(long v) {
+		update(v);
+
+		fireMatrixChanged();
+	}
+	
+	/**
+	 * Update text.
+	 *
+	 * @param value the value
+	 */
+	public void update(long value) {
+		update((double)value);
+	}
+	
+	public void set(String v) {
+		update(v);
+
+		fireMatrixChanged();
+	}
+	
+	/**
+	 * Update text.
+	 *
+	 * @param value the value
+	 */
+	public void update(String value) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				update(i, j, value);
+			}
+		}
+	}
+	
+	public void set(Object v) {
+		update(v);
+
+		fireMatrixChanged();
+	}
+	
+	/**
+	 * Attempt to convert an object to a supported matrix type and then set
+	 * all cells to the value.
+	 * 
+	 * @param v
+	 */
+	public void update(Object v) {
+		if (v != null) {
+			if (v instanceof Double) {
+				update(((Double)v).doubleValue());
+			} else if (v instanceof Long) {
+				update(((Long)v).longValue());
+			} else if (v instanceof Integer) {
+				update(((Integer)v).intValue());
+			} else {
+				update(v.toString());
+			}
+		}
+	}
+
+
+	/**
+	 * Update cell with a value. If the value can be converted to a number
+	 * update the cell as a number, else try to update as a string
+	 *
+	 * @param row the row
+	 * @param column the column
+	 * @param value the value
+	 */
+	public void update(int row, int column, Object value) {
+		if (value != null) {
+			if (value instanceof Number) {
+				update(row, column, ((Number)value).doubleValue());
+			} else {
+				String s = value.toString();
+
+				try {
+					// First try to parse the string as number.
+					update(row, column, Double.parseDouble(s));
+				} catch (Exception e) {
+					// If that fails, use the string value for the cell value.
+					update(row, column, s);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Copy the values from a matrix to this matrix.
+	 *
+	 * @param m the m
+	 */
+	public void update(Matrix m) {
+		int r = Math.min(getRows(), m.getRows());
+		int c = Math.min(getCols(), m.getCols());
+
+		for (int i = 0; i < r; ++i) {
+			for (int j = 0; j < c; ++j) {
+				set(i, j, m.get(i, j));
+			}
+		}
 	}
 
 	/**
@@ -217,34 +338,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param value the value
 	 */
 	public void update(int row, int column, String value) {
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Update text.
-	 *
-	 * @param value the value
-	 */
-	public void update(String value) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
-				update(i, j, value);
-			}
-		}
-		
-		fireMatrixChanged();
-	}
-
-
-	/**
-	 * Sets the text.
-	 *
-	 * @param v the new text
-	 */
-	public void set(String v) {
-		update(v);
-
-		fireMatrixChanged();
+		// Do nothing
 	}
 
 	/**
@@ -260,53 +354,6 @@ public abstract class Matrix extends MatrixEventListeners {
 		fireMatrixChanged();
 	}
 
-
-
-	/**
-	 * Update cell with a value. If the value can be converted to a number
-	 * update the cell as a number, else try to update as a string
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @param value the value
-	 */
-	public void update(int row, int column, Object value) {
-		if (value != null) {
-			if (value instanceof Number) {
-				update(row, column, ((Number)value).doubleValue());
-			} else {
-				String s = value.toString();
-
-				try {
-					// First try to parse the string as number.
-					update(row, column, TextUtils.parseDouble(s));
-				} catch (ParseException e) {
-					// If that fails, use the string value for the cell value.
-					update(row, column, s);
-				}
-			}
-		}
-		
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Copy the values from a matrix to this matrix.
-	 *
-	 * @param m the m
-	 */
-	public void update(Matrix m) {
-		int r = Math.min(getRowCount(), m.getRowCount());
-		int c = Math.min(getColumnCount(), m.getColumnCount());
-
-		for (int i = 0; i < r; ++i) {
-			for (int j = 0; j < c; ++j) {
-				set(i, j, m.get(i, j));
-			}
-		}
-		
-		fireMatrixChanged();
-	}
 
 	/**
 	 * Copy the values from a matrix to this matrix.
@@ -327,7 +374,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setColumn(int column, List<? extends Object> values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
 			set(i, column, values.get(i));
 		}
 		
@@ -335,7 +382,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void setColumn(int column, Object[] values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.length); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
 			set(i, column, values[i]);
 		}
 		
@@ -343,7 +390,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void setColumn(int column, double[] values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.length); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
 			set(i, column, values[i]);
 		}
 		
@@ -357,7 +404,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setValueColumn(int column, List<Double> values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
 			set(i, column, values.get(i));
 		}
 		
@@ -371,7 +418,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setTextColumn(int column, List<String> values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
 			set(i, column, values.get(i));
 		}
 		
@@ -385,7 +432,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setRow(int row, List<? extends Object> values) {
-		for (int i = 0; i < Math.min(getColumnCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
 			set(row, i, values.get(i));
 		}
 		
@@ -393,7 +440,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void setRow(int row, Object[] values) {
-		for (int i = 0; i < Math.min(getColumnCount(), values.length); ++i) {
+		for (int i = 0; i < Math.min(getCols(), values.length); ++i) {
 			set(row, i, values[i]);
 		}
 		
@@ -401,7 +448,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void setRow(int row, double[] values) {
-		for (int i = 0; i < Math.min(getRowCount(), values.length); ++i) {
+		for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
 			set(row, i, values[i]);
 		}
 		
@@ -415,7 +462,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setValueRow(int row, List<Double> values) {
-		for (int i = 0; i < Math.min(getColumnCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
 			set(row, i, values.get(i));
 		}
 		
@@ -429,7 +476,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param values the values
 	 */
 	public void setTextRow(int row, List<String> values) {
-		for (int i = 0; i < Math.min(getColumnCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
 			set(row, i, values.get(i));
 		}
 		
@@ -446,7 +493,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyRow(final Matrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		for (int i = 0; i < c; ++i) {
 			set(toRow, i, from.get(row, i));
@@ -463,7 +510,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyRow(final DoubleMatrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		for (int i = 0; i < c; ++i) {
 			set(toRow, i, from.getValue(row, i));
@@ -480,7 +527,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyRow(final TextMatrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		for (int i = 0; i < c; ++i) {
 			set(toRow, i, from.getText(row, i));
@@ -497,7 +544,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyRow(final MixedMatrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		for (int i = 0; i < c; ++i) {
 			set(toRow, i, from.getText(row, i));
@@ -533,7 +580,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		} else if (from instanceof TextMatrix) { 
 			copyColumn((TextMatrix)from, column, toColumn);
 		} else {
-			int r = Math.min(from.getRowCount(), getRowCount());
+			int r = Math.min(from.getRows(), getRows());
 
 			for (int i = 0; i < r; ++i) {
 				set(i, toColumn, from.get(i, column));
@@ -551,7 +598,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyColumn(final DoubleMatrix from, 
 			int column,
 			int toColumn) {
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			set(i, toColumn, from.getValue(i, column));
@@ -568,7 +615,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyColumn(final TextMatrix from, 
 			int column,
 			int toColumn) {
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			set(i, toColumn, from.getText(i, column));
@@ -585,7 +632,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void copyColumn(final MixedMatrix from, 
 			int column,
 			int toColumn) {
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			set(i, toColumn, from.getText(i, column));
@@ -605,7 +652,15 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the value
 	 */
 	public double getValue(int row, int column) {
-		return Double.NaN;
+		return NULL_NUMBER;
+	}
+	
+	public int getInt(int row, int column) {
+		return (int)getValue(row, column);
+	}
+	
+	public long getLong(int row, int column) {
+		return (long)getValue(row, column);
 	}
 
 	/**
@@ -618,6 +673,12 @@ public abstract class Matrix extends MatrixEventListeners {
 	public String getText(int row, int column) {
 		return TextUtils.EMPTY_STRING;
 	}
+	
+	public boolean isNull(int row, int column) {
+		return true;
+	}
+	
+
 
 	/**
 	 * Gets the.
@@ -651,7 +712,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param row the row
 	 * @param column the column
 	 */
-	public final void setToNull(int row, int column) {
+	public void setToNull(int row, int column) {
 		updateToNull(row, column);
 
 		fireMatrixChanged();
@@ -666,6 +727,20 @@ public abstract class Matrix extends MatrixEventListeners {
 	public void updateToNull(int row, int column) {
 		// Do nothing
 	}
+	
+	public void setToNull() {
+		updateToNull();
+
+		fireMatrixChanged();
+	}
+	
+	public void updateToNull() {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				update(i, j, NULL_NUMBER);
+			}
+		}
+	}
 
 
 	/* (non-Javadoc)
@@ -673,7 +748,11 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder("[").append(getRowCount()).append(" x ").append(getColumnCount()).append("]");
+		StringBuilder buffer = new StringBuilder("[")
+				.append(getRows())
+				.append(" x ")
+				.append(getCols())
+				.append("]");
 
 		return buffer.toString();
 	}
@@ -685,9 +764,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the list
 	 */
 	public Object[] columnAsList(int column) {
-		Object[] values = new Object[getRowCount()];
+		Object[] values = new Object[getRows()];
 
-		for (int row = 0; row < getRowCount(); ++row) {
+		for (int row = 0; row < getRows(); ++row) {
 			values[row] = get(row, column);
 		}
 
@@ -701,9 +780,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the list
 	 */
 	public List<String> columnAsText(int column) {
-		List<String> values = new ArrayList<String>(getRowCount());
+		List<String> values = new ArrayList<String>(getRows());
 
-		for (int row = 0; row < getRowCount(); ++row) {
+		for (int row = 0; row < getRows(); ++row) {
 			values.add(getText(row, column));
 		}
 
@@ -718,25 +797,57 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param column the column
 	 * @return the double[]
 	 */
-	public double[] columnAsDouble(int column) {
-		int r = getRowCount();
+	public double[] columnToDoubleArray(int column) {
+		double[] ret = new double[getRows()];
 
-		double[] ret = new double[r];
-
-		columnAsDouble(column, ret);
+		columnToDoubleArray(column, ret);
 
 		return ret;
 	}
 	
-	public void columnAsDouble(int column, double[] data) {
-		int r = getRowCount();
+	public void columnToDoubleArray(int column, double[] ret) {
+		int r = getRows();
 
 		for (int row = 0; row < r; ++row) {
 			double v = getValue(row, column);
 
-			//if (Mathematics.isValidNumber(v)) {
-			data[row] = v;
-			//}
+			ret[row] = v;
+		}
+	}
+	
+	public int[] columnToIntArray(int column) {
+		int[] ret = new int[getRows()];
+
+		columnToIntArray(column, ret);
+
+		return ret;
+	}
+	
+	public void columnToIntArray(int column, int[] ret) {
+		int r = getRows();
+
+		for (int row = 0; row < r; ++row) {
+			int v = getInt(row, column);
+
+			ret[row] = v;
+		}
+	}
+	
+	public long[] columnToLongArray(int column) {
+		long[] ret = new long[getRows()];
+
+		columnToLongArray(column, ret);
+
+		return ret;
+	}
+	
+	public void columnToLongArray(int column, long[] ret) {
+		int r = getRows();
+
+		for (int row = 0; row < r; ++row) {
+			long v = getLong(row, column);
+
+			ret[row] = v;
 		}
 	}
 
@@ -747,7 +858,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the list
 	 */
 	public Object[] rowAsList(int row) {
-		int n = getColumnCount();
+		int n = getCols();
 
 		Object[] ret = new Object[n];
 
@@ -764,21 +875,57 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param row the row
 	 * @return the double[]
 	 */
-	public double[] rowAsDouble(int row) {
-		int n = getColumnCount();
+	public double[] rowToDoubleArray(int row) {
+		int n = getCols();
 
 		double[] ret = new double[n];
 
-		rowAsDouble(row, ret);
+		rowToDoubleArray(row, ret);
 
 		return ret;
 	}
 	
-	public void rowAsDouble(int row, double[] data) {
-		int n = getColumnCount();
+	public void rowToDoubleArray(int row, double[] data) {
+		int n = getCols();
 
 		for (int c = 0; c < n; ++c) {
 			data[c] = getValue(row, c);
+		}
+	}
+	
+	public int[] rowToIntArray(int row) {
+		int n = getCols();
+
+		int[] ret = new int[n];
+
+		rowToIntArray(row, ret);
+
+		return ret;
+	}
+	
+	public void rowToIntArray(int row, int[] data) {
+		int n = getCols();
+
+		for (int c = 0; c < n; ++c) {
+			data[c] = getInt(row, c);
+		}
+	}
+	
+	public long[] rowToLongArray(int row) {
+		int n = getCols();
+
+		long[] ret = new long[n];
+
+		rowToLongArray(row, ret);
+
+		return ret;
+	}
+	
+	public void rowToLongArray(int row, long[] data) {
+		int n = getCols();
+
+		for (int c = 0; c < n; ++c) {
+			data[c] = getLong(row, c);
 		}
 	}
 
@@ -789,9 +936,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the list
 	 */
 	public List<String> rowAsText(int row) {
-		List<String> values = new ArrayList<String>(getColumnCount());
+		List<String> values = new ArrayList<String>(getCols());
 
-		for (int c = 0; c < getColumnCount(); ++c) {
+		for (int c = 0; c < getCols(); ++c) {
 			values.add(getText(row, c));
 		}
 
@@ -815,14 +962,29 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 
 	public static void dot(Matrix m1, Matrix m2) {
-		for (int i = 0; i < m1.getRowCount(); ++i) {
-			for (int j = 0; j < m1.getColumnCount(); ++j) {
+		for (int i = 0; i < m1.getRows(); ++i) {
+			for (int j = 0; j < m1.getCols(); ++j) {
 				m1.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
 			}
 		}
 	}
 
-	public Matrix applied(MatrixCellFunction f) {
+	/**
+	 * Return a matrix of the same dimension and type as this one, but
+	 * uninitialized.
+	 * 
+	 * @return
+	 */
+	public abstract Matrix ofSameType();
+	
+	/**
+	 * Return a copy of a matrix where the function has been applied to
+	 * each cell.
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public Matrix applied(CellFunction f) {
 		// Copy the matrix
 		Matrix ret = copy();
 
@@ -831,27 +993,34 @@ public abstract class Matrix extends MatrixEventListeners {
 		return ret;
 	}
 	
-	public Matrix rowApplied(MatrixCellFunction f, int row) {
+	public Matrix f(CellFunction f) {
 		// Copy the matrix
-		Matrix ret = copy();
+		Matrix ret = ofSameType();
 
-		ret.rowApply(f, row);
+		f(f, ret);
 
 		return ret;
 	}
 	
-	public Matrix colApplied(MatrixCellFunction f, int col) {
-		// Copy the matrix
-		Matrix ret = copy();
+	/**
+	 * Apply a function to a matrix and put the results in another matrix.
+	 * 
+	 * @param f
+	 * @param ret
+	 */
+	public void f(CellFunction f, Matrix ret) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				double v = getValue(i, j);
 
-		ret.colApply(f, col);
-
-		return ret;
+				ret.set(i, j, f.apply(i, j, v));
+			}
+		}
 	}
-
-	public void apply(MatrixCellFunction f) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
+	
+	public void apply(CellFunction f) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
 				double v = getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -863,14 +1032,34 @@ public abstract class Matrix extends MatrixEventListeners {
 		fireMatrixChanged();
 	}
 	
-	public void rowApply(MatrixCellFunction f) {
-		for (int i = 0; i < getRowCount(); ++i) {
+	public Matrix rowApplied(CellFunction f, int row) {
+		// Copy the matrix
+		Matrix ret = copy();
+
+		ret.rowApply(f, row);
+
+		return ret;
+	}
+	
+	public Matrix colApplied(CellFunction f, int col) {
+		// Copy the matrix
+		Matrix ret = copy();
+
+		ret.colApply(f, col);
+
+		return ret;
+	}
+
+	
+	
+	public void rowApply(CellFunction f) {
+		for (int i = 0; i < getRows(); ++i) {
 			rowApply(f, i);
 		}
 	}
 
-	public void rowApply(MatrixCellFunction f, int row) {
-		for (int i = 0; i < getColumnCount(); ++i) {
+	public void rowApply(CellFunction f, int row) {
+		for (int i = 0; i < getCols(); ++i) {
 			double v = getValue(row, i);
 
 			if (Mathematics.isValidNumber(v)) {
@@ -882,20 +1071,20 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void rowApply(MatrixDimFunction f) {
-		int c = getColumnCount();
+		int c = getCols();
 		
 		double[] data = new double[c];
 		double[] ret = new double[c];
 		
-		for (int i = 0; i < getRowCount(); ++i) {
-			rowAsDouble(i, data);
+		for (int i = 0; i < getRows(); ++i) {
+			rowToDoubleArray(i, data);
 			f.apply(i, data, ret);
 			setRow(i, ret);
 		}
 	}
 	
 	public void rowApply(MatrixDimFunction f, int row) {
-		double[] data = rowAsDouble(row);
+		double[] data = rowToDoubleArray(row);
 		double[] ret = new double[data.length];
 		
 		f.apply(row, data, ret);
@@ -903,8 +1092,8 @@ public abstract class Matrix extends MatrixEventListeners {
 		setRow(row, ret);
 	}
 	
-	public void colApply(MatrixCellFunction f, int col) {
-		for (int i = 0; i < getRowCount(); ++i) {
+	public void colApply(CellFunction f, int col) {
+		for (int i = 0; i < getRows(); ++i) {
 			double v = getValue(i, col);
 
 			if (Mathematics.isValidNumber(v)) {
@@ -916,13 +1105,13 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void colApply(MatrixDimFunction f) {
-		int r = getRowCount();
+		int r = getRows();
 		
 		double[] data = new double[r];
 		double[] ret = new double[r];
 		
-		for (int i = 0; i < getColumnCount(); ++i) {
-			columnAsDouble(i, data);
+		for (int i = 0; i < getCols(); ++i) {
+			columnToDoubleArray(i, data);
 			f.apply(i, data, ret);
 			setColumn(i, ret);
 		}
@@ -931,7 +1120,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void colApply(MatrixDimFunction f, int col) {
-		double[] data = columnAsDouble(col);
+		double[] data = columnToDoubleArray(col);
 		double[] ret = new double[data.length];
 		
 		f.apply(col, data, ret);
@@ -942,21 +1131,21 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public void rowEval(MatrixReduceFunction f, double[] ret) {
-		for (int i = 0; i < getRowCount(); ++i) {
-			double[] data = rowAsDouble(i);
+		for (int i = 0; i < getRows(); ++i) {
+			double[] data = rowToDoubleArray(i);
 
 			ret[i] = f.apply(i, data);
 		}
 	}
 	
 	public void rowEval(MatrixDimFunction f, int row, double[] ret) {
-		double[] data = rowAsDouble(row);
+		double[] data = rowToDoubleArray(row);
 		
 		f.apply(row, data, ret);
 	}
 	
 	public void colEval(MatrixDimFunction f, int col, double[] ret) {
-		double[] data = rowAsDouble(col);
+		double[] data = rowToDoubleArray(col);
 		
 		f.apply(col, data, ret);
 	}
@@ -968,8 +1157,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param ret
 	 */
 	public void colEval(MatrixDimFunction f, double[] ret) {
-		for (int i = 0; i < getColumnCount(); ++i) {
-			double[] data = columnAsDouble(i);
+		for (int i = 0; i < getCols(); ++i) {
+			double[] data = columnToDoubleArray(i);
 			
 			f.apply(i, data, ret);
 		}
@@ -984,8 +1173,8 @@ public abstract class Matrix extends MatrixEventListeners {
 	public double stat(MatrixStatFunction f) {
 		f.init();
 
-		for (int i = 0; i < getRowCount(); ++i) {
-			for (int j = 0; j < getColumnCount(); ++j) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
 				f.apply(i, j, getValue(i, j));
 			}
 		}
@@ -996,7 +1185,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public double rowStat(MatrixStatFunction f, int row) {
 		f.init();
 
-		for (int i = 0; i < getColumnCount(); ++i) {
+		for (int i = 0; i < getCols(); ++i) {
 			f.apply(row, i, getValue(row, i));
 		}
 
@@ -1006,16 +1195,59 @@ public abstract class Matrix extends MatrixEventListeners {
 	public double colStat(MatrixStatFunction f, int col) {
 		f.init();
 
-		for (int i = 0; i < getRowCount(); ++i) {
+		for (int i = 0; i < getRows(); ++i) {
 			f.apply(i, col, getValue(i, col));
 		}
 
 		return f.getStat();
 	}
 
-
-	public double[] toDouble() {
-		return toDouble(this);
+	public double[] toDoubleArray() {
+		double[] ret = new double[size()];
+		
+		toDoubleArray(this, ret);
+		
+		return ret;
+	}
+	
+	public void toDoubleArray(double[] ret) {
+		toDoubleArray(this, ret);
+	}
+	
+	public int[] toIntArray() {
+		int[] ret = new int[size()];
+		
+		toIntArray(this, ret);
+		
+		return ret;
+	}
+	
+	public void toIntArray(int[] ret) {
+		toIntArray(this, ret);
+	}
+	
+	public long[] toLongArray() {
+		long[] ret = new long[size()];
+		
+		toLongArray(this, ret);
+		
+		return ret;
+	}
+	
+	public void toLongArray(long[] ret) {
+		toLongArray(this, ret);
+	}
+	
+	public String[] toStringArray() {
+		String[] ret = new String[size()];
+		
+		toStringArray(this, ret);
+		
+		return ret;
+	}
+	
+	public void toStringArray(String[] ret) {
+		toStringArray(this, ret);
 	}
 
 
@@ -1042,7 +1274,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int n = m.getColumnCount();
+		int n = m.getCols();
 
 		for (int i = 0; i < n; ++i) {
 			if (m.getCellType(0, i) == CellType.TEXT) {
@@ -1054,7 +1286,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int rn = m.getRowCount();
+		int rn = m.getRows();
 
 
 		for (int i = 0; i < rn; ++i) {
@@ -1117,7 +1349,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int n = m.getColumnCount();
+		int n = m.getCols();
 
 		for (int i = 0; i < n; ++i) {
 			if (m.getCellType(0, i) == CellType.NUMBER) {
@@ -1129,7 +1361,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			return null;
 		}
 
-		int rn = m.getRowCount();
+		int rn = m.getRows();
 
 		for (int i = 0; i < rn; ++i) {
 			if (m.getCellType(i, columns.get(0)) == CellType.NUMBER) {
@@ -1196,7 +1428,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		int cn = m.mDim.mCols;
 
 		for (int i = 0; i < cn; ++i) {
-			if (m.mCellType[i] == cellType) {
+			if (m.getCellType(i) == cellType) {
 				columns.add(i);
 			}
 		}
@@ -1210,7 +1442,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		int c = columns.get(0);
 
 		for (int i = 0; i < rn; ++i) {
-			if (m.mCellType[c] == cellType) {
+			if (m.getCellType(c) == cellType) {
 				rows.add(i);
 			}
 
@@ -1296,7 +1528,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static void copyColumns(Matrix from, 
 			Matrix to) {
-		int cols = Math.min(from.getColumnCount(), to.getColumnCount());
+		int cols = Math.min(from.getCols(), to.getCols());
 
 		for (int i = 0; i < cols; ++i) {
 			to.copyColumn(from, i);
@@ -1518,7 +1750,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static int countNumericalRows(final Matrix m, int c) {
 		int ret = 0;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			if (Mathematics.isValidNumber(m.getValue(i, c))) {
 				++ret;
 			}
@@ -1538,7 +1770,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param m the m
 	 */
 	public static <T> void setColumn(int column, List<T> values, Matrix m) {
-		for (int i = 0; i < Math.min(m.getRowCount(), values.size()); ++i) {
+		for (int i = 0; i < Math.min(m.getRows(), values.size()); ++i) {
 			m.set(i, column, values.get(i));
 		}
 	}
@@ -1564,7 +1796,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static void setRowValue(int from, int to, String v, Matrix ret) {
 		for (int row = from; row <= to; ++row) {
-			for (int column = 0; column < ret.getColumnCount(); ++column) {
+			for (int column = 0; column < ret.getCols(); ++column) {
 				ret.set(row, column, v);
 			}
 		}
@@ -1580,7 +1812,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static void setRowValue(int from, int to, double v, Matrix ret) {
 		for (int row = from; row <= to; ++row) {
-			for (int column = 0; column < ret.getColumnCount(); ++column) {
+			for (int column = 0; column < ret.getCols(); ++column) {
 				ret.set(row, column, v);
 			}
 		}
@@ -1610,18 +1842,46 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @param m the m
 	 * @return the list
 	 */
-	public static double[] toDouble(Matrix m) {
-		double[] ret = new double[m.getNumCells()];
-
+	public static void toDoubleArray(Matrix m, double[] ret) {
 		int v = 0;
 		
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret[v++] = m.getValue(i, j);
+			}
+		}
+	}
+	
+	public static long[] toLongArray(Matrix m, long[] ret) {
+		int v = 0;
+		
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
+				ret[v++] = m.getLong(i, j);
 			}
 		}
 
 		return ret;
+	}
+	
+	public static void toIntArray(Matrix m, int[] ret) {
+		int v = 0;
+		
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
+				ret[v++] = m.getInt(i, j);
+			}
+		}
+	}
+	
+	public static void toStringArray(Matrix m, String[] ret) {
+		int v = 0;
+		
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
+				ret[v++] = m.getText(i, j);
+			}
+		}
 	}
 
 	/**
@@ -1645,6 +1905,10 @@ public abstract class Matrix extends MatrixEventListeners {
 		//return ofSameType(m, m.getRowCount(), m.getColumnCount());
 	}
 
+	public static Matrix ofSameType(final DataFrame m, int rows, int columns) {
+		return ofSameType(m.getMatrix(), rows, columns);
+	}
+	
 	/**
 	 * Create a new matrix of the same type as given with the specified
 	 * rows and columns.
@@ -1659,6 +1923,8 @@ public abstract class Matrix extends MatrixEventListeners {
 
 		if (m instanceof DoubleMatrix) {
 			return DoubleMatrix.createDoubleMatrix(rows, columns);
+		} else if (m instanceof LongMatrix) {
+			return LongMatrix.createLongMatrix(rows, columns);
 		} else if (m instanceof IntMatrix) {
 			return IntMatrix.createIntMatrix(rows, columns);
 		} else if (m instanceof TextMatrix) {
@@ -1719,8 +1985,8 @@ public abstract class Matrix extends MatrixEventListeners {
 
 			int n = CellType.values().length;
 
-			for (int i = 0; i < m.getRowCount(); ++i) {
-				for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int i = 0; i < m.getRows(); ++i) {
+				for (int j = 0; j < m.getCols(); ++j) {
 					ret.add(m.getCellType(i, j));
 
 					if (ret.size() == n) {
@@ -1771,7 +2037,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		int n = CellType.values().length;
 
 		for (int i = 0; i < m.mData.length; ++i) {
-			ret.add(m.mCellType[i]);
+			ret.add(m.getCellType(i));
 
 			if (ret.size() == n) {
 				break;
@@ -1780,4 +2046,6 @@ public abstract class Matrix extends MatrixEventListeners {
 
 		return ret;
 	}
+
+	
 }

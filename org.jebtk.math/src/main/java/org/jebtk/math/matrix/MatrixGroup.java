@@ -749,9 +749,9 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 */
 	public static  <X extends MatrixGroup> List<Integer> findColumnIndices(DataFrame m, 
 			X group) {
-		List<Integer> ret = new ArrayList<Integer>(m.getColumnCount());
+		List<Integer> ret = new ArrayList<Integer>(m.getCols());
 		
-		for (int i = 0; i < m.getColumnCount(); ++i) {
+		for (int i = 0; i < m.getCols(); ++i) {
 			for (Pattern regex : group) {
 				if (TextUtils.find(m.getColumnAnnotationText(i), regex).size() > 0) {
 					ret.add(i);
@@ -776,7 +776,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 	 */
 	public static List<Integer> findAllColumnIndices(DataFrame m, 
 			List<? extends MatrixGroup> groups) {
-		List<Integer> ret = new UniqueArrayList<Integer>(m.getColumnCount());
+		List<Integer> ret = new UniqueArrayList<Integer>(m.getCols());
 		
 		for (MatrixGroup group : groups) {
 			ret.addAll(findColumnIndices(m, group));
@@ -838,7 +838,7 @@ public class MatrixGroup extends ChangeListeners implements NameProperty, JsonRe
 		Set<Integer> ret = new HashSet<Integer>();
 
 		for (Pattern regex : group) {
-			ret.addAll(Stream.stringStream(names).indices(regex));
+			ret.addAll(Stream.asString(names).indices(regex));
 		}
 		
 		return CollectionUtils.sort(ret);

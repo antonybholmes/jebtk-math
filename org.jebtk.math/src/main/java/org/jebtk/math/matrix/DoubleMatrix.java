@@ -29,10 +29,11 @@ package org.jebtk.math.matrix;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.sys.SysUtils;
@@ -46,15 +47,185 @@ import org.jebtk.math.statistics.Statistics;
  *
  * @author Antony Holmes Holmes
  */
-public class DoubleMatrix extends IndexableMatrix {
+public class DoubleMatrix extends IndexRowMatrix {
 
 	/**
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/** The Constant CONCURRENT_ROWS. */
+	private static final int CONCURRENT_ROWS = 4;
+	
+	/**
+	 * The Class DoubleMatrixRecursiveAction processes x rows per thread
+	 * to parallelize matrix operations.
+	 */
+	private static class DoubleMatrixRecursiveAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m data. */
+		private final double[] mData;
+		
+		/** The m F. */
+		private final CellFunction mF;
+		
+		/** The m I. */
+		private final int mI;
+		
+		/** The m R. */
+		private final int mR;
+		
+		/** The m ret. */
+		private final double[] mRet;
+
+		/** The m cols. */
+		private final int mCols;
+
+		/** The m steps. */
+		private final int mSteps;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public DoubleMatrixRecursiveAction(final double[] data, 
+				final CellFunction f,
+				final int i,
+				final int r, 
+				final int cols,
+				final int steps,
+				final double[] ret) {
+			mData = data;
+			mF = f;
+			mR = r;
+			mCols = cols;
+			mI = i;
+			mSteps = steps;
+			mRet = ret;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			int ix = mI;
+			int r = mR;
+			int c = 0;
+			
+			for (int i = 0; i < mSteps; ++i) {
+				// Stop if we reach the end of the data
+				if (ix == mData.length) {
+					break;
+				}
+				
+				mRet[ix] = mF.apply(r, c++, mData[ix]);
+				
+				if (c == mCols) {
+					c = 0;
+					++r;
+				}
+				
+				++ix;
+			}
+		}
+	}
+	
+	private static class TransposeRecursiveAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m data. */
+		private final double[] mData;
+		
+		/** The m I. */
+		private final int mI;
+		
+		/** The m R. */
+		private final int mR;
+		
+		/** The m ret. */
+		private final double[] mRet;
+
+		/** The m cols. */
+		private final int mCols;
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private final  int mRows;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public TransposeRecursiveAction(final double[] data,
+				final int i,
+				final int r, 
+				final int cols,
+				final int rows,
+				final int steps,
+				final double[] ret) {
+			mData = data;
+			mR = r;
+			mCols = cols;
+			mRows = rows;
+			mI = i;
+			mSteps = steps;
+			mRet = ret;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			int i2 = -1;
+			int c = mR;
+			int ix = mI;
+			
+			for (int i = 0; i < mSteps; ++i) {
+				if (ix == mData.length) {
+					break;
+				}
+				
+				// Each time we end a row, reset i2 back to the next column
+				if (i % mCols == 0) {
+					i2 = c++;
+				}
+
+				mRet[i2] = mData[ix];
+
+				// Skip blocks
+				i2 += mRows;
+				
+				++ix;
+			}
+		}
+	}
 
 	/** The m data. */
-	public double[] mData = null;
+	public final double[] mData;
 
 	/**
 	 * Instantiates a new numerical matrix.
@@ -63,7 +234,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param columns the columns
 	 */
 	public DoubleMatrix(int rows, int columns) {
-		this(rows, columns, NULL_NUMBER);
+		super(rows, columns);
+
+		// We use a 1d array to store a 2d matrix for speed.
+		mData = new double[mSize];
 	}
 
 	/**
@@ -74,21 +248,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param v the v
 	 */
 	public DoubleMatrix(int rows, int columns, double v) {
-		super(rows, columns);
-
-		// We use a 1d array to store a 2d matrix for speed.
-		init();
+		this(rows, columns);
 
 		// Set the default value
 		update(v);
-	}
-
-	/**
-	 * Inits the.
-	 */
-	protected void init() {
-		mData = new double[mSize];
-		//mTextData = new String[mSize];
 	}
 
 	/**
@@ -97,7 +260,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public DoubleMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -108,8 +271,8 @@ public class DoubleMatrix extends IndexableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public DoubleMatrix(IndexableMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+	public DoubleMatrix(IndexRowMatrix m) {
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -120,7 +283,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public DoubleMatrix(DoubleMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -131,6 +294,14 @@ public class DoubleMatrix extends IndexableMatrix {
 	@Override
 	public void updateToNull(int index) {
 		mData[index] = NULL_NUMBER;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.IndexMatrix#updateToNull()
+	 */
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, NULL_NUMBER);
 	}
 
 	/* (non-Javadoc)
@@ -151,20 +322,14 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public void update(DoubleMatrix m) {
-		System.arraycopy(m.mData, 0, mData, 0, Math.min(m.mData.length, mData.length));
+		SysUtils.arraycopy(m.mData, mData);
 	}
 
-	/**
-	 * Gets the data.
-	 *
-	 * @return the data
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.RegularMatrix#toDoubleArray()
 	 */
-	public double[] getData() {
-		return mData;
-	}
-	
 	@Override
-	public double[] toDouble() {
+	public double[] toDoubleArray() {
 		return mData;
 	}
 
@@ -175,12 +340,20 @@ public class DoubleMatrix extends IndexableMatrix {
 	public Matrix copy() {
 		return new DoubleMatrix(this);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#ofSameType()
+	 */
+	@Override
+	public Matrix ofSameType() {
+		return createDoubleMatrix(this);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
 	 */
 	@Override
-	public int getNumCells() {
+	public int size() {
 		return mData.length;
 	}
 
@@ -198,6 +371,14 @@ public class DoubleMatrix extends IndexableMatrix {
 	@Override
 	public double getValue(int index) {
 		return mData[index];
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.IndexMatrix#isValid(int)
+	 */
+	@Override
+	public boolean isValid(int index) {
+		return isValidMatrixNum(mData[index]);
 	}
 
 	/* (non-Javadoc)
@@ -224,13 +405,16 @@ public class DoubleMatrix extends IndexableMatrix {
 		return Double.toString(mData[index]);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#setRow(int, double[])
+	 */
 	@Override
 	public void setRow(int row, double[] values) {
 		SysUtils.arraycopy(values, mData, mRowOffsets[row], mDim.mCols);
-		
+
 		fireMatrixChanged();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
 	 */
@@ -245,18 +429,21 @@ public class DoubleMatrix extends IndexableMatrix {
 
 			ix += mDim.mCols;
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#setColumn(int, double[])
+	 */
 	@Override
 	public void setColumn(int column, double[] values) {
 		SysUtils.arraycopy(values, mData, column, mDim.mCols, mDim.mRows);
-		
+
 		fireMatrixChanged();
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#copyColumn(org.abh.common.math.matrix.Matrix, int, int)
@@ -272,7 +459,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		} else {
 			int i1 = getIndex(0, toColumn);
 
-			int r = Math.min(from.getRowCount(), getRowCount());
+			int r = Math.min(from.getRows(), getRows());
 
 			for (int i = 0; i < r; ++i) {
 				mData[i1] = from.getValue(i, column);
@@ -300,7 +487,7 @@ public class DoubleMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -320,7 +507,7 @@ public class DoubleMatrix extends IndexableMatrix {
 			int row,
 			int toRow) {
 
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
 
@@ -331,7 +518,8 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
 	 */
 	@Override
-	public void columnAsDouble(int column, double[] ret) {
+	public void columnToDoubleArray(int column, double[] ret) {
+		/*
 		int i1 = column;
 
 		for (int row = 0; row < mDim.mRows; ++row) {
@@ -339,107 +527,213 @@ public class DoubleMatrix extends IndexableMatrix {
 
 			i1 += mDim.mCols;
 		}
+		 */
+
+		SysUtils.arraycopy(mData, column, mDim.mCols, ret, 0, mDim.mRows);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
 	 */
 	@Override
-	public void rowAsDouble(int row, double[] ret) {
+	public void rowToDoubleArray(int row, double[] ret) {
 		SysUtils.arraycopy(mData, mRowOffsets[row], ret, mDim.mCols);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#apply(org.jebtk.math.matrix.CellFunction)
+	 */
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		int r = 0;
 		int c = 0;
-		
+
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = f.apply(r, c++, mData[i]);
-			
+
 			if (c == mDim.mCols) {
 				c = 0;
 				++r;
 			}
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.IndexMatrix#f(org.jebtk.math.matrix.CellFunction, org.jebtk.math.matrix.IndexMatrix)
+	 */
 	@Override
-	public void rowApply(MatrixCellFunction f) {
+	public void f(CellFunction f, IndexMatrix ret) {
+		if (ret instanceof DoubleMatrix) {
+			f(f, (DoubleMatrix)ret);
+		} else {
+			super.f(f, ret);
+		}
+	}
+
+	/**
+	 * F.
+	 *
+	 * @param f the f
+	 * @param ret the ret
+	 */
+	public void f(CellFunction f, DoubleMatrix ret) {
+		f(f, this, ret);
+	}
+	
+	/**
+	 * F.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 */
+	public static void f(CellFunction f, DoubleMatrix m, DoubleMatrix ret) {
+		/*
+		int r = 0;
+		int c = 0;
+		
+		for (int i = 0; i < m.mData.length; ++i) {
+			ret.mData[i] = f.apply(r, c++, m.mData[i]);
+
+			if (c == m.mDim.mCols) {
+				c = 0;
+				++r;
+			}
+		}
+		*/
+		
+		fconc(f, m, CONCURRENT_ROWS, ret);
+	}
+	
+	/**
+	 * Fconc.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 * @param rows the rows
+	 */
+	public static void fconc(CellFunction f, DoubleMatrix m, int rows, DoubleMatrix ret) {
+		int r = 0;
+		
+		System.err.println("f concurrent");
+		
+		int steps = rows * m.mDim.mCols;
+		
+		ForkJoinPool forkJoinPool = new ForkJoinPool(); //16);
+		
+		for (int i = 0; i < m.mData.length; i += steps) {
+			DoubleMatrixRecursiveAction a = new DoubleMatrixRecursiveAction(m.mData, 
+					f,
+					i,
+					r, 
+					m.mDim.mCols,
+					steps,
+					ret.mData);
+			
+			forkJoinPool.invoke(a);
+			
+			r += rows;
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#rowApply(org.jebtk.math.matrix.CellFunction)
+	 */
+	@Override
+	public void rowApply(CellFunction f) {
 		for (int i = 0; i < mDim.mRows; ++i) {
 			rowApply(f, i);
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#rowApply(org.jebtk.math.matrix.CellFunction, int)
+	 */
 	@Override
-	public void rowApply(MatrixCellFunction f, int index) {
+	public void rowApply(CellFunction f, int index) {
 		int offset = mRowOffsets[index];
-		
+
 		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = f.apply(i, 0, mData[offset]);
-			
+
 			++offset;
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#colApply(org.jebtk.math.matrix.CellFunction, int)
+	 */
 	@Override
-	public void colApply(MatrixCellFunction f, int col) {
+	public void colApply(CellFunction f, int col) {
 		int offset = col;
-		
+
 		for (int i = 0; i < mDim.mCols; ++i) {
 			mData[offset] = f.apply(i, 0, mData[offset]);
-			
+
 			offset += mDim.mCols;
 		}
-		
+
 		fireMatrixChanged();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#stat(org.jebtk.math.matrix.MatrixStatFunction)
+	 */
 	@Override
 	public double stat(MatrixStatFunction f) {
 		f.init();
-		
+
 		for (int i = 0; i < mData.length; ++i) {
 			f.apply(i, 0, mData[i]);
 		}
-		
-		return f.getStat();
-	}
-	
-	@Override
-	public double rowStat(MatrixStatFunction f, int index) {
-		f.init();
-		
-		int offset = mRowOffsets[index];
-		
-		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
-			
-			++offset;
-		}
-		
-		return f.getStat();
-	}
-	
-	@Override
-	public double colStat(MatrixStatFunction f, int index) {
-		int offset = index;
-		
-		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
-			
-			offset += mDim.mCols;
-		}
-		
+
 		return f.getStat();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#rowStat(org.jebtk.math.matrix.MatrixStatFunction, int)
+	 */
+	@Override
+	public double rowStat(MatrixStatFunction f, int index) {
+		f.init();
+
+		int offset = mRowOffsets[index];
+
+		for (int i = 0; i < mDim.mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+
+			++offset;
+		}
+
+		return f.getStat();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#colStat(org.jebtk.math.matrix.MatrixStatFunction, int)
+	 */
+	@Override
+	public double colStat(MatrixStatFunction f, int index) {
+		int offset = index;
+
+		for (int i = 0; i < mDim.mCols; ++i) {
+			f.apply(i, 0, mData[offset]);
+
+			offset += mDim.mCols;
+		}
+
+		return f.getStat();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.Matrix#dot(org.jebtk.math.matrix.Matrix)
+	 */
 	@Override
 	public Matrix dot(final Matrix m) {
 		if (m instanceof DoubleMatrix) {
@@ -448,7 +742,13 @@ public class DoubleMatrix extends IndexableMatrix {
 			return super.dot(m);
 		}
 	}
-	
+
+	/**
+	 * Dot.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public Matrix dot(final DoubleMatrix m) {
 		dot(this, m);
 
@@ -456,7 +756,13 @@ public class DoubleMatrix extends IndexableMatrix {
 
 		return this;
 	}
-	
+
+	/**
+	 * Dot.
+	 *
+	 * @param m1 the m 1
+	 * @param m2 the m 2
+	 */
 	public static void dot(DoubleMatrix m1, final DoubleMatrix m2) {
 		for (int i = 0; i < m1.mData.length; ++i) {
 			m1.mData[i] *= m2.mData[i];
@@ -470,8 +776,15 @@ public class DoubleMatrix extends IndexableMatrix {
 	public Matrix transpose() { 
 		return transpose(this);
 	}
-	
+
+	/**
+	 * Transpose.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
 	public static Matrix transpose(final DoubleMatrix m) { 
+		/*
 		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
@@ -490,7 +803,47 @@ public class DoubleMatrix extends IndexableMatrix {
 		}
 
 		return ret;
+		*/
+		
+		return transposeC(m);
 	}
+	
+	public static Matrix transposeC(final DoubleMatrix m) { 
+		return transposeC(m, CONCURRENT_ROWS);
+	}
+	
+	public static Matrix transposeC(final DoubleMatrix m, int rows) { 
+		DoubleMatrix ret = 
+				DoubleMatrix.createDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
+		
+		int r = 0;
+		
+		System.err.println("transpose concurrent");
+
+		int steps = rows * m.mDim.mCols;
+		
+		ForkJoinPool forkJoinPool = new ForkJoinPool(); //16);
+		
+		for (int i = 0; i < m.mData.length; i += steps) {
+			TransposeRecursiveAction a = new TransposeRecursiveAction(m.mData,
+					i,
+					r, 
+					m.mDim.mCols,
+					m.mDim.mRows,
+					steps,
+					ret.mData);
+			
+			forkJoinPool.invoke(a);
+			
+			r += rows;
+		}
+		
+		return ret;
+	}
+	
+	
+	
+	
 
 	//
 	// Static methods
@@ -503,10 +856,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] minInRow(Matrix matrix) {
-		double[] ret = new double[matrix.getRowCount()];
+		double[] ret = new double[matrix.getRows()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < r; ++i) {
 			double min = Double.MAX_VALUE;
@@ -535,10 +888,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] maxInRow(Matrix matrix) {
-		double[] ret = new double[matrix.getRowCount()];
+		double[] ret = new double[matrix.getRows()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < r; ++i) {
 			double max = Double.MIN_VALUE;
@@ -566,10 +919,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] minInColumn(Matrix matrix) {
-		double[] ret = new double[matrix.getColumnCount()];
+		double[] ret = new double[matrix.getCols()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < c; ++i) {
 			double min = Double.MAX_VALUE;
@@ -598,9 +951,9 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] maxInColumn(Matrix matrix) {
-		double[] ret = new double[matrix.getColumnCount()];
+		double[] ret = new double[matrix.getCols()];
 
-		int c = matrix.getColumnCount();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < c; ++i) {
 			ret[i] = maxInColumn(matrix, i);
@@ -619,7 +972,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double maxInColumn(Matrix matrix, int column) {
 		double ret = Double.MIN_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.max(ret, matrix.getValue(j, column));
@@ -638,7 +991,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double minInColumn(Matrix matrix, int column) {
 		double ret = Double.MAX_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.min(ret, matrix.getValue(j, column));
@@ -668,9 +1021,9 @@ public class DoubleMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> zscores = new ArrayList<Double>(im.getRowCount());
+		List<Double> zscores = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>();
 
 			for (int c : phenIndices) {
@@ -722,9 +1075,9 @@ public class DoubleMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
+		List<Double> foldChanges = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -765,9 +1118,9 @@ public class DoubleMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
+		List<Double> foldChanges = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>();
 
 			for (int c : g11) {
@@ -825,15 +1178,15 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param value the value
 	 * @return the double
 	 */
-	public static double parseValue(String value) {
-		if (value.toLowerCase().equals(TextUtils.NA)) {
-			return Double.NaN;
+	public static double parseDouble(String value) {
+		if (value == null || value.toLowerCase().equals(TextUtils.NA)) {
+			return NULL_NUMBER;
 		}
 
 		try {
-			return TextUtils.parseDouble(value);
-		} catch (ParseException e) {
-			return Double.NaN;
+			return Double.parseDouble(value);
+		} catch (Exception e) {
+			return NULL_NUMBER;
 		}
 	}
 
@@ -850,9 +1203,9 @@ public class DoubleMatrix extends IndexableMatrix {
 		Matrix im = m.getMatrix();
 
 		List<Double> means = 
-				new ArrayList<Double>(im.getRowCount());
+				new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> values = new ArrayList<Double>(g1.size());
 
 			for (int c : g1) {
@@ -876,8 +1229,8 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double sum(Matrix m) {
 		double sum = 0;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -898,10 +1251,10 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double maxRowSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			double sum = 0;
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -926,11 +1279,11 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double[] columnMeans(Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return columnMeans((DoubleMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnMeans((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnMeans((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 
 			double[] means = new double[c];
 
@@ -956,9 +1309,9 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnMeans(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnMeans(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] means = new double[c];
 
@@ -1021,11 +1374,11 @@ public class DoubleMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return columnPopStdDev((DoubleMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnPopStdDev((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnPopStdDev((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 
 			double[] ret = new double[c];
 
@@ -1051,9 +1404,9 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnPopStdDev(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnPopStdDev(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] ret = new double[c];
 
@@ -1083,8 +1436,8 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] columnPopStdDev(DoubleMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] ret = new double[c];
 
@@ -1114,7 +1467,7 @@ public class DoubleMatrix extends IndexableMatrix {
 	 * @return the double matrix
 	 */
 	public static DoubleMatrix createDoubleMatrix(Matrix m) {
-		return createDoubleMatrix(m.getRowCount(), m.getColumnCount());
+		return createDoubleMatrix(m.getRows(), m.getCols());
 	}
 
 	/**
@@ -1126,6 +1479,29 @@ public class DoubleMatrix extends IndexableMatrix {
 	 */
 	public static DoubleMatrix createDoubleMatrix(int rows, int cols) {
 		return new DoubleMatrix(rows, cols);
+	}
+
+	/**
+	 * Creates the double matrix.
+	 *
+	 * @param rows the rows
+	 * @param cols the cols
+	 * @param v1 the v 1
+	 * @param values the values
+	 * @return the double matrix
+	 */
+	public static DoubleMatrix createDoubleMatrix(int rows, int cols, double v1, double... values) {
+		DoubleMatrix m = createDoubleMatrix(rows, cols);
+
+		int c = 0;
+
+		m.mData[c++] = v1;
+
+		for (double v : values) {
+			m.mData[c++] = v;
+		}
+
+		return m;
 	}
 
 	/**

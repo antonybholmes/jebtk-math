@@ -594,7 +594,7 @@ public class Excel {
 
 			String name = names.get(i);
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(i);
 
 				cell.setCellStyle(headerStyle);
@@ -615,7 +615,7 @@ public class Excel {
 				cell.setCellValue(name);
 			}
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(c++);
 
 				cell.setCellStyle(headerStyle);
@@ -623,7 +623,7 @@ public class Excel {
 			}
 		}
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			c = 0;
 
 			row = (XSSFRow)sheet.createRow(r++);
@@ -642,7 +642,7 @@ public class Excel {
 				}
 			}
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(c++);
 				cell.setCellStyle(defaultStyle);
 
@@ -736,7 +736,7 @@ public class Excel {
 
 			String name = names.get(i);
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(i);
 
 				cell.setCellStyle(headerStyle);
@@ -757,7 +757,7 @@ public class Excel {
 				cell.setCellValue(name);
 			}
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(c++);
 
 				cell.setCellStyle(headerStyle);
@@ -765,7 +765,7 @@ public class Excel {
 			}
 		}
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			c = 0;
 
 			row = (XSSFRow)sheet.createRow(r++);
@@ -784,7 +784,7 @@ public class Excel {
 				}
 			}
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				cell = row.createCell(c++);
 				cell.setCellStyle(defaultStyle);
 

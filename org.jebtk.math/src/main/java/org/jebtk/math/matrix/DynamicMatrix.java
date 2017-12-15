@@ -92,7 +92,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 * @param m the m
 	 */
 	public DynamicMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -103,9 +103,9 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
 	 * @param m the m
 	 */
 	public DynamicMatrix(DynamicMatrix<T> m) {
-		super(m.getRowCount(), m.getColumnCount());
+		super(m.getRows(), m.getCols());
 
-		mData = DefaultHashMapMap.create(m.getRowCount(), m.getColumnCount());
+		mData = DefaultHashMapMap.create(m.getRows(), m.getCols());
 
 		update(m);
 	}

@@ -82,7 +82,7 @@ public abstract class ExpandMatrix<T> extends ResizableMatrix {
 	 * @param m the m
 	 */
 	public ExpandMatrix(Matrix m, T v) {
-		this(m.getRowCount(), m.getColumnCount(), v);
+		this(m.getRows(), m.getCols(), v);
 
 		update(m);
 	}
@@ -93,7 +93,7 @@ public abstract class ExpandMatrix<T> extends ResizableMatrix {
 	 * @param m the m
 	 */
 	public ExpandMatrix(ExpandMatrix<T> m, T v) {
-		this(m.getRowCount(), m.getColumnCount(), v);
+		this(m.getRows(), m.getCols(), v);
 
 		update(m);
 	}

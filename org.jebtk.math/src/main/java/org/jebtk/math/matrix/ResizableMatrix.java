@@ -157,6 +157,16 @@ public abstract class ResizableMatrix extends Matrix {
 	public void update(int row, int column, double v) {
 		updateSize(row, column);
 	}
+	
+	@Override
+	public void update(int row, int column, long v) {
+		updateSize(row, column);
+	}
+	
+	@Override
+	public void update(int row, int column, int v) {
+		updateSize(row, column);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#update(int, int, java.lang.String)
@@ -170,23 +180,12 @@ public abstract class ResizableMatrix extends Matrix {
 	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
 	 */
 	@Override
-	public int getNumCells() {
+	public int size() {
 		return mSize;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getRowCount()
-	 */
+	
 	@Override
-	public int getRowCount() {
-		return mDim.mRows;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getColumnCount()
-	 */
-	@Override
-	public int getColumnCount() {
-		return mDim.mCols;
+	public MatrixDim getShape() {
+		return mDim;
 	}
 }

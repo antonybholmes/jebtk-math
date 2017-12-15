@@ -39,7 +39,7 @@ import org.jebtk.core.text.TextUtils;
  * 
  * @author Antony Holmes Holmes
  */
-public class MixedMatrix extends IndexableMatrix {
+public class MixedMatrix extends IndexRowMatrix {
 
 	/**
 	 * The constant serialVersionUID.
@@ -47,13 +47,10 @@ public class MixedMatrix extends IndexableMatrix {
 	private static final long serialVersionUID = 1L;
 
 	/** Stores the matrix data in a row format. */
-	public Object[] mData;
-	
-	/**  Storest the cell types in a row format. */
-	public CellType[] mCellType;
+	public final Object[] mData;
 
-	/** The m default number. */
-	private double mDefaultNumber;
+	/**  Storest the cell types in a row format. */
+	//public final CellType[] mCellType;
 
 	/**
 	 * Create a new matrix defaulting to being entirely numeric.
@@ -62,7 +59,10 @@ public class MixedMatrix extends IndexableMatrix {
 	 * @param columns the columns
 	 */
 	public MixedMatrix(int rows, int columns) {
-		this(rows, columns, NULL_NUMBER);
+		super(rows, columns);
+		
+		mData = new Object[mSize];
+		//mCellType = new CellType[mSize];
 	}
 
 	/**
@@ -73,9 +73,9 @@ public class MixedMatrix extends IndexableMatrix {
 	 * @param v the v
 	 */
 	public MixedMatrix(int rows, int columns, double v) {
-		super(rows, columns);
+		this(rows, columns);
 
-		mDefaultNumber = v;
+		set(v);
 	}
 
 	/**
@@ -86,9 +86,8 @@ public class MixedMatrix extends IndexableMatrix {
 	 * @param v the v
 	 */
 	public MixedMatrix(int rows, int columns, String v) {
-		super(rows, columns);
+		this(rows, columns);
 
-		// Set the default value
 		set(v);
 	}
 
@@ -100,6 +99,11 @@ public class MixedMatrix extends IndexableMatrix {
 	 */
 	public MixedMatrix(Matrix m) {
 		super(m);
+
+		mData = new Object[mSize];
+		//mCellType = new CellType[mSize];
+
+		//update(CellType.TEXT);
 	}
 
 	/**
@@ -107,19 +111,13 @@ public class MixedMatrix extends IndexableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public MixedMatrix(IndexableMatrix m) {
+	public MixedMatrix(IndexRowMatrix m) {
 		super(m);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#createData(int, int, int)
-	 */
-	@Override
-	protected void createData(int rows, int columns, int n) {
-		mData = new Object[n];
-		mCellType = new CellType[n];
-		
-		update(CellType.TEXT);
+		mData = new Object[mSize];
+		//mCellType = new CellType[mSize];
+
+		//update(CellType.TEXT);
 	}
 
 	/* (non-Javadoc)
@@ -137,13 +135,18 @@ public class MixedMatrix extends IndexableMatrix {
 	public Matrix copy() {
 		return new MixedMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return createMixedMatrix(this);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
 	 */
 	@Override
 	public CellType getCellType(int index) {
-		return mCellType[index];
+		return mData[index] instanceof Number ? CellType.NUMBER : CellType.TEXT; //mCellType[index];
 	}
 
 	/* (non-Javadoc)
@@ -152,43 +155,83 @@ public class MixedMatrix extends IndexableMatrix {
 	@Override
 	public Object get(int index) {
 		Object v = mData[index];
-		
+
 		if (v != null) {
 			return v;
 		} else {
 			return TextUtils.EMPTY_STRING;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#getValue(int)
 	 */
 	@Override
 	public double getValue(int index) {
 		Object v = mData[index];
-		
+
 		if (v != null) {
 			if (v instanceof Double) {
-				return (Double)v;
+				return (double)v;
+			} else if (v instanceof Long) {
+				return (long)v;
 			} else if (v instanceof Integer) {
-				return (Integer)v;
+				return (int)v;
 			} else {
-				return mDefaultNumber;
+				return NULL_NUMBER;
 			}
 		} else {
-			return mDefaultNumber;
+			return NULL_NUMBER;
 		}
 	}
-	
+
+	@Override
+	public long getLong(int index) {
+		Object v = mData[index];
+
+		if (v != null) {
+			if (v instanceof Double) {
+				return ((Double)v).longValue();
+			} else if (v instanceof Long) {
+				return (long)v;
+			} else if (v instanceof Integer) {
+				return ((Integer)v).longValue();
+			} else {
+				return NULL_LONG_NUMBER;
+			}
+		} else {
+			return NULL_LONG_NUMBER;
+		}
+	}
+
+	@Override
+	public int getInt(int index) {
+		Object v = mData[index];
+
+		if (v != null) {
+			if (v instanceof Double) {
+				return ((Double)v).intValue();
+			} else if (v instanceof Long) {
+				return ((Long)v).intValue();
+			} else if (v instanceof Integer) {
+				return (int)v;
+			} else {
+				return NULL_INT_NUMBER;
+			}
+		} else {
+			return NULL_INT_NUMBER;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
 	 */
 	@Override
 	public String getText(int index) {
 		Object v = mData[index];
-		
+
 		//System.err.println("mixed " + index + " " + v);
-		
+
 		if (v != null) {
 			if (v instanceof String) {
 				return (String)v;
@@ -197,6 +240,29 @@ public class MixedMatrix extends IndexableMatrix {
 			}
 		} else {
 			return TextUtils.EMPTY_STRING;
+		}
+	}
+
+	@Override
+	public boolean isValid(int index) {
+		Object v = mData[index];
+
+		//System.err.println("mixed " + index + " " + v);
+
+		if (v != null) {
+			if (v instanceof Double) {
+				return isValidMatrixNum((double)v);
+			} else if (v instanceof Integer) {
+				return isValidMatrixNum((int)v);
+			} else if (v instanceof Long) {
+				return isValidMatrixNum((long)v);
+			} else if (v instanceof Number) {
+				return isValidMatrixNum(((Number)v).doubleValue());
+			} else {
+				return false;
+			}
+		} else {
+			return true;
 		}
 	}
 
@@ -209,6 +275,11 @@ public class MixedMatrix extends IndexableMatrix {
 	public void updateToNull(int index) {
 		mData[index] = null;
 	}
+	
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, null);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#update(double)
@@ -216,47 +287,16 @@ public class MixedMatrix extends IndexableMatrix {
 	@Override
 	public void update(double v) {
 		Arrays.fill(mData, v);
-		update(CellType.NUMBER);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
-	 */
 	@Override
-	public void update(int index, Object v) {
-		if (v == null) {
-			return;
-		}
-
-		if (v instanceof Double) {
-			update(index, (double)v);
-		} else if (v instanceof Integer) {
-			update(index, (int)v);
-		} else if (v instanceof Number) {
-			update(index, ((Number)v).doubleValue());
-		} else if (v instanceof String) {
-			update(index, (String)v);
-		} else {
-			update(index, v.toString());
-		}
+	public void update(long v) {
+		Arrays.fill(mData, v);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, java.lang.String)
-	 */
 	@Override
-	public void update(int index, String v) {
-		mData[index] = v;
-		mCellType[index] = CellType.TEXT;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		mData[index] = v;
-		mCellType[index] = CellType.NUMBER;
+	public void update(int v) {
+		Arrays.fill(mData, v);
 	}
 
 	/* (non-Javadoc)
@@ -265,18 +305,52 @@ public class MixedMatrix extends IndexableMatrix {
 	@Override
 	public void update(String v) {
 		Arrays.fill(mData, v);
-		update(CellType.TEXT);
 	}
-	
-	/**
-	 * Update.
-	 *
-	 * @param v the v
+
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
 	 */
-	public void update(CellType v) {
-		Arrays.fill(mCellType, v);
+	@Override
+	public void update(int index, Object v) {
+		if (v != null) {
+			if (v instanceof Double) {
+				update(index, (double)v);
+			} else if (v instanceof Integer) {
+				update(index, (int)v);
+			} else if (v instanceof Long) {
+				update(index, (long)v);
+			} else {
+				update(index, v.toString());
+			}
+		}
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, java.lang.String)
+	 */
+	@Override
+	public void update(int index, String v) {
+		mData[index] = v;
+	}
+
+	@Override
+	public void update(int index, int v) {
+		mData[index] = v;
+	}
+
+	@Override
+	public void update(int index, long v) {
+		mData[index] = v;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, double)
+	 */
+	@Override
+	public void update(int index, double v) {
+		mData[index] = v;
+	}
+
 	/**
 	 * Specialized instance of column copying for numerical matrices.
 	 *
@@ -291,7 +365,7 @@ public class MixedMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -311,7 +385,7 @@ public class MixedMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -331,7 +405,7 @@ public class MixedMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -348,7 +422,7 @@ public class MixedMatrix extends IndexableMatrix {
 	public void copyRow(final DoubleMatrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
 	}
@@ -361,7 +435,7 @@ public class MixedMatrix extends IndexableMatrix {
 			int row,
 			int toRow) {
 
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
 	}
@@ -373,7 +447,7 @@ public class MixedMatrix extends IndexableMatrix {
 	public void copyRow(final MixedMatrix from, 
 			int row,
 			int toRow) {
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		//SysUtils.err().println("copy row", from.getColumnCount(), getColumnCount());
 
@@ -385,7 +459,7 @@ public class MixedMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void setValueColumn(int column, List<Double> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(getRows(), values.size());
 
 		int ix = getIndex(0, column);
 
@@ -401,7 +475,7 @@ public class MixedMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public void setTextColumn(int column, List<String> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(getRows(), values.size());
 
 		int ix = getIndex(0, column);
 
@@ -433,15 +507,15 @@ public class MixedMatrix extends IndexableMatrix {
 			}
 
 			ret.mData[i2] = m.mData[i];
-			
+
 			// Skip blocks
 			i2 += m.mDim.mRows;
 		}
 
 		return ret;
 	}
-	
-	
+
+
 
 	//
 	// Static methods
@@ -454,7 +528,7 @@ public class MixedMatrix extends IndexableMatrix {
 	 * @return the mixed matrix
 	 */
 	public static MixedMatrix createMixedMatrix(Matrix m) {
-		return createMixedMatrix(m.getRowCount(), m.getColumnCount());
+		return createMixedMatrix(m.getRows(), m.getCols());
 	}
 
 	/**

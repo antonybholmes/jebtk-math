@@ -43,7 +43,7 @@ public class EmptyMatrix extends RegularMatrix {
 
 
 	/**
-	 * Create a new matrix defaulting to being entirely numeric.
+	 * Create a new empty matrix.
 	 *
 	 * @param rows the rows
 	 * @param columns the columns
@@ -52,9 +52,13 @@ public class EmptyMatrix extends RegularMatrix {
 		super(rows, columns);
 	}
 
-
 	@Override
 	public Matrix transpose() {
+		return this;
+	}
+	
+	@Override
+	public Matrix ofSameType() {
 		return this;
 	}
 }

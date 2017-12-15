@@ -22,7 +22,7 @@ import java.util.List;
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
-import org.jebtk.math.matrix.IndexableMatrix;
+import org.jebtk.math.matrix.IndexRowMatrix;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixGroup;
 import org.jebtk.math.statistics.Statistics;
@@ -50,11 +50,11 @@ public class MatrixUtils {
 	public static double[] columnMeans(Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return columnMeans((DoubleMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnMeans((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnMeans((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 
 			double[] means = new double[c];
 
@@ -80,9 +80,9 @@ public class MatrixUtils {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnMeans(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnMeans(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] means = new double[c];
 
@@ -112,8 +112,8 @@ public class MatrixUtils {
 	 * @return the double[]
 	 */
 	public static double[] columnMeans(DoubleMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] means = new double[c];
 
@@ -145,11 +145,11 @@ public class MatrixUtils {
 	public static double[] columnPopStdDev(Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return columnPopStdDev((DoubleMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnPopStdDev((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnPopStdDev((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 
 			double[] ret = new double[c];
 
@@ -175,9 +175,9 @@ public class MatrixUtils {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnPopStdDev(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnPopStdDev(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] ret = new double[c];
 
@@ -207,8 +207,8 @@ public class MatrixUtils {
 	 * @return the double[]
 	 */
 	public static double[] columnPopStdDev(DoubleMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] ret = new double[c];
 
@@ -240,11 +240,11 @@ public class MatrixUtils {
 	public static double[] rowMeans(Matrix m) {
 		if (m instanceof DoubleMatrix) {
 			return rowMeans((DoubleMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return rowMeans((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return rowMeans((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 
 			double[] means = new double[r];
 
@@ -270,9 +270,9 @@ public class MatrixUtils {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] rowMeans(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] rowMeans(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] means = new double[r];
 
@@ -330,8 +330,8 @@ public class MatrixUtils {
 	 * @return the double[]
 	 */
 	public static double[] columnRows(DoubleMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 
 		double[] means = new double[r];
 
@@ -363,10 +363,10 @@ public class MatrixUtils {
 	public static double maxRowSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			double sum = 0;
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -391,10 +391,10 @@ public class MatrixUtils {
 	public static double maxColSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getColumnCount(); ++i) {
+		for (int i = 0; i < m.getCols(); ++i) {
 			double sum = 0;
 
-			for (int j = 0; j < m.getRowCount(); ++j) {
+			for (int j = 0; j < m.getRows(); ++j) {
 				double v = m.getValue(j, i);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -423,12 +423,12 @@ public class MatrixUtils {
 			MatrixGroup g1,
 			MatrixGroup g2,
 			boolean equalVariance) {
-		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
+		List<Double> pvalues = new ArrayList<Double>(m.getRows());
 
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			List<Double> p1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -476,9 +476,9 @@ public class MatrixUtils {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
+		List<Double> foldChanges = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -513,7 +513,7 @@ public class MatrixUtils {
 	public static double maxInColumn(Matrix matrix, int column) {
 		double ret = Double.MIN_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.max(ret, matrix.getValue(j, column));
@@ -532,7 +532,7 @@ public class MatrixUtils {
 	public static double minInColumn(Matrix matrix, int column) {
 		double ret = Double.MAX_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.min(ret, matrix.getValue(j, column));

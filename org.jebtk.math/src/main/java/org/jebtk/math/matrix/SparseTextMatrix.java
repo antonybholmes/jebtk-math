@@ -58,7 +58,7 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	 * @param v the v
 	 */
 	public SparseTextMatrix(int rows, int columns, double v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -72,7 +72,7 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	 * @param v the v
 	 */
 	public SparseTextMatrix(int rows, int columns, String v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -93,7 +93,7 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	 *
 	 * @param m the m
 	 */
-	public SparseTextMatrix(IndexableMatrix m) {
+	public SparseTextMatrix(IndexRowMatrix m) {
 		super(m);
 	}
 
@@ -104,6 +104,11 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	public Matrix copy() {
 		return new SparseTextMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new SparseTextMatrix(mDim.mRows, mDim.mCols);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
@@ -112,20 +117,18 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	public CellType getCellType(int index) {
 		return CellType.TEXT;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
 	 */
 	@Override
 	public void update(int index, Object v) {
-		if (v == null) {
-			return;
-		}
-		
-		if (v instanceof String) {
-			mData.put(index, (String)v);
-		} else {
-			mData.put(index, v.toString());
+		if (v != null) {
+			if (v instanceof String) {
+				mData.put(index, (String)v);
+			} else {
+				mData.put(index, v.toString());
+			}
 		}
 	}
 
@@ -135,6 +138,16 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	@Override
 	public void update(int index, double v) {
 		update(index, Double.toString(v));
+	}
+
+	@Override
+	public void update(int index, long v) {
+		update(index, Long.toString(v));
+	}
+
+	@Override
+	public void update(int index, int v) {
+		update(index, Integer.toString(v));
 	}
 
 	/* (non-Javadoc)
@@ -160,12 +173,12 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	public String getText(int index) {
 		return mData.get(index);
 	}
-	
+
 	@Override
 	public Matrix transpose() { 
 		return transpose(this);
 	}
-	
+
 	public static Matrix transpose(final SparseTextMatrix m) { 
 		SparseTextMatrix ret = new SparseTextMatrix(m.mDim.mCols, m.mDim.mRows);
 

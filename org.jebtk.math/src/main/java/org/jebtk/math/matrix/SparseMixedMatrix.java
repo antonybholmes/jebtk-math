@@ -50,7 +50,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	 * @param columns the columns
 	 */
 	public SparseMixedMatrix(int rows, int columns) {
-		this(rows, columns, NULL_NUMBER);
+		super(rows, columns);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	 * @param v the v
 	 */
 	public SparseMixedMatrix(int rows, int columns, double v) {
-		super(rows, columns);
+		this(rows, columns);
 
 		// Set the default value
 		set(v);
@@ -96,7 +96,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	 *
 	 * @param m the m
 	 */
-	public SparseMixedMatrix(IndexableMatrix m) {
+	public SparseMixedMatrix(IndexRowMatrix m) {
 		super(m);
 	}
 
@@ -107,7 +107,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	public MatrixType getType() {
 		return MatrixType.MIXED;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#copy()
 	 */
@@ -115,18 +115,19 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	public Matrix copy() {
 		return new SparseMixedMatrix(this);
 	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return new SparseMixedMatrix(mDim.mRows, mDim.mCols);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
 	 */
 	@Override
 	public CellType getCellType(int index) {
-		if (mData.containsKey(index)) {
-			if (mData.get(index) instanceof Number) {
-				return CellType.NUMBER;
-			} else {
-				return CellType.TEXT;
-			}
+		if (mData.get(index) instanceof Number) {
+			return CellType.NUMBER;
 		} else {
 			return CellType.TEXT;
 		}
@@ -158,6 +159,21 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 		mData.put(index, v);
 	}
 
+	@Override
+	public void update(int index, double v) {
+		mData.put(index, v);
+	}
+
+	@Override
+	public void update(int index, int v) {
+		mData.put(index, v);
+	}
+
+	@Override
+	public void update(int index, long v) {
+		mData.put(index, v);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
 	 */
@@ -178,7 +194,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	@Override
 	public double getValue(int index) {
 		Object v = mData.get(index);
-		
+
 		if (v != null) {
 			if (v instanceof Double) {
 				return (Double)v;
@@ -191,9 +207,9 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 			return 0;
 		}
 	}
-	
+
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		for (int i : mData.keySet()) {
 			if (mData.get(i) instanceof Double) {
 				mData.put(i, f.apply(i, 0, (double)mData.get(i)));
@@ -202,13 +218,13 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 
 		fireMatrixChanged();
 	}
-	
-	
+
+
 	@Override
 	public Matrix transpose() { 
 		return transpose(this);
 	}
-	
+
 	public static Matrix transpose(final SparseMixedMatrix m) { 
 		SparseMixedMatrix ret = new SparseMixedMatrix(m.mDim.mCols, m.mDim.mRows);
 

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jebtk.core.Mathematics;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.TTest;
@@ -46,7 +47,7 @@ import org.jebtk.math.statistics.TTest;
  *
  * @author Antony Holmes Holmes
  */
-public class LongMatrix extends IndexableMatrix {
+public class LongMatrix extends IndexRowMatrix {
 
 	/**
 	 * The constant serialVersionUID.
@@ -56,7 +57,7 @@ public class LongMatrix extends IndexableMatrix {
 	/**
 	 * The member data.
 	 */
-	public long[] mData;
+	public final long[] mData;
 
 	/**
 	 * Instantiates a new numerical matrix.
@@ -65,7 +66,10 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param columns the columns
 	 */
 	public LongMatrix(int rows, int columns) {
-		this(rows, columns, Long.MIN_VALUE);
+		super(rows, columns);
+		
+		// We use a 1d array to store a 2d matrix for speed.
+		mData = new long[mSize];
 	}
 
 	/**
@@ -76,21 +80,10 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param v the v
 	 */
 	public LongMatrix(int rows, int columns, long v) {
-		super(rows, columns);
-
-		// We use a 1d array to store a 2d matrix for speed.
-		init();
+		this(rows, columns);
 
 		// Set the default value
 		update(v);
-	}
-	
-	/**
-	 * Inits the.
-	 */
-	protected void init() {
-		mData = new long[mSize];
-		//mTextData = new String[mSize];
 	}
 
 	/**
@@ -99,7 +92,7 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public LongMatrix(Matrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -110,8 +103,8 @@ public class LongMatrix extends IndexableMatrix {
 	 *
 	 * @param m the m
 	 */
-	public LongMatrix(IndexableMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+	public LongMatrix(IndexRowMatrix m) {
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -122,7 +115,7 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param m the m
 	 */
 	public LongMatrix(LongMatrix m) {
-		this(m.getRowCount(), m.getColumnCount());
+		this(m.getRows(), m.getCols());
 
 		update(m);
 	}
@@ -139,7 +132,7 @@ public class LongMatrix extends IndexableMatrix {
 	}
 	
 	@Override
-	public void apply(MatrixCellFunction f) {
+	public void apply(CellFunction f) {
 		for (int i = 0; i < mData.length; ++i) {
 			double v = f.apply(i, 0, mData[i]);
 			
@@ -156,16 +149,26 @@ public class LongMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
 	 */
 	public void updateToNull(int index) {
-		mData[index] = Long.MIN_VALUE;
+		mData[index] = NULL_LONG_NUMBER;
+	}
+	
+	@Override
+	public void updateToNull() {
+		Arrays.fill(mData, NULL_LONG_NUMBER);
 	}
 
-	/**
-	 * Update.
-	 *
-	 * @param m the m
-	 */
+	@Override
+	public void update(Matrix m) {
+		if (m instanceof LongMatrix) {
+			update((LongMatrix)m);
+		} else {
+			super.update(m);
+		}
+	}
+
+	
 	public void update(LongMatrix m) {
-		System.arraycopy(m.mData, 0, mData, 0, Math.min(m.mData.length, mData.length));
+		SysUtils.arraycopy(m.mData, mData);
 	}
 
 	/* (non-Javadoc)
@@ -175,13 +178,33 @@ public class LongMatrix extends IndexableMatrix {
 	public Matrix copy() {
 		return new LongMatrix(this);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
-	 */
+	
 	@Override
-	public int getNumCells() {
-		return mData.length;
+	public Matrix ofSameType() {
+		return createLongMatrix(this);
+	}
+	
+	@Override
+	public void f(CellFunction f, IndexMatrix ret) {
+		if (ret instanceof LongMatrix) {
+			f(f, (LongMatrix)ret);
+		} else {
+			super.f(f, ret);
+		}
+	}
+
+	public void f(CellFunction f, LongMatrix ret) {
+		int r = 0;
+		int c = 0;
+		
+		for (int i = 0; i < mData.length; ++i) {
+			ret.mData[i] = (long)f.apply(r, c++, mData[i]);
+
+			if (c == mDim.mCols) {
+				c = 0;
+				++r;
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -197,13 +220,29 @@ public class LongMatrix extends IndexableMatrix {
 	 */
 	@Override
 	public double getValue(int index) {
-		long v = mData[index];
+		long v = getLong(index);
 		
 		if (isValidMatrixNum(v)) {
 			return v;
 		} else  {
 			return NULL_NUMBER;
 		}		
+	}
+	
+	@Override
+	public int getInt(int index) {
+		long v = getLong(index);
+		
+		if (isValidMatrixNum(v)) {
+			return (int)v;
+		} else  {
+			return NULL_INT_NUMBER;
+		}		
+	}
+	
+	@Override
+	public long getLong(int index) {
+		return mData[index];
 	}
 
 	/* (non-Javadoc)
@@ -219,7 +258,25 @@ public class LongMatrix extends IndexableMatrix {
 			l = NULL_LONG_NUMBER;
 		}
 
-		Arrays.fill(mData, l);
+		update(l);
+	}
+	
+	@Override
+	public void update(int v) {
+		long l;
+
+		if (isValidMatrixNum(v)) {
+			l = (long)v;
+		} else {
+			l = NULL_LONG_NUMBER;
+		}
+
+		update(l);
+	}
+	
+	@Override
+	public void update(long v) {
+		Arrays.fill(mData, v);
 	}
 
 	/* (non-Javadoc)
@@ -237,6 +294,20 @@ public class LongMatrix extends IndexableMatrix {
 		
 		mData[index] = l;
 	}
+	
+	@Override
+	public void update(int index, int v) {
+		if (isValidMatrixNum(v)) {
+			mData[index] = (long)v;
+		} else {
+			mData[index] = NULL_LONG_NUMBER;
+		}
+	}
+	
+	@Override
+	public void update(int index, long v) {
+		mData[index] = v;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
@@ -245,13 +316,18 @@ public class LongMatrix extends IndexableMatrix {
 	public String getText(int index) {
 		return Long.toString(mData[index]);
 	}
+	
+	@Override
+	public boolean isValid(int index) {
+		return isValidMatrixNum(mData[index]);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
 	 */
 	@Override
 	public void setValueColumn(int column, final List<Double> values) {
-		int r = Math.min(getRowCount(), values.size());
+		int r = Math.min(getRows(), values.size());
 
 		int ix = getIndex(0, column);
 
@@ -276,7 +352,7 @@ public class LongMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = (long)from.mData[i1];
@@ -305,7 +381,7 @@ public class LongMatrix extends IndexableMatrix {
 		int i1 = from.getIndex(0, column);
 		int i2 = getIndex(0, toColumn);
 
-		int r = Math.min(from.getRowCount(), getRowCount());
+		int r = Math.min(from.getRows(), getRows());
 
 		for (int i = 0; i < r; ++i) {
 			mData[i2] = from.mData[i1];
@@ -328,7 +404,7 @@ public class LongMatrix extends IndexableMatrix {
 			int row,
 			int toRow) {
 
-		int c = Math.min(from.getColumnCount(), getColumnCount());
+		int c = Math.min(from.getCols(), getCols());
 
 		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
 		
@@ -365,8 +441,8 @@ public class LongMatrix extends IndexableMatrix {
 	 * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
 	 */
 	@Override
-	public double[] columnAsDouble(int column) {
-		int r = getRowCount();
+	public double[] columnToDoubleArray(int column) {
+		int r = getRows();
 		
 		double[] values = new double[r];
 		
@@ -381,20 +457,19 @@ public class LongMatrix extends IndexableMatrix {
 		return values;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
-	 */
 	@Override
-	public double[] rowAsDouble(int row) {
-		int c = getColumnCount();
-		
-		double[] values = new double[c];
-		
-		int i1 = getIndex(row, 0);
-		
-		System.arraycopy(mData, i1, values, 0, c);
-		
-		return values;
+	public void rowToLongArray(int row, long[] ret) {
+		SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
+	}
+	
+	@Override
+	public void columnToLongArray(int column, long[] ret) {
+		SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
+	}
+	
+	@Override
+	public void toLongArray(long[] ret) {
+		SysUtils.arraycopy(mData, ret);
 	}
 	
 
@@ -415,8 +490,8 @@ public class LongMatrix extends IndexableMatrix {
 		
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (!Mathematics.isValidNumber(v)) {
@@ -463,8 +538,8 @@ public class LongMatrix extends IndexableMatrix {
 	public static double absMax(Matrix m) {
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (!Mathematics.isValidNumber(v)) {
@@ -492,8 +567,8 @@ public class LongMatrix extends IndexableMatrix {
 		
 		double min = Double.MAX_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (!Mathematics.isValidNumber(v)) {
@@ -542,10 +617,10 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] minInRow(Matrix matrix) {
-		double[] ret = new double[matrix.getRowCount()];
+		double[] ret = new double[matrix.getRows()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < r; ++i) {
 			double min = Double.MAX_VALUE;
@@ -574,10 +649,10 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] maxInRow(Matrix matrix) {
-		double[] ret = new double[matrix.getRowCount()];
+		double[] ret = new double[matrix.getRows()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < r; ++i) {
 			double max = Double.MIN_VALUE;
@@ -605,10 +680,10 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] minInColumn(Matrix matrix) {
-		double[] ret = new double[matrix.getColumnCount()];
+		double[] ret = new double[matrix.getCols()];
 
-		int r = matrix.getRowCount();
-		int c = matrix.getColumnCount();
+		int r = matrix.getRows();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < c; ++i) {
 			double min = Double.MAX_VALUE;
@@ -637,9 +712,9 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] maxInColumn(Matrix matrix) {
-		double[] ret = new double[matrix.getColumnCount()];
+		double[] ret = new double[matrix.getCols()];
 
-		int c = matrix.getColumnCount();
+		int c = matrix.getCols();
 
 		for (int i = 0; i < c; ++i) {
 			ret[i] = maxInColumn(matrix, i);
@@ -658,7 +733,7 @@ public class LongMatrix extends IndexableMatrix {
 	public static double maxInColumn(Matrix matrix, int column) {
 		double ret = Double.MIN_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.max(ret, matrix.getValue(j, column));
@@ -677,7 +752,7 @@ public class LongMatrix extends IndexableMatrix {
 	public static double minInColumn(Matrix matrix, int column) {
 		double ret = Double.MAX_VALUE;
 
-		int r = matrix.getRowCount();
+		int r = matrix.getRows();
 
 		for (int j = 0; j < r; ++j) {
 			ret = Math.min(ret, matrix.getValue(j, column));
@@ -701,12 +776,12 @@ public class LongMatrix extends IndexableMatrix {
 			boolean equalVariance) {
 		Matrix im = m.getMatrix();
 		
-		List<Double> pvalues = new ArrayList<Double>(m.getRowCount());
+		List<Double> pvalues = new ArrayList<Double>(m.getRows());
 
 		List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
 		List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> p1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -758,9 +833,9 @@ public class LongMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> zscores = new ArrayList<Double>(im.getRowCount());
+		List<Double> zscores = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>();
 
 			for (int c : phenIndices) {
@@ -812,9 +887,9 @@ public class LongMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
+		List<Double> foldChanges = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>(g11.size());
 
 			for (int c : g11) {
@@ -855,9 +930,9 @@ public class LongMatrix extends IndexableMatrix {
 
 		Matrix im = matrix.getMatrix();
 
-		List<Double> foldChanges = new ArrayList<Double>(im.getRowCount());
+		List<Double> foldChanges = new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> d1 = new ArrayList<Double>();
 
 			for (int c : g11) {
@@ -940,9 +1015,9 @@ public class LongMatrix extends IndexableMatrix {
 		Matrix im = m.getMatrix();
 
 		List<Double> means = 
-				new ArrayList<Double>(im.getRowCount());
+				new ArrayList<Double>(im.getRows());
 
-		for (int i = 0; i < im.getRowCount(); ++i) {
+		for (int i = 0; i < im.getRows(); ++i) {
 			List<Double> values = new ArrayList<Double>(g1.size());
 
 			for (int c : g1) {
@@ -966,8 +1041,8 @@ public class LongMatrix extends IndexableMatrix {
 	public static double sum(Matrix m) {
 		double sum = 0;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -988,10 +1063,10 @@ public class LongMatrix extends IndexableMatrix {
 	public static double maxRowSum(DataFrame m) {
 		double max = Double.MIN_VALUE;
 
-		for (int i = 0; i < m.getRowCount(); ++i) {
+		for (int i = 0; i < m.getRows(); ++i) {
 			double sum = 0;
 
-			for (int j = 0; j < m.getColumnCount(); ++j) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				double v = m.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
@@ -1014,7 +1089,7 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the long matrix
 	 */
 	public static LongMatrix create(Matrix m) {
-		return create(m.getRowCount(), m.getColumnCount());
+		return create(m.getRows(), m.getCols());
 	}
 
 	/**
@@ -1037,11 +1112,11 @@ public class LongMatrix extends IndexableMatrix {
 	public static double[] columnMeans(Matrix m) {
 		if (m instanceof LongMatrix) {
 			return columnMeans((LongMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnMeans((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnMeans((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 			
 			double[] means = new double[c];
 			
@@ -1067,9 +1142,9 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnMeans(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnMeans(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 		
 		double[] means = new double[c];
 		
@@ -1099,8 +1174,8 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] columnMeans(LongMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 		
 		double[] means = new double[c];
 		
@@ -1132,11 +1207,11 @@ public class LongMatrix extends IndexableMatrix {
 	public static double[] columnPopStdDev(Matrix m) {
 		if (m instanceof LongMatrix) {
 			return columnPopStdDev((LongMatrix)m);
-		} else if (m instanceof IndexableMatrix) {
-			return columnPopStdDev((IndexableMatrix)m);
+		} else if (m instanceof IndexRowMatrix) {
+			return columnPopStdDev((IndexRowMatrix)m);
 		} else {
-			int r = m.getRowCount();
-			int c = m.getColumnCount();
+			int r = m.getRows();
+			int c = m.getCols();
 			
 			double[] ret = new double[c];
 			
@@ -1162,9 +1237,9 @@ public class LongMatrix extends IndexableMatrix {
 	 * @param m the m
 	 * @return the double[]
 	 */
-	public static double[] columnPopStdDev(IndexableMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+	public static double[] columnPopStdDev(IndexRowMatrix m) {
+		int r = m.getRows();
+		int c = m.getCols();
 		
 		double[] ret = new double[c];
 		
@@ -1194,8 +1269,8 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the double[]
 	 */
 	public static double[] columnPopStdDev(LongMatrix m) {
-		int r = m.getRowCount();
-		int c = m.getColumnCount();
+		int r = m.getRows();
+		int c = m.getCols();
 		
 		double[] ret = new double[c];
 		
@@ -1225,7 +1300,7 @@ public class LongMatrix extends IndexableMatrix {
 	 * @return the long matrix
 	 */
 	public static LongMatrix createLongMatrix(Matrix m) {
-		return createLongMatrix(m.getRowCount(), m.getColumnCount());
+		return createLongMatrix(m.getRows(), m.getCols());
 	}
 	
 	/**
