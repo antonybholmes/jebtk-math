@@ -60,7 +60,7 @@ public class MixedMatrix extends IndexRowMatrix {
 	 */
 	public MixedMatrix(int rows, int columns) {
 		super(rows, columns);
-		
+
 		mData = new Object[mSize];
 		//mCellType = new CellType[mSize];
 	}
@@ -135,7 +135,7 @@ public class MixedMatrix extends IndexRowMatrix {
 	public Matrix copy() {
 		return new MixedMatrix(this);
 	}
-	
+
 	@Override
 	public Matrix ofSameType() {
 		return createMixedMatrix(this);
@@ -156,11 +156,7 @@ public class MixedMatrix extends IndexRowMatrix {
 	public Object get(int index) {
 		Object v = mData[index];
 
-		if (v != null) {
-			return v;
-		} else {
-			return TextUtils.EMPTY_STRING;
-		}
+		return v != null ? v : TextUtils.EMPTY_STRING;
 	}
 
 	/* (non-Javadoc)
@@ -230,39 +226,27 @@ public class MixedMatrix extends IndexRowMatrix {
 	public String getText(int index) {
 		Object v = mData[index];
 
-		//System.err.println("mixed " + index + " " + v);
-
-		if (v != null) {
-			if (v instanceof String) {
-				return (String)v;
-			} else {
-				return v.toString();
-			}
-		} else {
-			return TextUtils.EMPTY_STRING;
-		}
+		return v != null ? v.toString() : TextUtils.EMPTY_STRING;
 	}
 
 	@Override
 	public boolean isValid(int index) {
 		Object v = mData[index];
 
-		//System.err.println("mixed " + index + " " + v);
+		if (v == null) {
+			return false;
+		}
 
-		if (v != null) {
-			if (v instanceof Double) {
-				return isValidMatrixNum((double)v);
-			} else if (v instanceof Integer) {
-				return isValidMatrixNum((int)v);
-			} else if (v instanceof Long) {
-				return isValidMatrixNum((long)v);
-			} else if (v instanceof Number) {
-				return isValidMatrixNum(((Number)v).doubleValue());
-			} else {
-				return false;
-			}
+		if (v instanceof Double) {
+			return isValidMatrixNum((double)v);
+		} else if (v instanceof Integer) {
+			return isValidMatrixNum((int)v);
+		} else if (v instanceof Long) {
+			return isValidMatrixNum((long)v);
+		} else if (v instanceof Number) {
+			return isValidMatrixNum(((Number)v).doubleValue());
 		} else {
-			return true;
+			return false;
 		}
 	}
 
@@ -275,7 +259,7 @@ public class MixedMatrix extends IndexRowMatrix {
 	public void updateToNull(int index) {
 		mData[index] = null;
 	}
-	
+
 	@Override
 	public void updateToNull() {
 		Arrays.fill(mData, null);
@@ -288,12 +272,12 @@ public class MixedMatrix extends IndexRowMatrix {
 	public void update(double v) {
 		Arrays.fill(mData, v);
 	}
-	
+
 	@Override
 	public void update(long v) {
 		Arrays.fill(mData, v);
 	}
-	
+
 	@Override
 	public void update(int v) {
 		Arrays.fill(mData, v);
@@ -313,6 +297,8 @@ public class MixedMatrix extends IndexRowMatrix {
 	@Override
 	public void update(int index, Object v) {
 		if (v != null) {
+			// This is so only a limited number of object types can go in the
+			// matrix, either numbers or strings.
 			if (v instanceof Double) {
 				update(index, (double)v);
 			} else if (v instanceof Integer) {

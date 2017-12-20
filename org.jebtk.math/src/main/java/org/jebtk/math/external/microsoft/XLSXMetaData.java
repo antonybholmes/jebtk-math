@@ -13,7 +13,6 @@ import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.util.SAXHelper;
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
@@ -90,20 +89,17 @@ public class XLSXMetaData {
 				return;
 			}
 
-
-
-			CellAddress address;
+			CellReference address;
 
 			if (cellReference != null) {
-				address = new CellAddress(new CellReference(cellReference));
+				address = new CellReference(cellReference);
 			} else {
-				address = new CellAddress(mCurrentRow, mCurrentCol);
+				address = new CellReference(mCurrentRow, mCurrentCol);
 			}
 
-			System.err.println("aha " + address + " " + formattedValue);
 			mRow.add(formattedValue);
 
-			int thisCol = address.getColumn();
+			int thisCol = address.getCol();
 
 			mCurrentCol = thisCol;
 		}

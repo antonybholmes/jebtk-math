@@ -44,7 +44,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -63,8 +62,6 @@ import org.jebtk.core.io.Io;
 import org.jebtk.core.io.PathUtils;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.matrix.DataFrame;
-import org.jebtk.math.matrix.DataFrame;
-import org.xml.sax.SAXException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -149,9 +146,9 @@ public class Excel {
 		return new XSSFWorkbook(OPCPackage.open(file.toFile()));
 	}
 	
-	public static XLSXMetaData xLSXMetaData(Path file) throws IOException, OpenXML4JException, SAXException {
-		return new XLSXMetaData(file);
-	}
+	//public static XLSXMetaData xLSXMetaData(Path file) throws IOException, OpenXML4JException, SAXException {
+	//	return new XLSXMetaData(file);
+	//}
 
 
 	
