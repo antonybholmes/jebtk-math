@@ -27,16 +27,13 @@ IntMatrix * Copyright (C) 2016, Antony Holmes
  */
 package org.jebtk.math.matrix;
 
-import org.jebtk.core.ForEach2D;
-import org.jebtk.core.IterUtils;
-
 // TODO: Auto-generated Javadoc
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicLongMatrix extends DynamicMatrix<Long> {
+public class ExpandLongMatrix extends ExpandMatrix<Long> {
 
 	/**
 	 * The constant serialVersionUID.
@@ -46,7 +43,7 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	/**
 	 * Instantiates a new dynamic double matrix.
 	 */
-	public DynamicLongMatrix() {
+	public ExpandLongMatrix() {
 		this(0, 0);
 	}
 
@@ -56,8 +53,8 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	 * @param rows the rows
 	 * @param columns the columns
 	 */
-	public DynamicLongMatrix(int rows, int columns) {
-		super(rows, columns);
+	public ExpandLongMatrix(int rows, int columns) {
+		super(rows, columns, 0L);
 	}
 
 	/**
@@ -67,7 +64,7 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	 * @param columns the columns
 	 * @param v the v
 	 */
-	public DynamicLongMatrix(int rows, int columns, long v) {
+	public ExpandLongMatrix(int rows, int columns, long v) {
 		super(rows, columns, v);
 	}
 
@@ -77,8 +74,8 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	 *
 	 * @param m the m
 	 */
-	public DynamicLongMatrix(Matrix m) {
-		super(m);
+	public ExpandLongMatrix(Matrix m) {
+		super(m, 0L);
 	}
 
 	/* (non-Javadoc)
@@ -86,44 +83,34 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	 */
 	@Override
 	public Matrix copy() {
-		return new DynamicLongMatrix(this);
+		return new ExpandLongMatrix(this);
 	}
 	
 	@Override
 	public Matrix ofSameType() {
-		return new DynamicLongMatrix(mDim.mRows, mDim.mCols);
+		return new ExpandLongMatrix(mDim.mRows, mDim.mCols);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+	 */
 	@Override
-	public void update(int row, int column, double v) {
-		update(row, column, (long)v);
-	}
-	
-	@Override
-	public void update(int row, int column, int v) {
-		update(row, column, (long)v);
-	}
-	
-	@Override
-	public void update(int row, int column, long v) {
-		mData.put(row, column, v);
-
-		super.update(row, column, v);
-	}
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i = 0; i < getRows(); ++i) {
-			for (int j = 0; j < getCols(); ++j) {
-				double v = f.apply(i, j, mData.get(i, j));
-				
-				if (isValidMatrixNum(v)) {
-					mData.put(i, j, (long)v);
-				} else {
-					mData.put(i, j, 0L);
-				}
+	public void update(long v) {
+		for (int i = 0; i < mDim.mRows; ++i) {
+			for (int j = 0; j < mDim.mCols; ++j) {
+				mData.get(i).set(j, v);
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+	 */
+	@Override
+	public void update(int row, int column, long v) {
+		mData.get(row).set(column, v);
+
+		super.update(row, column, v);
 	}
 	
 	@Override
@@ -131,19 +118,19 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 		return transpose(this);
 	}
 	
-	public static Matrix transpose(final DynamicLongMatrix m) {
-		final DynamicLongMatrix ret = 
-				createDynamicLongMatrix(m.getCols(), m.getRows());
+	public static Matrix transpose(ExpandLongMatrix m) {
+		ExpandLongMatrix ret = 
+				createExpandDoubleMatrix(m.getCols(), m.getRows());
 
 		// Swap row and column indices. We use index lookup to reduce
 		// the number of number of times indices must be looked up to
 		// set cell elements.
 
-		IterUtils.forEach(m.getRows(), m.getCols(), new ForEach2D() {
-			@Override
-			public void loop(int i, int j) {
+		for (int i = 0; i < m.getRows(); ++i) {
+			for (int j = 0; j < m.getCols(); ++j) {
 				ret.set(j, i, m.get(i, j));
-			}});
+			}
+		}
 
 		return ret;
 	}
@@ -151,7 +138,7 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	//
 	// Static methods
 	//
-
+	
 	/**
 	 * Creates the.
 	 *
@@ -159,16 +146,16 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	 * @param columns the columns
 	 * @return the dynamic double matrix
 	 */
-	public static DynamicLongMatrix createDynamicLongMatrix(int rows, int columns) {
-		return new DynamicLongMatrix(rows, columns);
+	public static ExpandLongMatrix createExpandDoubleMatrix(int rows, int columns) {
+		return new ExpandLongMatrix(rows, columns);
 	}
-
+	
 	/**
 	 * Creates the matrix.
 	 *
 	 * @return the matrix
 	 */
-	public static Matrix createDynamicLongMatrix() {
-		return new DynamicLongMatrix();
+	public static Matrix createExpandDoubleMatrix() {
+		return new ExpandLongMatrix();
 	}
 }

@@ -150,7 +150,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 		if (mData.containsKey(index)) {
 			return mData.get(index);
 		} else {
-			return NULL_INT_NUMBER;
+			return 0;
 		}
 	}
 
@@ -170,7 +170,7 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 			if (isValidMatrixNum(v)) {
 				mData.put(i, (int)v);
 			} else {
-				mData.put(i, NULL_INT_NUMBER);
+				mData.put(i, 0);
 			}
 		}
 

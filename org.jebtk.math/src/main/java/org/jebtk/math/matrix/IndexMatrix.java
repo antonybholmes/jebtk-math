@@ -181,44 +181,6 @@ public abstract class IndexMatrix extends RegularMatrix {
 		update(index, (double)v);
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		updateToNull(getIndex(row, column));
-	}
-
-	/**
-	 * Set the cell to its default null value.
-	 *
-	 * @param index the new to null
-	 */
-	public void setToNull(int index) {
-		updateToNull(index);
-
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Update to null.
-	 *
-	 * @param index the index
-	 */
-	public abstract void updateToNull(int index);
-
-	@Override
-	public void updateToNull() {
-		for (int i = 0; i < mSize; ++i) {
-			update(i, NULL_NUMBER);
-		}
-	}
-
-
-
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.Matrix#updateText(int, int, java.lang.String)
 	 */
@@ -383,7 +345,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 * @return the value
 	 */
 	public double getValue(int index) {
-		return NULL_NUMBER;
+		return 0;
 	}
 
 	@Override
@@ -392,7 +354,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	}
 
 	public int getInt(int index) {
-		return (int)getValue(index);
+		return 0;
 	}
 
 	@Override
@@ -401,7 +363,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 	}
 
 	public long getLong(int index) {
-		return (long)getValue(index);
+		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -438,15 +400,6 @@ public abstract class IndexMatrix extends RegularMatrix {
 	 */
 	public CellType getCellType(int index) {
 		return CellType.NUMBER;
-	}
-
-	@Override
-	public boolean isNull(int row, int column) {
-		return isValid(getIndex(row, column));
-	}
-
-	public boolean isValid(int index) {
-		return true;
 	}
 
 	@Override

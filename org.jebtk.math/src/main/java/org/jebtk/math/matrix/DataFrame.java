@@ -232,7 +232,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	}
 
 	/**
-	 * Clone the annotations from an annotation matrix, but replace the
+	 * Clone the annotations from an existing DataFrame, but replace the
 	 * inner matrix with a different one. Useful for when creating a
 	 * copy of another matrix with updated values.
 	 *
@@ -794,6 +794,15 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	public double colStat(MatrixStatFunction f, int index) {
 		return getMatrix().colStat(f, index);
 	}
+	
+	@Override
+	public Matrix add(Matrix m) {
+		if (m instanceof DataFrame) {
+			m = ((DataFrame)m).getMatrix();
+		}
+		
+		return new DataFrame(this, getMatrix().add(m));
+	}
 
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#transpose()
@@ -801,9 +810,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	@Override
 	public Matrix transpose() {
 		// Transpose the main matrix
-		Matrix innerM = getMatrix().transpose();
-
-		DataFrame ret = new DataFrame(innerM);
+		DataFrame ret = new DataFrame(getMatrix().transpose());
 
 		// The first name is the row-name, which must be swapped for the
 		// column name so we only copy the annotation for names(1, end) 
@@ -908,7 +915,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 		if (row >= 0 && column >= 0) {
 			return getMatrix().getValue(row, column);
 		} else if (row < 0 && column < 0) {
-			return Matrix.NULL_NUMBER;
+			return 0;
 		} else if (row < 0) {
 			return getColumnAnnotations(row).getValue(0, column);
 		} else {
@@ -1036,14 +1043,6 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 			// col < 0
 			getRowAnnotations(column).update(0, row, v);
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		getMatrix().updateToNull(row, column);
 	}
 	
 	public Annotation getRowAnnotation() {

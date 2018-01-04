@@ -94,14 +94,6 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 		return new DynamicIntMatrix(mDim.mRows, mDim.mCols);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		mData.put(row, column, NULL_INT_NUMBER);
-	}
-	
 	@Override
 	public void update(int row, int column, double v) {
 		update(row, column, (int)v);
@@ -120,31 +112,6 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 	}
 	
 	@Override
-	public int getInt(int row, int column) {
-		Object v = mData.get(row, column);
-
-		if (v != null) {
-			return (int)v;
-		} else {
-			return NULL_INT_NUMBER;
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getText(int, int)
-	 */
-	@Override
-	public String getText(int row, int column) {
-		Object v = mData.get(row, column);
-
-		if (v != null) {
-			return v.toString();
-		} else {
-			return null;
-		}
-	}
-	
-	@Override
 	public void apply(final CellFunction f) {
 		IterUtils.forEach(getRows(), getCols(), new ForEach2D() {
 			@Override
@@ -154,7 +121,7 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 				if (isValidMatrixNum(v)) {
 					mData.put(i, j, (int)v);
 				} else {
-					mData.put(i, j, NULL_INT_NUMBER);
+					mData.put(i, j, 0);
 				}
 			}
 		});

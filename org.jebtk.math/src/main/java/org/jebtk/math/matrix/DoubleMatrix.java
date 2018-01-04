@@ -37,7 +37,6 @@ import java.util.concurrent.RecursiveAction;
 
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.sys.SysUtils;
-import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.statistics.Statistics;
 
 
@@ -289,22 +288,6 @@ public class DoubleMatrix extends IndexRowMatrix {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = NULL_NUMBER;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.jebtk.math.matrix.IndexMatrix#updateToNull()
-	 */
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, NULL_NUMBER);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.abh.common.math.matrix.Matrix#update(org.abh.common.math.matrix.Matrix)
 	 */
 	@Override
@@ -371,14 +354,6 @@ public class DoubleMatrix extends IndexRowMatrix {
 	@Override
 	public double getValue(int index) {
 		return mData[index];
-	}
-
-	/* (non-Javadoc)
-	 * @see org.jebtk.math.matrix.IndexMatrix#isValid(int)
-	 */
-	@Override
-	public boolean isValid(int index) {
-		return isValidMatrixNum(mData[index]);
 	}
 
 	/* (non-Javadoc)
@@ -730,6 +705,94 @@ public class DoubleMatrix extends IndexRowMatrix {
 
 		return f.getStat();
 	}
+	
+	@Override
+	public Matrix add(double v) {
+		DoubleMatrix ret = ofSameType(this);
+		
+		for (int i = 0; i < mData.length; ++i) {
+			ret.mData[i] = mData[i] + v;
+		}
+
+		return ret;
+	}
+	
+	@Override
+	public Matrix add(final Matrix m) {
+		if (m instanceof DoubleMatrix) {
+			return add((DoubleMatrix)m);
+		} else {
+			return super.add(m);
+		}
+	}
+
+	/**
+	 * Dot.
+	 *
+	 * @param m the m
+	 * @return the matrix
+	 */
+	public Matrix add(final DoubleMatrix m) {
+		DoubleMatrix ret = ofSameType(this);
+		
+		add(ret, m);
+
+		return ret;
+	}
+
+	/**
+	 * Dot.
+	 *
+	 * @param m1 the m 1
+	 * @param m2 the m 2
+	 */
+	public static void add(DoubleMatrix m1, final DoubleMatrix m2) {
+		for (int i = 0; i < m1.mData.length; ++i) {
+			m1.mData[i] += m2.mData[i];
+		}
+	}
+	
+	@Override
+	public Matrix multiply(final Matrix m) {
+		if (m instanceof DoubleMatrix) {
+			return multiply(this, (DoubleMatrix)m);
+		} else {
+			return super.multiply(m);
+		}
+	}
+
+	public static Matrix multiply(final DoubleMatrix m1, final DoubleMatrix m2) {
+		DoubleMatrix ret = ofSameType(m1);
+		
+		int of1 = 0;
+		
+		int r = m1.mDim.mRows;
+		int c = m1.mDim.mCols;
+
+		for (int i = 0; i < r; ++i) {
+			int ix = of1;
+			
+			for (int j = 0; i < c; ++j) {
+				int ix1 = of1;
+				
+				int ix2 = j;
+				
+				for (int k = 0; i < c; ++k) {
+					ret.mData[ix] += m1.mData[ix1] * m2.mData[ix2];
+					
+					++ix1;
+					ix2 += c;
+				}
+				
+				++ix;
+			}
+			
+			of1 += c;
+		}
+
+		return ret;
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.jebtk.math.matrix.Matrix#dot(org.jebtk.math.matrix.Matrix)
@@ -750,11 +813,11 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 * @return the matrix
 	 */
 	public Matrix dot(final DoubleMatrix m) {
-		dot(this, m);
+		DoubleMatrix ret = ofSameType(this);
+		
+		dot(ret, m);
 
-		fireMatrixChanged();
-
-		return this;
+		return ret;
 	}
 
 	/**
@@ -1169,27 +1232,6 @@ public class DoubleMatrix extends IndexRowMatrix {
 		return new EstDoubleMatrixParser().parse(file);
 	}
 
-
-
-	/**
-	 * Parse a string as a double or return null if
-	 * the string == "n/a".
-	 *
-	 * @param value the value
-	 * @return the double
-	 */
-	public static double parseDouble(String value) {
-		if (value == null || value.toLowerCase().equals(TextUtils.NA)) {
-			return NULL_NUMBER;
-		}
-
-		try {
-			return Double.parseDouble(value);
-		} catch (Exception e) {
-			return NULL_NUMBER;
-		}
-	}
-
 	/**
 	 * Return the row wise means of a matrix group.
 	 *
@@ -1524,5 +1566,15 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 */
 	public static DoubleMatrix createOnesMatrix(int rows, int cols) {
 		return new DoubleMatrix(rows, cols, 1);
+	}
+	
+	/**
+	 * Return an empty double matrix of the same dimension as the matrix argument.
+	 * 
+	 * @param m
+	 * @return
+	 */
+	public static DoubleMatrix ofSameType(final DoubleMatrix m) {
+		return new DoubleMatrix(m);
 	}
 }

@@ -131,20 +131,6 @@ public class IntMatrix extends IndexRowMatrix {
 		fireMatrixChanged();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = NULL_INT_NUMBER;
-	}
-	
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, NULL_INT_NUMBER);
-	}
-
-
 	@Override
 	public void update(Matrix m) {
 		if (m instanceof IntMatrix) {
@@ -204,7 +190,7 @@ public class IntMatrix extends IndexRowMatrix {
 	 */
 	@Override
 	public Object get(int index) {
-		return getValue(index);
+		return getInt(index);
 	}
 
 	/* (non-Javadoc)
@@ -212,24 +198,12 @@ public class IntMatrix extends IndexRowMatrix {
 	 */
 	@Override
 	public double getValue(int index) {
-		int v = mData[index];
-
-		if (isValidMatrixNum(v)) {
-			return v;
-		} else  {
-			return NULL_NUMBER;
-		}		
+		return getInt(index);
 	}
 	
 	@Override
 	public long getLong(int index) {
-		int v = getInt(index);
-		
-		if (isValidMatrixNum(v)) {
-			return v;
-		} else  {
-			return NULL_LONG_NUMBER;
-		}		
+		return getInt(index);
 	}
 	
 	@Override
@@ -247,7 +221,7 @@ public class IntMatrix extends IndexRowMatrix {
 		if (isValidMatrixNum(v)) {
 			i = (int)v;
 		} else {
-			i = NULL_INT_NUMBER;
+			i = 0;
 		}
 
 		update(i);
@@ -255,15 +229,7 @@ public class IntMatrix extends IndexRowMatrix {
 	
 	@Override
 	public void update(long v) {
-		long i;
-
-		if (isValidMatrixNum(v)) {
-			i = (int)v;
-		} else {
-			i = NULL_INT_NUMBER;
-		}
-
-		update(i);
+		update((int)v);
 	}
 	
 	@Override
@@ -281,7 +247,7 @@ public class IntMatrix extends IndexRowMatrix {
 		if (isValidMatrixNum(v)) {
 			i = (int)v;
 		} else {
-			i = NULL_INT_NUMBER;
+			i = 0;
 		}
 
 		mData[index] = i;
@@ -294,11 +260,7 @@ public class IntMatrix extends IndexRowMatrix {
 	
 	@Override
 	public void update(int index, long v) {
-		if (isValidMatrixNum(v)) {
-			mData[index] = (int)v;
-		} else {
-			mData[index] = NULL_INT_NUMBER;
-		}
+		mData[index] = (int)v;
 	}
 	
 	
@@ -322,11 +284,6 @@ public class IntMatrix extends IndexRowMatrix {
 	@Override
 	public String getText(int index) {
 		return Integer.toString(mData[index]);
-	}
-	
-	@Override
-	public boolean isValid(int index) {
-		return isValidMatrixNum(mData[index]);
 	}
 
 	/* (non-Javadoc)
@@ -500,6 +457,47 @@ public class IntMatrix extends IndexRowMatrix {
 		}
 
 		return f.getStat();
+	}
+	
+	@Override
+	public Matrix multiply(final Matrix m) {
+		if (m instanceof IntMatrix) {
+			return multiply(this, (IntMatrix)m);
+		} else {
+			return super.multiply(m);
+		}
+	}
+
+	public static Matrix multiply(final IntMatrix m1, final IntMatrix m2) {
+		IntMatrix ret = ofSameType(m1);
+		
+		int of1 = 0;
+		
+		int r = m1.mDim.mRows;
+		int c = m1.mDim.mCols;
+
+		for (int i = 0; i < r; ++i) {
+			int ix = of1;
+			
+			for (int j = 0; i < c; ++j) {
+				int ix1 = of1;
+				
+				int ix2 = j;
+				
+				for (int k = 0; i < c; ++k) {
+					ret.mData[ix] += m1.mData[ix1] * m2.mData[ix2];
+					
+					++ix1;
+					ix2 += c;
+				}
+				
+				++ix;
+			}
+			
+			of1 += c;
+		}
+
+		return ret;
 	}
 
 	@Override
@@ -1377,5 +1375,15 @@ public class IntMatrix extends IndexRowMatrix {
 	 */
 	public static IntMatrix createIntMatrix(int rows, int cols) {
 		return new IntMatrix(rows, cols);
+	}
+	
+	/**
+	 * Return an empty double matrix of the same dimension as the matrix argument.
+	 * 
+	 * @param m
+	 * @return
+	 */
+	public static IntMatrix ofSameType(final IntMatrix m) {
+		return new IntMatrix(m);
 	}
 }

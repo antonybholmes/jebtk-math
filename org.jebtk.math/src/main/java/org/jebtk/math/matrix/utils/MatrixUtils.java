@@ -310,7 +310,7 @@ public class MatrixUtils {
 			int index = i * m.mDim.mCols;
 
 			for (int j = 0; j < m.mDim.mCols; ++j) {
-				values[j] = m.getValue(index);
+				values[j] = m.mData[index];
 
 				++index;
 			}

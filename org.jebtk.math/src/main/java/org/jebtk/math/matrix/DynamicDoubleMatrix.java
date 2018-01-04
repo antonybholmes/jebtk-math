@@ -113,42 +113,6 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 		super.update(row, column, v);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		mData.put(row, column, Matrix.NULL_NUMBER);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
-	 */
-	@Override
-	public double getValue(int row, int column) {
-		Object v = mData.get(row, column);
-
-		if (v != null) {
-			return (double)v;
-		} else {
-			return NULL_NUMBER;
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getText(int, int)
-	 */
-	@Override
-	public String getText(int row, int column) {
-		Object v = mData.get(row, column);
-
-		if (v != null) {
-			return v.toString();
-		} else {
-			return null;
-		}
-	}
-	
 	@Override
 	public Matrix transpose() {
 		return transpose(this);

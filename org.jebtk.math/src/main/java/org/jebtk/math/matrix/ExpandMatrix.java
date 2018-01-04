@@ -119,9 +119,31 @@ public abstract class ExpandMatrix<T> extends ResizableMatrix {
 		Object v = mData.get(row).get(column);
 
 		if (v != null && v instanceof Number) {
-			return ((Double)v).doubleValue();
+			return ((Number)v).doubleValue();
 		} else {
-			return NULL_NUMBER;
+			return 0;
+		}
+	}
+	
+	@Override
+	public int getInt(int row, int column) {
+		Object v = mData.get(row).get(column);
+
+		if (v != null && v instanceof Number) {
+			return ((Number)v).intValue();
+		} else {
+			return 0;
+		}
+	}
+	
+	@Override
+	public long getLong(int row, int column) {
+		Object v = mData.get(row).get(column);
+
+		if (v != null && v instanceof Number) {
+			return ((Number)v).longValue();
+		} else {
+			return 0;
 		}
 	}
 
@@ -133,21 +155,9 @@ public abstract class ExpandMatrix<T> extends ResizableMatrix {
 		Object v = mData.get(row).get(column);
 
 		if (v != null) {
-			if (v instanceof String) {
-				return (String)v;
-			} else {
-				return v.toString();
-			}
+			return v.toString();
 		} else {
 			return TextUtils.EMPTY_STRING;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		mData.get(row).set(column, null);
 	}
 }

@@ -209,16 +209,6 @@ public class TextMatrix extends IndexRowMatrix {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = TextUtils.EMPTY_STRING;
-	}
-
-	
-
-	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#updateText(int, java.lang.String)
 	 */
 	@Override
@@ -240,11 +230,6 @@ public class TextMatrix extends IndexRowMatrix {
 	@Override
 	public Object get(int index) {
 		return getText(index);
-	}
-	
-	@Override
-	public boolean isValid(int index) {
-		return mData[index] == null;
 	}
 	
 	/* (non-Javadoc)

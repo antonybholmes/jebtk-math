@@ -58,9 +58,9 @@ public abstract class Matrix extends MatrixEventListeners {
 	public static final double NULL_NUMBER = Double.NaN;
 
 	/** The Constant NULL_INT_NUMBER. */
-	public static final int NULL_INT_NUMBER = Integer.MIN_VALUE;
+	//public static final int NULL_INT_NUMBER = Integer.MIN_VALUE;
 
-	public static final long NULL_LONG_NUMBER = Long.MIN_VALUE;
+	//public static final long NULL_LONG_NUMBER = Long.MIN_VALUE;
 
 
 	/** The Constant NUMBER_MATRIX_TYPES. */
@@ -652,15 +652,15 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the value
 	 */
 	public double getValue(int row, int column) {
-		return NULL_NUMBER;
+		return 0;
 	}
 	
 	public int getInt(int row, int column) {
-		return (int)getValue(row, column);
+		return 0;
 	}
 	
 	public long getLong(int row, int column) {
-		return (long)getValue(row, column);
+		return 0;
 	}
 
 	/**
@@ -673,11 +673,6 @@ public abstract class Matrix extends MatrixEventListeners {
 	public String getText(int row, int column) {
 		return TextUtils.EMPTY_STRING;
 	}
-	
-	public boolean isNull(int row, int column) {
-		return true;
-	}
-	
 
 
 	/**
@@ -705,43 +700,6 @@ public abstract class Matrix extends MatrixEventListeners {
 	public CellType getCellType(int row, int column) {
 		return CellType.NUMBER;
 	}
-
-	/**
-	 * Should reset a cell to its null value.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 */
-	public void setToNull(int row, int column) {
-		updateToNull(row, column);
-
-		fireMatrixChanged();
-	}
-
-	/**
-	 * Should reset a cell to its null value.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 */
-	public void updateToNull(int row, int column) {
-		// Do nothing
-	}
-	
-	public void setToNull() {
-		updateToNull();
-
-		fireMatrixChanged();
-	}
-	
-	public void updateToNull() {
-		for (int i = 0; i < getRows(); ++i) {
-			for (int j = 0; j < getCols(); ++j) {
-				update(i, j, NULL_NUMBER);
-			}
-		}
-	}
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -954,19 +912,92 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the matrix
 	 */
 	public Matrix dot(Matrix m) {
-		dot(this, m);
-
-		fireMatrixChanged();
-
-		return this;
+		return dot(this, m);
 	}
 
-	public static void dot(Matrix m1, Matrix m2) {
+	public static Matrix dot(final Matrix m1, final Matrix m2) {
+		Matrix ret = m1.ofSameType();
+		
 		for (int i = 0; i < m1.getRows(); ++i) {
 			for (int j = 0; j < m1.getCols(); ++j) {
-				m1.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
+				ret.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
 			}
 		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Add a constant value to the matrix.
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public Matrix add(double v) {
+		Matrix ret = ofSameType();
+		
+		for (int i = 0; i < ret.getRows(); ++i) {
+			for (int j = 0; j < ret.getCols(); ++j) {
+				ret.set(i, j, getValue(i, j) + v);
+			}
+		}
+
+		return ret;
+	}
+	
+	/**
+	 * Subtract a constant value from the matrix.
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public Matrix subtract(double v) {
+		return add(-v);
+	}
+	
+	public Matrix add(Matrix m) {
+		return add(this, m);
+	}
+	
+	/**
+	 * Add the cells of matrix 2 to matrix 1.
+	 * 
+	 * @param m1		Matrix 1.
+	 * @param m2		Matrix 2.
+	 * @param ret		The matrix to update.
+	 * @return 
+	 */
+	public static Matrix add(Matrix m1, Matrix m2) {
+		Matrix ret = m1.ofSameType();
+		
+		for (int i = 0; i < m1.getRows(); ++i) {
+			for (int j = 0; j < m1.getCols(); ++j) {
+				ret.set(i, j, m1.getValue(i, j) + m2.getValue(i, j));
+			}
+		}
+		
+		return ret;
+	}
+	
+	public Matrix multiply(final Matrix m) {
+		return multiply(this, m);
+	}
+	
+	public static Matrix multiply(final Matrix m1, final Matrix m2) {
+		Matrix ret = m1.ofSameType();
+		
+		int r = m1.getRows();
+		int c = m2.getCols();
+
+		for (int i = 0; i < r; ++i) {
+			for (int j = 0; i < c; ++j) {
+				for (int k = 0; i < c; ++k) {
+					ret.set(i, j, ret.getValue(i, j) + m1.getValue(i, k) * m2.getValue(k, j));
+				}
+			}
+		}
+
+		return ret;
 	}
 
 	/**
@@ -1826,14 +1857,6 @@ public abstract class Matrix extends MatrixEventListeners {
 	 */
 	public static boolean isValidMatrixNum(double v) {
 		return !Double.isNaN(v);
-	}
-
-	public static boolean isValidMatrixNum(int v) {
-		return v != NULL_INT_NUMBER;
-	}
-
-	public static boolean isValidMatrixNum(long v) {
-		return v != NULL_LONG_NUMBER;
 	}
 
 	/**

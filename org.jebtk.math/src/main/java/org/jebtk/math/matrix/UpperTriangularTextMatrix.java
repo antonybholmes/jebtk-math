@@ -27,8 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.Arrays;
-
 import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 
@@ -166,19 +164,6 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = value;
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = null;
-	}
-	
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, null);
 	}
 	
 	/* (non-Javadoc)

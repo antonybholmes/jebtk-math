@@ -139,22 +139,9 @@ public class LongMatrix extends IndexRowMatrix {
 			if (isValidMatrixNum(v)) {
 				mData[i] = (long)v;
 			} else {
-				mData[i] = NULL_LONG_NUMBER;
+				mData[i] = 0;
 			}
 		}
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	public void updateToNull(int index) {
-		mData[index] = NULL_LONG_NUMBER;
-	}
-	
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, NULL_LONG_NUMBER);
 	}
 
 	@Override
@@ -212,7 +199,7 @@ public class LongMatrix extends IndexRowMatrix {
 	 */
 	@Override
 	public Object get(int index) {
-		return getValue(index);
+		return getLong(index);
 	}
 
 	/* (non-Javadoc)
@@ -220,24 +207,12 @@ public class LongMatrix extends IndexRowMatrix {
 	 */
 	@Override
 	public double getValue(int index) {
-		long v = getLong(index);
-		
-		if (isValidMatrixNum(v)) {
-			return v;
-		} else  {
-			return NULL_NUMBER;
-		}		
+		return getLong(index);		
 	}
 	
 	@Override
 	public int getInt(int index) {
-		long v = getLong(index);
-		
-		if (isValidMatrixNum(v)) {
-			return (int)v;
-		} else  {
-			return NULL_INT_NUMBER;
-		}		
+		return (int)getLong(index);		
 	}
 	
 	@Override
@@ -255,7 +230,7 @@ public class LongMatrix extends IndexRowMatrix {
 		if (isValidMatrixNum(v)) {
 			l = (long)v;
 		} else {
-			l = NULL_LONG_NUMBER;
+			l = 0;
 		}
 
 		update(l);
@@ -263,15 +238,7 @@ public class LongMatrix extends IndexRowMatrix {
 	
 	@Override
 	public void update(int v) {
-		long l;
-
-		if (isValidMatrixNum(v)) {
-			l = (long)v;
-		} else {
-			l = NULL_LONG_NUMBER;
-		}
-
-		update(l);
+		update((long)v);
 	}
 	
 	@Override
@@ -289,7 +256,7 @@ public class LongMatrix extends IndexRowMatrix {
 		if (isValidMatrixNum(v)) {
 			l = (long)v;
 		} else {
-			l = NULL_LONG_NUMBER;
+			l = 0;
 		}
 		
 		mData[index] = l;
@@ -300,7 +267,7 @@ public class LongMatrix extends IndexRowMatrix {
 		if (isValidMatrixNum(v)) {
 			mData[index] = (long)v;
 		} else {
-			mData[index] = NULL_LONG_NUMBER;
+			mData[index] = 0;
 		}
 	}
 	
@@ -315,11 +282,6 @@ public class LongMatrix extends IndexRowMatrix {
 	@Override
 	public String getText(int index) {
 		return Long.toString(mData[index]);
-	}
-	
-	@Override
-	public boolean isValid(int index) {
-		return isValidMatrixNum(mData[index]);
 	}
 
 	/* (non-Javadoc)

@@ -49,26 +49,20 @@ public class DoubleColMatrix extends IndexColMatrix {
 	public final double[] mData;
 
 	/**
-	 * Instantiates a new numerical matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DoubleColMatrix(int rows, int columns) {
-		this(rows, columns, NULL_NUMBER);
-	}
-
-	/**
 	 * Create a new matrix and initialize all cells to a common value.
 	 *
 	 * @param rows the rows
 	 * @param columns the columns
 	 * @param v the v
 	 */
-	public DoubleColMatrix(int rows, int columns, double v) {
+	public DoubleColMatrix(int rows, int columns) {
 		super(rows, columns);
 
 		mData = new double[mSize];
+	}
+	
+	public DoubleColMatrix(int rows, int columns, double v) {
+		this(rows, columns);
 
 		// Set the default value
 		update(v);
@@ -106,14 +100,6 @@ public class DoubleColMatrix extends IndexColMatrix {
 		this(m.getRows(), m.getCols());
 
 		update(m);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = NULL_NUMBER;
 	}
 
 	/* (non-Javadoc)

@@ -47,9 +47,6 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Represents cells are strings. Unused cells are set to null.
-	 */
 	protected Map<Integer, T> mData = null;
 	
 	/**
@@ -97,21 +94,6 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		mData = new HashMap<Integer, T>(m.mData);
 	}
 
-	/**
-	 * Set a cell to null so that neither text nor number are valid.
-	 *
-	 * @param index the index
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData.remove(index);
-	}
-	
-	@Override
-	public void updateToNull() {
-		mData.clear();
-	}
-
 	/* (non-Javadoc)
 	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
 	 */
@@ -122,7 +104,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		if (v != null && v instanceof Number) {
 			return ((Number)v).doubleValue();
 		} else {
-			return NULL_NUMBER;
+			return 0;
 		}
 	}
 	
@@ -133,7 +115,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		if (v != null && v instanceof Number) {
 			return ((Number)v).doubleValue();
 		} else {
-			return NULL_NUMBER;
+			return 0;
 		}
 	}
 	
@@ -144,7 +126,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		if (v != null && v instanceof Number) {
 			return ((Number)v).intValue();
 		} else {
-			return NULL_INT_NUMBER;
+			return 0;
 		}
 	}
 	
@@ -155,7 +137,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		if (v != null && v instanceof Number) {
 			return ((Number)v).longValue();
 		} else {
-			return NULL_LONG_NUMBER;
+			return 0;
 		}
 	}
 
@@ -175,10 +157,5 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		} else {
 			return TextUtils.EMPTY_STRING;
 		}
-	}
-	
-	@Override
-	public boolean isValid(int index) {
-		return mData.get(index) == null;
 	}
 }

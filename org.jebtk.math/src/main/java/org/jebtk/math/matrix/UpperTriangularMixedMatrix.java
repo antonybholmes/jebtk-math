@@ -27,8 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.Arrays;
-
 import org.jebtk.core.text.TextUtils;
 
 // TODO: Auto-generated Javadoc
@@ -112,10 +110,10 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 			} else if (v instanceof Integer) {
 				return (int)v;
 			} else {
-				return NULL_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_NUMBER;
+			return 0;
 		}
 	}
 	
@@ -131,10 +129,10 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 			} else if (v instanceof Integer) {
 				return ((Integer)v).longValue();
 			} else {
-				return NULL_LONG_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_LONG_NUMBER;
+			return 0;
 		}
 	}
 	
@@ -150,10 +148,10 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 			} else if (v instanceof Integer) {
 				return (int)v;
 			} else {
-				return NULL_INT_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_INT_NUMBER;
+			return 0;
 		}
 	}
 
@@ -245,19 +243,6 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = value;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = null;
-	}
-	
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, null);
 	}
 
 	/* (non-Javadoc)

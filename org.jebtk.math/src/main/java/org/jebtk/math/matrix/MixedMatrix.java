@@ -174,10 +174,10 @@ public class MixedMatrix extends IndexRowMatrix {
 			} else if (v instanceof Integer) {
 				return (int)v;
 			} else {
-				return NULL_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_NUMBER;
+			return 0;
 		}
 	}
 
@@ -193,10 +193,10 @@ public class MixedMatrix extends IndexRowMatrix {
 			} else if (v instanceof Integer) {
 				return ((Integer)v).longValue();
 			} else {
-				return NULL_LONG_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_LONG_NUMBER;
+			return 0;
 		}
 	}
 
@@ -212,10 +212,10 @@ public class MixedMatrix extends IndexRowMatrix {
 			} else if (v instanceof Integer) {
 				return (int)v;
 			} else {
-				return NULL_INT_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_INT_NUMBER;
+			return 0;
 		}
 	}
 
@@ -227,42 +227,6 @@ public class MixedMatrix extends IndexRowMatrix {
 		Object v = mData[index];
 
 		return v != null ? v.toString() : TextUtils.EMPTY_STRING;
-	}
-
-	@Override
-	public boolean isValid(int index) {
-		Object v = mData[index];
-
-		if (v == null) {
-			return false;
-		}
-
-		if (v instanceof Double) {
-			return isValidMatrixNum((double)v);
-		} else if (v instanceof Integer) {
-			return isValidMatrixNum((int)v);
-		} else if (v instanceof Long) {
-			return isValidMatrixNum((long)v);
-		} else if (v instanceof Number) {
-			return isValidMatrixNum(((Number)v).doubleValue());
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Set a cell to null so that neither text nor number are valid.
-	 *
-	 * @param index the index
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = null;
-	}
-
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, null);
 	}
 
 	/* (non-Javadoc)

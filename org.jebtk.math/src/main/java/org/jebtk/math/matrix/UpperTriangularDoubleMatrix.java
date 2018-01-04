@@ -27,8 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.Arrays;
-
 import org.jebtk.core.sys.SysUtils;
 
 // TODO: Auto-generated Javadoc
@@ -149,19 +147,6 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	@Override
 	public void update(String value) {
 		// Do nothing
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#updateToNull(int)
-	 */
-	@Override
-	public void updateToNull(int index) {
-		mData[index] = NULL_NUMBER;
-	}
-	
-	@Override
-	public void updateToNull() {
-		Arrays.fill(mData, NULL_NUMBER);
 	}
 	
 	/* (non-Javadoc)

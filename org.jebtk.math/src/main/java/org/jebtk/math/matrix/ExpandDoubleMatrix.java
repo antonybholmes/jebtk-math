@@ -54,7 +54,7 @@ public class ExpandDoubleMatrix extends ExpandMatrix<Double> {
 	 * @param columns the columns
 	 */
 	public ExpandDoubleMatrix(int rows, int columns) {
-		super(rows, columns, Matrix.NULL_NUMBER);
+		super(rows, columns, 0d);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class ExpandDoubleMatrix extends ExpandMatrix<Double> {
 	 * @param m the m
 	 */
 	public ExpandDoubleMatrix(Matrix m) {
-		super(m, Matrix.NULL_NUMBER);
+		super(m, 0d);
 	}
 
 	/* (non-Javadoc)
@@ -111,42 +111,6 @@ public class ExpandDoubleMatrix extends ExpandMatrix<Double> {
 		mData.get(row).set(column, v);
 
 		super.update(row, column, v);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		mData.get(row).set(column, Matrix.NULL_NUMBER);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getValue(int, int)
-	 */
-	@Override
-	public double getValue(int row, int column) {
-		Object v = mData.get(row).get(column);
-
-		if (v != null) {
-			return ((Double)v).doubleValue();
-		} else {
-			return Matrix.NULL_NUMBER;
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getText(int, int)
-	 */
-	@Override
-	public String getText(int row, int column) {
-		Object v = mData.get(row).get(column);
-
-		if (v != null) {
-			return v.toString();
-		} else {
-			return null;
-		}
 	}
 	
 	@Override

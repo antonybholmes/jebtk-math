@@ -38,7 +38,7 @@ public class MatrixStream implements CellFunction, MatrixDimFunction, MatrixRedu
 
 	@Override
 	public double apply(int row, int col, double value) {
-		return Matrix.NULL_NUMBER;
+		return 0;
 	}
 	
 	@Override
@@ -49,6 +49,6 @@ public class MatrixStream implements CellFunction, MatrixDimFunction, MatrixRedu
 
 	@Override
 	public double apply(int index, double[] data) {
-		return Matrix.NULL_NUMBER;
+		return 0;
 	}
 }

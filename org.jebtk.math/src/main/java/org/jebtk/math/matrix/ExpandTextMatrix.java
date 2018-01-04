@@ -125,28 +125,6 @@ public class ExpandTextMatrix extends ExpandMatrix<String> {
 		super.update(row, column, v);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#updateToNull(int, int)
-	 */
-	@Override
-	public void updateToNull(int row, int column) {
-		mData.get(row).set(column, null);
-	}
-		
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#getText(int, int)
-	 */
-	@Override
-	public String getText(int row, int column) {
-		Object v = mData.get(row).get(column);
-
-		if (v != null) {
-			return v.toString();
-		} else {
-			return null;
-		}
-	}
-	
 	@Override
 	public Matrix transpose() {
 		return transpose(this);

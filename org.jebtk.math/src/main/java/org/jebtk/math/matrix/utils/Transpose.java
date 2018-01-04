@@ -17,10 +17,10 @@
 package org.jebtk.math.matrix.utils;
 
 import org.jebtk.math.matrix.DataFrame;
-import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IndexMatrix;
 import org.jebtk.math.matrix.IntMatrix;
+import org.jebtk.math.matrix.LongMatrix;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MixedMatrix;
 
@@ -160,6 +160,27 @@ public class Transpose {
 	 */
 	public static Matrix transpose(final IntMatrix m) { 
 		IntMatrix ret = IntMatrix.createIntMatrix(m.mDim.mCols, m.mDim.mRows);
+
+		int i2 = 0;
+		int c = 0;
+
+		for (int i = 0; i < m.mData.length; ++i) {
+			// Each time we end a row, reset i2 back to the next column
+			if (i % m.mDim.mCols == 0) {
+				i2 = c++;
+			}
+
+			ret.mData[i2] = m.mData[i];
+
+			// Skip blocks
+			i2 += m.mDim.mRows;
+		}
+
+		return ret;
+	}
+	
+	public static Matrix transpose(final LongMatrix m) { 
+		LongMatrix ret = LongMatrix.createLongMatrix(m.mDim.mCols, m.mDim.mRows);
 
 		int i2 = 0;
 		int c = 0;

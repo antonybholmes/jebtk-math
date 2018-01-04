@@ -2,7 +2,7 @@ package org.jebtk.math.matrix;
 
 public abstract class MatrixStatFunction implements CellFunction {
 	
-	protected double mStat = Matrix.NULL_NUMBER;
+	protected double mStat = 0;
 	
 	/**
 	 * Run once before matrix is iterated over

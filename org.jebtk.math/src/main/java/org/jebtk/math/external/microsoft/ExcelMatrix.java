@@ -27,13 +27,11 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jebtk.core.text.TextUtils;
-import org.jebtk.math.matrix.DataFrame;
-import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.CellType;
+import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixType;
 import org.jebtk.math.matrix.RegularMatrix;
-import org.jebtk.math.matrix.UpperTriangularMixedMatrix;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -130,10 +128,10 @@ public class ExcelMatrix extends RegularMatrix {
 			if (mEvaluator.evaluateInCell(cell).getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return cell.getNumericCellValue();
 			} else {
-				return NULL_NUMBER;
+				return 0;
 			}
 		} else {
-			return NULL_NUMBER;
+			return 0;
 		}
 	}
 	
