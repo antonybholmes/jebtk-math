@@ -15,30 +15,22 @@
  */
 package org.jebtk.math.functions;
 
+import org.jebtk.math.matrix.CellFunction;
+
 // TODO: Auto-generated Javadoc
 /**
- * The Class MultiplyFunction.
+ * The Class LogFunction.
  */
-public class MultiplyFunction implements UnaryFunction {
+public class LnFunction implements CellFunction {
+	/** The ln function. */
+	public static CellFunction LN_FUNCTION = new LnFunction();
 
-	/** The m V. */
-	private double mV;
-
-	/**
-	 * Instantiates a new multiply function.
-	 *
-	 * @param v the v
-	 */
-	public MultiplyFunction(double v) {
-		mV = v;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.abh.common.math.functions.Function#apply(double)
 	 */
 	@Override
-	public double f(double x) {
-		return x * mV;
+	public double f(int r, int c, double x, double... y) {
+		return Math.log(x);
 	}
 
 }

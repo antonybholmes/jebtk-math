@@ -53,7 +53,7 @@ public class IntMatrix extends IndexRowMatrix {
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * The member data.
 	 */
@@ -158,31 +158,8 @@ public class IntMatrix extends IndexRowMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return createIntMatrix(this);
-	}
-	
-	@Override
-	public void f(CellFunction f, IndexMatrix ret) {
-		if (ret instanceof IntMatrix) {
-			f(f, (IntMatrix)ret);
-		} else {
-			super.f(f, ret);
-		}
-	}
-
-	public void f(CellFunction f, IntMatrix ret) {
-		int r = 0;
-		int c = 0;
-		
-		for (int i = 0; i < mData.length; ++i) {
-			ret.mData[i] = (int)f.apply(r, c++, mData[i]);
-
-			if (c == mDim.mCols) {
-				c = 0;
-				++r;
-			}
-		}
+	public Matrix ofSameType(int rows, int cols) {
+		return createIntMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)
@@ -384,22 +361,12 @@ public class IntMatrix extends IndexRowMatrix {
 		fireMatrixChanged();
 	}
 
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] = (int)f.apply(i, 0, mData[i]);
-		}
-
-		fireMatrixChanged();
-	}
-
 	@Override
 	public void rowApply(CellFunction f, int index) {
 		int offset = mRowOffsets[index];
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			mData[offset] = (int)f.apply(i, 0, mData[offset]);
+			mData[offset] = (int)f.f(i, 0, mData[offset]);
 
 			++offset;
 		}
@@ -412,7 +379,7 @@ public class IntMatrix extends IndexRowMatrix {
 		int offset = index;
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			mData[offset] = (int)f.apply(i, 0, mData[offset]);
+			mData[offset] = (int)f.f(i, 0, mData[offset]);
 
 			offset += mDim.mCols;
 		}
@@ -425,7 +392,7 @@ public class IntMatrix extends IndexRowMatrix {
 		f.init();
 
 		for (int i = 0; i < mData.length; ++i) {
-			f.apply(i, 0, mData[i]);
+			f.f(i, 0, mData[i]);
 		}
 
 		return f.getStat();
@@ -438,7 +405,7 @@ public class IntMatrix extends IndexRowMatrix {
 		int offset = mRowOffsets[index];
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
+			f.f(i, 0, mData[offset]);
 
 			++offset;
 		}
@@ -451,7 +418,7 @@ public class IntMatrix extends IndexRowMatrix {
 		int offset = index;
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
+			f.f(i, 0, mData[offset]);
 
 			offset += mDim.mCols;
 		}
@@ -498,29 +465,6 @@ public class IntMatrix extends IndexRowMatrix {
 		}
 
 		return ret;
-	}
-
-	@Override
-	public Matrix dot(final Matrix m) {
-		if (m instanceof IntMatrix) {
-			return dot((IntMatrix)m);
-		} else {
-			return super.dot(m);
-		}
-	}
-
-	public Matrix dot(final IntMatrix m) {
-		dot(this, m);
-
-		fireMatrixChanged();
-
-		return this;
-	}
-
-	public static void dot(IntMatrix m1, final IntMatrix m2) {
-		for (int i = 0; i < m1.mData.length; ++i) {
-			m1.mData[i] *= m2.mData[i];
-		}
 	}
 
 	/* (non-Javadoc)

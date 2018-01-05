@@ -92,8 +92,8 @@ public class UpperTriangularTextMatrix extends UpperTriangularMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new UpperTriangularTextMatrix(mSize);
+	public Matrix ofSameType(int rows, int cols) {
+		return new UpperTriangularTextMatrix(Math.max(rows, cols));
 	}
 	
 	/**

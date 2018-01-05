@@ -28,7 +28,7 @@ public class MatrixStream implements CellFunction, MatrixDimFunction, MatrixRedu
 				double v = mM.getValue(i, j);
 
 				if (Mathematics.isValidNumber(v)) {
-					mM.set(i, j, apply(i, j, v));
+					mM.set(i, j, f(i, j, v));
 				}
 			}
 		}
@@ -37,7 +37,7 @@ public class MatrixStream implements CellFunction, MatrixDimFunction, MatrixRedu
 	}
 
 	@Override
-	public double apply(int row, int col, double value) {
+	public double f(int row, int col, double x, double... y) {
 		return 0;
 	}
 	

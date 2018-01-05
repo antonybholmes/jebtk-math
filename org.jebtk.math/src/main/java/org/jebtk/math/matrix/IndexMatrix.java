@@ -403,24 +403,66 @@ public abstract class IndexMatrix extends RegularMatrix {
 	}
 
 	@Override
-	public void f(CellFunction f, Matrix ret) {
-		if (ret instanceof IndexMatrix) {
-			f(f, (IndexMatrix)ret);
+	public void apply(CellFunction f) {
+		applySimple(f, this);
+	}
+	
+	public static void applySimple(CellFunction f, IndexMatrix m1) {
+		int r = 0;
+		int c = 0;
+		
+		for (int i = 0; i < m1.size(); ++i) {
+			m1.set(i, f.f(r, c, m1.getValue(i)));
+			
+			if (c++ == m1.mDim.mCols) {
+				++r;
+				c = 0;
+			}
+		}
+	}
+	
+	@Override
+	public void apply(CellFunction f, double v) {
+		apply(f, this, v);
+	}
+	
+	public static void apply(CellFunction f, IndexMatrix m1, double v) {
+		int r = 0;
+		int c = 0;
+		
+		for (int i = 0; i < m1.size(); ++i) {
+			m1.set(i, f.f(r, c, m1.getValue(i), v));
+			
+			if (c++ == m1.mDim.mCols) {
+				++r;
+				c = 0;
+			}
+		}
+	}
+	
+	@Override
+	public void apply(CellFunction f, Matrix m) {
+		if (m instanceof IndexMatrix) {
+			apply(f, (IndexMatrix)m);
 		} else {
-			super.f(f, ret);
+			super.apply(f, m);
 		}
 	}
 
-	public void f(CellFunction f, IndexMatrix ret) {
+	public void apply(CellFunction f, IndexMatrix m) {
+		apply(f, this, m);
+	}
+	
+	public static void apply(CellFunction f, IndexMatrix m1, IndexMatrix m2) {
 		int r = 0;
 		int c = 0;
-
-		for (int i = 0; i < size(); ++i) {
-			ret.set(i, f.apply(r, c++, getValue(i)));
-
-			if (c == mDim.mCols) {
-				c = 0;
+		
+		for (int i = 0; i < m1.size(); ++i) {
+			m1.set(i, f.f(r, c, m1.getValue(i), m2.getValue(i)));
+			
+			if (c++ == m1.mDim.mCols) {
 				++r;
+				c = 0;
 			}
 		}
 	}

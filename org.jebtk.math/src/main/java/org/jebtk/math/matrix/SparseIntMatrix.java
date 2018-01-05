@@ -109,8 +109,8 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new SparseIntMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new SparseIntMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)
@@ -160,21 +160,6 @@ public class SparseIntMatrix extends SparseMatrix<Integer>  {
 	@Override
 	public String getText(int index) {
 		return Double.toString(getValue(index));
-	}
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i : mData.keySet()) {
-			double v = f.apply(i, 0, mData.get(i));
-			
-			if (isValidMatrixNum(v)) {
-				mData.put(i, (int)v);
-			} else {
-				mData.put(i, 0);
-			}
-		}
-
-		fireMatrixChanged();
 	}
 	
 	@Override

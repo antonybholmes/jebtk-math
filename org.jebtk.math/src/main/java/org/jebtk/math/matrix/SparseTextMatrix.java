@@ -106,8 +106,8 @@ public class SparseTextMatrix extends SparseMatrix<String> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new SparseTextMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new SparseTextMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)

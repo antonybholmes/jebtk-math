@@ -90,8 +90,8 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new DynamicLongMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new DynamicLongMatrix(rows, cols);
 	}
 	
 	@Override
@@ -109,21 +109,6 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
 		mData.put(row, column, v);
 
 		super.update(row, column, v);
-	}
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i = 0; i < getRows(); ++i) {
-			for (int j = 0; j < getCols(); ++j) {
-				double v = f.apply(i, j, mData.get(i, j));
-				
-				if (isValidMatrixNum(v)) {
-					mData.put(i, j, (long)v);
-				} else {
-					mData.put(i, j, 0L);
-				}
-			}
-		}
 	}
 	
 	@Override

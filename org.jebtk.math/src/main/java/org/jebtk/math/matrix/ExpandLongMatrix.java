@@ -87,8 +87,8 @@ public class ExpandLongMatrix extends ExpandMatrix<Long> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new ExpandLongMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new ExpandLongMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

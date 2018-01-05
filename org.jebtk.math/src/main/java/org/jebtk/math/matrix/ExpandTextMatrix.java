@@ -89,8 +89,8 @@ public class ExpandTextMatrix extends ExpandMatrix<String> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new ExpandTextMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new ExpandTextMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

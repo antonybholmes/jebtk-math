@@ -27,7 +27,7 @@
  */
 package org.jebtk.math.matrix;
 
-import org.jebtk.core.Mathematics;
+import org.jebtk.math.functions.Function;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,12 +70,10 @@ public abstract class RegularMatrix extends Matrix {
 	}
 	
 	@Override
-	public void f(CellFunction f, Matrix ret) {
+	public void apply(CellFunction f, Matrix m) {
 		for (int i = 0; i < mDim.mRows; ++i) {
 			for (int j = 0; j < mDim.mCols; ++j) {
-				double v = getValue(i, j);
-
-				ret.set(i, j, f.apply(i, j, v));
+				set(i, j, f.f(i, j, getValue(i, j), m.getValue(i, j)));
 			}
 		}
 	}
@@ -114,5 +112,10 @@ public abstract class RegularMatrix extends Matrix {
 		toStringArray(ret);
 		
 		return ret;
+	}
+	
+	@Override
+	public Matrix ofSameType() {
+		return ofSameType(mDim.mRows, mDim.mCols);
 	}
 }

@@ -87,8 +87,8 @@ public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new DynamicDoubleMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new DynamicDoubleMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

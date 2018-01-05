@@ -90,8 +90,8 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new DynamicIntMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new DynamicIntMatrix(rows, cols);
 	}
 	
 	@Override
@@ -109,22 +109,6 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 		mData.put(row, column, v);
 
 		super.update(row, column, v);
-	}
-	
-	@Override
-	public void apply(final CellFunction f) {
-		IterUtils.forEach(getRows(), getCols(), new ForEach2D() {
-			@Override
-			public void loop(int i, int j) {
-				double v = f.apply(i, j, mData.get(i, j));
-				
-				if (isValidMatrixNum(v)) {
-					mData.put(i, j, (int)v);
-				} else {
-					mData.put(i, j, 0);
-				}
-			}
-		});
 	}
 	
 	@Override

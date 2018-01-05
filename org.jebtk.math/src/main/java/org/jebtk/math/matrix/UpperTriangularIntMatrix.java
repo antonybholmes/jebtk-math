@@ -40,7 +40,7 @@ import org.jebtk.core.sys.SysUtils;
  * @author Antony Holmes Holmes
  *
  */
-public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
+public class UpperTriangularIntMatrix extends UpperTriangularMatrix {
 	
 	/**
 	 * The constant serialVersionUID.
@@ -50,25 +50,25 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	/**
 	 * The member data.
 	 */
-	public final double[] mData;
+	public final int[] mData;
 	
 	/**
 	 * Instantiates a new distance matrix.
 	 *
 	 * @param size the size
 	 */
-	public UpperTriangularDoubleMatrix(int size) {
+	public UpperTriangularIntMatrix(int size) {
 		super(size);
 		
-		mData = new double[mOccupied];
+		mData = new int[mOccupied];
 	}
 	
 	/**
-	 * Instantiates a new upper triangular double matrix.
+	 * Instantiates a new upper triangular int matrix.
 	 *
 	 * @param m the m
 	 */
-	public UpperTriangularDoubleMatrix(UpperTriangularDoubleMatrix m) {
+	public UpperTriangularIntMatrix(UpperTriangularIntMatrix m) {
 		this(m.mSize);
 		
 		SysUtils.arraycopy(m.mData, mData);
@@ -79,12 +79,12 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 */
 	@Override
 	public Matrix copy() {
-		return new UpperTriangularDoubleMatrix(this);
+		return new UpperTriangularIntMatrix(this);
 	}
 	
 	@Override
 	public Matrix ofSameType(int rows, int cols) {
-		return new UpperTriangularDoubleMatrix(Math.max(rows, cols));
+		return new UpperTriangularIntMatrix(Math.max(rows, cols));
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 * @param value the value
 	 */
 	@Override
-	public void update(double value) {
+	public void update(int value) {
 		for (int i = 0; i < mData.length; ++i) {
 			mData[i] = value;
 		}
@@ -112,7 +112,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 */
 	@Override
 	public String getText(int index) {
-		return Double.toString(mData[index]);
+		return Integer.toString(mData[index]);
 	}
 
 	/* (non-Javadoc)
@@ -124,20 +124,20 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	}
 	
 	@Override
-	public void update(int index, int value) {
-		update(index, (double)value);
+	public void update(int index, double value) {
+		update(index, (int)value);
 	}
 	
 	@Override
 	public void update(int index, long value) {
-		update(index, (double)value);
+		update(index, (int)value);
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
+	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, int)
 	 */
 	@Override
-	public void update(int index, double value) {
+	public void update(int index, int value) {
 		mData[index] = value;
 	}
 	
@@ -164,7 +164,7 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 		
 		for (int i = 0; i < mDim.mRows; ++i) {
 			for (int j = i; i < mDim.mCols; ++j) {
-				mData[ix] = f.f(i, j, mData[ix]);
+				mData[ix] = (int)f.f(i, j, mData[ix]);
 				
 				++ix;
 			}
@@ -192,9 +192,9 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 * Creates the upper triangular matrix.
 	 *
 	 * @param m the m
-	 * @return the upper triangular double matrix
+	 * @return the upper triangular int matrix
 	 */
-	public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(Matrix m) {
+	public static UpperTriangularIntMatrix createUpperTriangularMatrix(Matrix m) {
 		return createUpperTriangularMatrix(m.getRows());
 	}
 	
@@ -202,9 +202,9 @@ public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
 	 * Creates the upper triangular matrix.
 	 *
 	 * @param rows the rows
-	 * @return the upper triangular double matrix
+	 * @return the upper triangular int matrix
 	 */
-	public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(int rows) {
-		return new UpperTriangularDoubleMatrix(rows);
+	public static UpperTriangularIntMatrix createUpperTriangularMatrix(int rows) {
+		return new UpperTriangularIntMatrix(rows);
 	}
 }

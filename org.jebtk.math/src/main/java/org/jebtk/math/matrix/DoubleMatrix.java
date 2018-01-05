@@ -53,93 +53,6 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/** The Constant CONCURRENT_ROWS. */
-	private static final int CONCURRENT_ROWS = 4;
-	
-	/**
-	 * The Class DoubleMatrixRecursiveAction processes x rows per thread
-	 * to parallelize matrix operations.
-	 */
-	private static class DoubleMatrixRecursiveAction extends RecursiveAction {
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = 1L;
-		
-		/** The m data. */
-		private final double[] mData;
-		
-		/** The m F. */
-		private final CellFunction mF;
-		
-		/** The m I. */
-		private final int mI;
-		
-		/** The m R. */
-		private final int mR;
-		
-		/** The m ret. */
-		private final double[] mRet;
-
-		/** The m cols. */
-		private final int mCols;
-
-		/** The m steps. */
-		private final int mSteps;
-
-		/**
-		 * Instantiates a new double matrix recursive action.
-		 *
-		 * @param data 		the data.
-		 * @param f 		the function.
-		 * @param i 		the starting index.
-		 * @param r the r	the starting row.
-		 * @param cols 		the number of colums in the matrix.
-		 * @param steps 	the number of elements to process in a thread.
-		 * @param ret 		the array to write results to.
-		 */
-		public DoubleMatrixRecursiveAction(final double[] data, 
-				final CellFunction f,
-				final int i,
-				final int r, 
-				final int cols,
-				final int steps,
-				final double[] ret) {
-			mData = data;
-			mF = f;
-			mR = r;
-			mCols = cols;
-			mI = i;
-			mSteps = steps;
-			mRet = ret;
-		}
-		
-		/* (non-Javadoc)
-		 * @see java.util.concurrent.RecursiveAction#compute()
-		 */
-		@Override
-		protected void compute() {
-			
-			int ix = mI;
-			int r = mR;
-			int c = 0;
-			
-			for (int i = 0; i < mSteps; ++i) {
-				// Stop if we reach the end of the data
-				if (ix == mData.length) {
-					break;
-				}
-				
-				mRet[ix] = mF.apply(r, c++, mData[ix]);
-				
-				if (c == mCols) {
-					c = 0;
-					++r;
-				}
-				
-				++ix;
-			}
-		}
-	}
 	
 	private static class TransposeRecursiveAction extends RecursiveAction {
 
@@ -222,6 +135,223 @@ public class DoubleMatrix extends IndexRowMatrix {
 			}
 		}
 	}
+	
+	/**
+	 * Applies a binary function to all cells of a matrix where the second operand is a constant. For example this
+	 * can be used to add a constant value to a matrix
+	 */
+	private static class MatConstRecAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m F. */
+		private final CellFunction mF;
+		
+		/** The m I. */
+		private final int mI;
+		
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private double mB;
+
+		private DoubleMatrix mM1;
+
+		private final int mR;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public MatConstRecAction(final CellFunction f,
+				final DoubleMatrix m1,
+				final double b,
+				final int i,
+				final int r,
+				final int steps) {
+			mM1 = m1;
+			mB = b;
+			mF = f;
+			mI = i;
+			mR = r;
+			mSteps = steps;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			int r = mR;
+			int c = 0;
+			
+			for (int ix = mI; ix < mI + mSteps; ++ix) {
+				// Stop if we reach the end of the data
+				if (ix == mM1.mData.length) {
+					break;
+				}
+				
+				mM1.mData[ix] = mF.f(r, c, mM1.mData[ix], mB);
+				
+				if (c++ == mM1.mDim.mCols) {
+					c = 0;
+					++r;
+				}
+			}
+		}
+	}
+	
+	private static class MatMatRecAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m F. */
+		private final CellFunction mF;
+		
+		/** The m I. */
+		private final int mI;
+
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private final double[] mData2;
+
+		private int mR;
+
+		private final DoubleMatrix mM1;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public MatMatRecAction(final CellFunction f,
+				final DoubleMatrix m1,
+				final double[] data2,
+				final int i,
+				final int r,
+				final int steps) {
+			mM1 = m1;
+			mData2 = data2;
+			mF = f;
+			mI = i;
+			mR = r;
+			mSteps = steps;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			int r = mR;
+			int c = 0;
+			
+			for (int ix = mI; ix < mI + mSteps; ++ix) {
+				// Stop if we reach the end of the data
+				if (ix == mM1.mData.length) {
+					break;
+				}
+				
+				mM1.mData[ix] = mF.f(r, c, mM1.mData[ix], mData2[ix]);
+				
+				if (c++ == mM1.mDim.mCols) {
+					c = 0;
+					++r;
+				}
+			}
+		}
+	}
+	
+	private static class MatRecAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m F. */
+		private final CellFunction mF;
+		
+		/** The m I. */
+		private final int mI;
+
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private int mR;
+
+		private final DoubleMatrix mM1;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public MatRecAction(final CellFunction f,
+				final DoubleMatrix m1,
+				final int i,
+				final int r,
+				final int steps) {
+			mM1 = m1;
+			mF = f;
+			mI = i;
+			mR = r;
+			mSteps = steps;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			int r = mR;
+			int c = 0;
+			
+			for (int ix = mI; ix < mI + mSteps; ++ix) {
+				// Stop if we reach the end of the data
+				if (ix == mM1.mData.length) {
+					break;
+				}
+				
+				mM1.mData[ix] = mF.f(r, c, mM1.mData[ix]);
+				
+				if (c++ == mM1.mDim.mCols) {
+					c = 0;
+					++r;
+				}
+			}
+		}
+	}
+	
+	
+	
+	
 
 	/** The m data. */
 	public final double[] mData;
@@ -328,8 +458,8 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 * @see org.jebtk.math.matrix.Matrix#ofSameType()
 	 */
 	@Override
-	public Matrix ofSameType() {
-		return createDoubleMatrix(this);
+	public Matrix ofSameType(int rows, int cols) {
+		return createDoubleMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)
@@ -516,34 +646,14 @@ public class DoubleMatrix extends IndexRowMatrix {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.jebtk.math.matrix.Matrix#apply(org.jebtk.math.matrix.CellFunction)
-	 */
-	@Override
-	public void apply(CellFunction f) {
-		int r = 0;
-		int c = 0;
-
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] = f.apply(r, c++, mData[i]);
-
-			if (c == mDim.mCols) {
-				c = 0;
-				++r;
-			}
-		}
-
-		fireMatrixChanged();
-	}
-
-	/* (non-Javadoc)
 	 * @see org.jebtk.math.matrix.IndexMatrix#f(org.jebtk.math.matrix.CellFunction, org.jebtk.math.matrix.IndexMatrix)
 	 */
 	@Override
-	public void f(CellFunction f, IndexMatrix ret) {
-		if (ret instanceof DoubleMatrix) {
-			f(f, (DoubleMatrix)ret);
+	public void apply(CellFunction f, IndexMatrix m) {
+		if (m instanceof DoubleMatrix) {
+			apply(f, (DoubleMatrix)m);
 		} else {
-			super.f(f, ret);
+			super.apply(f, m);
 		}
 	}
 
@@ -552,9 +662,10 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 *
 	 * @param f the f
 	 * @param ret the ret
+	 * @return 
 	 */
-	public void f(CellFunction f, DoubleMatrix ret) {
-		f(f, this, ret);
+	public void apply(CellFunction f, DoubleMatrix m) {
+		apply(f, this, m);
 	}
 	
 	/**
@@ -564,22 +675,19 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 * @param m the m
 	 * @param ret the ret
 	 */
-	public static void f(CellFunction f, DoubleMatrix m, DoubleMatrix ret) {
-		/*
-		int r = 0;
-		int c = 0;
+	public static void apply(CellFunction f, DoubleMatrix m1, DoubleMatrix m2) {
 		
-		for (int i = 0; i < m.mData.length; ++i) {
-			ret.mData[i] = f.apply(r, c++, m.mData[i]);
-
-			if (c == m.mDim.mCols) {
-				c = 0;
-				++r;
-			}
+		/*
+		DoubleMatrix ret = ofSameType(m1);
+		
+		for (int i = 0; i < m1.mData.length; ++i) {
+			ret.mData[i] = f.f(m1.mData[i], m2.mData[i]);
 		}
+		
+		return ret;
 		*/
 		
-		fconc(f, m, CONCURRENT_ROWS, ret);
+		applyconc(f, m1, m2, CONCURRENT_ROWS);
 	}
 	
 	/**
@@ -589,30 +697,166 @@ public class DoubleMatrix extends IndexRowMatrix {
 	 * @param m the m
 	 * @param ret the ret
 	 * @param rows the rows
+	 * @return 
 	 */
-	public static void fconc(CellFunction f, DoubleMatrix m, int rows, DoubleMatrix ret) {
-		int r = 0;
-		
+	public static void applyconc(CellFunction f, DoubleMatrix m1, DoubleMatrix m2, int rows) {
 		System.err.println("f concurrent");
 		
-		int steps = rows * m.mDim.mCols;
+		int steps = rows * m1.mDim.mCols;
 		
 		ForkJoinPool forkJoinPool = new ForkJoinPool(); //16);
 		
-		for (int i = 0; i < m.mData.length; i += steps) {
-			DoubleMatrixRecursiveAction a = new DoubleMatrixRecursiveAction(m.mData, 
-					f,
-					i,
-					r, 
-					m.mDim.mCols,
-					steps,
-					ret.mData);
+		//for (int i = 0; i < m1.mData.length; i += steps) {
+		int ix = 0;
+		
+		for (int r = 0; r < m1.mDim.mRows; r += rows) {
+			RecursiveAction a = new MatMatRecAction(f,
+					m1,
+					m2.mData,
+					ix,
+					r,
+					steps);
 			
 			forkJoinPool.invoke(a);
 			
-			r += rows;
+			ix += steps;
 		}
+		
+		m1.fireMatrixChanged();
 	}
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.IndexMatrix#f(org.jebtk.math.matrix.CellFunction, org.jebtk.math.matrix.IndexMatrix)
+	 */
+	@Override
+	public void apply(CellFunction f, double v) {
+		apply(f, this, v);
+	}
+	
+	/**
+	 * F.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 */
+	public static void apply(CellFunction f, DoubleMatrix m1, double v) {
+		
+		/*
+		DoubleMatrix ret = ofSameType(m1);
+		
+		for (int i = 0; i < m1.mData.length; ++i) {
+			ret.mData[i] = f.f(m1.mData[i], v);
+		}
+		
+		return ret;
+		*/
+		
+		applyconc(f, m1, v, CONCURRENT_ROWS);
+	}
+	
+	/**
+	 * Fconc.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 * @param rows the rows
+	 * @return 
+	 */
+	public static void applyconc(CellFunction f, DoubleMatrix m1, double v, int rows) {
+		System.err.println("f concurrent");
+		
+		int steps = rows * m1.mDim.mCols;
+		
+		ForkJoinPool forkJoinPool = new ForkJoinPool(); //16);
+		
+		int ix = 0;
+		
+		for (int r = 0; r < m1.mDim.mRows; r += rows) {
+			RecursiveAction a = new MatConstRecAction(f,
+					m1,
+					v,
+					ix,
+					r,
+					steps);
+			
+			forkJoinPool.invoke(a);
+			
+			ix += steps;
+		}
+		
+		m1.fireMatrixChanged();
+	}
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.jebtk.math.matrix.IndexMatrix#f(org.jebtk.math.matrix.CellFunction, org.jebtk.math.matrix.IndexMatrix)
+	 */
+	@Override
+	public void apply(CellFunction f) {
+		applySimple(f, this);
+	}
+	
+	/**
+	 * F.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 */
+	public static void applySimple(CellFunction f, DoubleMatrix m1) {
+		
+		/*
+		DoubleMatrix ret = ofSameType(m1);
+		
+		for (int i = 0; i < m1.mData.length; ++i) {
+			ret.mData[i] = f.f(m1.mData[i]);
+		}
+		
+		return ret;
+		*/
+		
+		applyconc(f, m1, CONCURRENT_ROWS);
+	}
+	
+	/**
+	 * Fconc.
+	 *
+	 * @param f the f
+	 * @param m the m
+	 * @param ret the ret
+	 * @param rows the rows
+	 * @return 
+	 */
+	public static void applyconc(CellFunction f, DoubleMatrix m1, int rows) {
+		System.err.println("f concurrent");
+		
+		int steps = rows * m1.mDim.mCols;
+		
+		ForkJoinPool forkJoinPool = new ForkJoinPool(); //16);
+		
+		int ix = 0;
+		
+		for (int r = 0; r < m1.mDim.mRows; r += rows) {
+			RecursiveAction a = new MatRecAction(f,
+					m1,
+					ix,
+					r,
+					steps);
+			
+			forkJoinPool.invoke(a);
+			
+			ix += steps;
+		}
+		
+		m1.fireMatrixChanged();
+	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.jebtk.math.matrix.Matrix#rowApply(org.jebtk.math.matrix.CellFunction)
@@ -634,7 +878,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 		int offset = mRowOffsets[index];
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			mData[offset] = f.apply(i, 0, mData[offset]);
+			mData[offset] = f.f(i, 0, mData[offset]);
 
 			++offset;
 		}
@@ -650,7 +894,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 		int offset = col;
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			mData[offset] = f.apply(i, 0, mData[offset]);
+			mData[offset] = f.f(i, 0, mData[offset]);
 
 			offset += mDim.mCols;
 		}
@@ -666,7 +910,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 		f.init();
 
 		for (int i = 0; i < mData.length; ++i) {
-			f.apply(i, 0, mData[i]);
+			f.f(i, 0, mData[i]);
 		}
 
 		return f.getStat();
@@ -682,7 +926,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 		int offset = mRowOffsets[index];
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
+			f.f(i, 0, mData[offset]);
 
 			++offset;
 		}
@@ -698,58 +942,12 @@ public class DoubleMatrix extends IndexRowMatrix {
 		int offset = index;
 
 		for (int i = 0; i < mDim.mCols; ++i) {
-			f.apply(i, 0, mData[offset]);
+			f.f(i, 0, mData[offset]);
 
 			offset += mDim.mCols;
 		}
 
 		return f.getStat();
-	}
-	
-	@Override
-	public Matrix add(double v) {
-		DoubleMatrix ret = ofSameType(this);
-		
-		for (int i = 0; i < mData.length; ++i) {
-			ret.mData[i] = mData[i] + v;
-		}
-
-		return ret;
-	}
-	
-	@Override
-	public Matrix add(final Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			return add((DoubleMatrix)m);
-		} else {
-			return super.add(m);
-		}
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix add(final DoubleMatrix m) {
-		DoubleMatrix ret = ofSameType(this);
-		
-		add(ret, m);
-
-		return ret;
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m1 the m 1
-	 * @param m2 the m 2
-	 */
-	public static void add(DoubleMatrix m1, final DoubleMatrix m2) {
-		for (int i = 0; i < m1.mData.length; ++i) {
-			m1.mData[i] += m2.mData[i];
-		}
 	}
 	
 	@Override
@@ -762,74 +960,42 @@ public class DoubleMatrix extends IndexRowMatrix {
 	}
 
 	public static Matrix multiply(final DoubleMatrix m1, final DoubleMatrix m2) {
-		DoubleMatrix ret = ofSameType(m1);
 		
+		
+		int of = 0;
 		int of1 = 0;
 		
-		int r = m1.mDim.mRows;
-		int c = m1.mDim.mCols;
+		int n = m1.mDim.mRows;
+		int m = m1.mDim.mCols;
+		int p = m2.mDim.mCols;
 
-		for (int i = 0; i < r; ++i) {
-			int ix = of1;
+		DoubleMatrix ret = createDoubleMatrix(n, p);
+		
+		for (int i = 0; i < n; ++i) {
+			int ix = of;
 			
-			for (int j = 0; i < c; ++j) {
+			for (int j = 0; j < p; ++j) {
 				int ix1 = of1;
 				
 				int ix2 = j;
 				
-				for (int k = 0; i < c; ++k) {
-					ret.mData[ix] += m1.mData[ix1] * m2.mData[ix2];
+				for (int k = 0; k < m; ++k) {
+					SysUtils.err().println("mm", n, m, p, i, j, k, ix, ix1, ix2);
 					
-					++ix1;
-					ix2 += c;
+					// Dot product
+					ret.mData[ix] += m1.mData[ix1++] * m2.mData[ix2];
+					
+					ix2 += p;
 				}
 				
 				++ix;
 			}
 			
-			of1 += c;
+			of += p;
+			of1 += m;
 		}
 
 		return ret;
-	}
-	
-
-	/* (non-Javadoc)
-	 * @see org.jebtk.math.matrix.Matrix#dot(org.jebtk.math.matrix.Matrix)
-	 */
-	@Override
-	public Matrix dot(final Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			return dot((DoubleMatrix)m);
-		} else {
-			return super.dot(m);
-		}
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix dot(final DoubleMatrix m) {
-		DoubleMatrix ret = ofSameType(this);
-		
-		dot(ret, m);
-
-		return ret;
-	}
-
-	/**
-	 * Dot.
-	 *
-	 * @param m1 the m 1
-	 * @param m2 the m 2
-	 */
-	public static void dot(DoubleMatrix m1, final DoubleMatrix m2) {
-		for (int i = 0; i < m1.mData.length; ++i) {
-			m1.mData[i] *= m2.mData[i];
-		}
 	}
 
 	/* (non-Javadoc)

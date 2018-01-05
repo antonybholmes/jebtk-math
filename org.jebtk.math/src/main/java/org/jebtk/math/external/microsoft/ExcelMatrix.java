@@ -31,6 +31,7 @@ import org.jebtk.math.matrix.CellType;
 import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixType;
+import org.jebtk.math.matrix.MixedMatrix;
 import org.jebtk.math.matrix.RegularMatrix;
 
 // TODO: Auto-generated Javadoc
@@ -91,8 +92,19 @@ public class ExcelMatrix extends RegularMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return null;
+	public Matrix ofSameType(int rows, int cols) {
+		// In this instance we used a mixed matrix in place of the Excel matrix since the Excel matrix is tied
+		// to the underlying sheet object.
+		return new MixedMatrix(rows, cols);
+	}
+	
+	@Override
+	public Matrix copy() {
+		Matrix ret = ofSameType();
+		
+		ret.update(this);
+		
+		return ret;
 	}
 	
 	/* (non-Javadoc)

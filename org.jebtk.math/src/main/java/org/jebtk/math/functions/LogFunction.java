@@ -16,12 +16,13 @@
 package org.jebtk.math.functions;
 
 import org.jebtk.core.Mathematics;
+import org.jebtk.math.matrix.CellFunction;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class LogFunction.
  */
-public class LogFunction implements Function {
+public class LogFunction implements CellFunction {
 
 	/** The m base. */
 	private int mBase;
@@ -39,7 +40,7 @@ public class LogFunction implements Function {
 	 * @see org.abh.common.math.functions.Function#apply(double)
 	 */
 	@Override
-	public double apply(double x) {
+	public double f(int r, int c, double x, double... y) {
 		return Mathematics.log(x, mBase);
 	}
 

@@ -33,10 +33,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
+import org.jebtk.math.functions.Function;
+import org.jebtk.math.functions.UnaryFunction;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.TTest;
 
@@ -54,6 +58,140 @@ public class LongMatrix extends IndexRowMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Applies a binary function to all cells of a matrix where the second operand is a constant. For example this
+	 * can be used to add a constant value to a matrix
+	 */
+	private static class MatConstRecAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m data. */
+		private final long[] mData;
+		
+		/** The m F. */
+		private final Function mF;
+		
+		/** The m I. */
+		private final int mI;
+		
+		/** The m ret. */
+		private final long[] mRet;
+
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private long mB;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public MatConstRecAction(final Function f,
+				final long[] data,
+				final int b,
+				final int i,
+				final int steps,
+				final long[] ret) {
+			mData = data;
+			mB = b;
+			mF = f;
+			mI = i;
+			mSteps = steps;
+			mRet = ret;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			for (int ix = mI; ix < mI + mSteps; ++ix) {
+				// Stop if we reach the end of the data
+				if (ix == mData.length) {
+					break;
+				}
+				
+				mRet[ix] = (long)mF.f(mData[ix], mB);
+			}
+		}
+	}
+	
+	private static class MatMatRecAction extends RecursiveAction {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = 1L;
+		
+		/** The m data. */
+		private final long[] mData;
+		
+		/** The m F. */
+		private final Function mF;
+		
+		/** The m I. */
+		private final int mI;
+		
+		/** The m ret. */
+		private final long[] mRet;
+
+
+		/** The m steps. */
+		private final int mSteps;
+
+		private final long[] mData2;
+
+		/**
+		 * Instantiates a new double matrix recursive action.
+		 *
+		 * @param data 		the data.
+		 * @param f 		the function.
+		 * @param i 		the starting index.
+		 * @param r the r	the starting row.
+		 * @param cols 		the number of colums in the matrix.
+		 * @param steps 	the number of elements to process in a thread.
+		 * @param ret 		the array to write results to.
+		 */
+		public MatMatRecAction(final Function f,
+				final long[] data1,
+				final long[] data2,
+				final int i,
+				final int steps,
+				final long[] ret) {
+			mData = data1;
+			mData2 = data2;
+			mF = f;
+			mI = i;
+			mSteps = steps;
+			mRet = ret;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.concurrent.RecursiveAction#compute()
+		 */
+		@Override
+		protected void compute() {
+			
+			for (int ix = mI; ix < mI + mSteps; ++ix) {
+				// Stop if we reach the end of the data
+				if (ix == mData.length) {
+					break;
+				}
+				
+				mRet[ix] = (long)mF.f(mData[ix], mData2[ix]);
+			}
+		}
+	}
+	
 	/**
 	 * The member data.
 	 */
@@ -130,19 +268,6 @@ public class LongMatrix extends IndexRowMatrix {
 
 		fireMatrixChanged();
 	}
-	
-	@Override
-	public void apply(CellFunction f) {
-		for (int i = 0; i < mData.length; ++i) {
-			double v = f.apply(i, 0, mData[i]);
-			
-			if (isValidMatrixNum(v)) {
-				mData[i] = (long)v;
-			} else {
-				mData[i] = 0;
-			}
-		}
-	}
 
 	@Override
 	public void update(Matrix m) {
@@ -167,31 +292,8 @@ public class LongMatrix extends IndexRowMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return createLongMatrix(this);
-	}
-	
-	@Override
-	public void f(CellFunction f, IndexMatrix ret) {
-		if (ret instanceof LongMatrix) {
-			f(f, (LongMatrix)ret);
-		} else {
-			super.f(f, ret);
-		}
-	}
-
-	public void f(CellFunction f, LongMatrix ret) {
-		int r = 0;
-		int c = 0;
-		
-		for (int i = 0; i < mData.length; ++i) {
-			ret.mData[i] = (long)f.apply(r, c++, mData[i]);
-
-			if (c == mDim.mCols) {
-				c = 0;
-				++r;
-			}
-		}
+	public Matrix ofSameType(int rows, int cols) {
+		return createLongMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)

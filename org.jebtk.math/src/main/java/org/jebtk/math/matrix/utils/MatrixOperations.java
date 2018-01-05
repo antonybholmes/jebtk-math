@@ -43,12 +43,14 @@ import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultHashMap;
 import org.jebtk.core.text.Join;
 import org.jebtk.math.MathUtils;
+import org.jebtk.math.functions.LnFunction;
+import org.jebtk.math.functions.LogFunction;
+import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.CellType;
 import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.DoubleMatrix;
 import org.jebtk.math.matrix.IntMatrix;
 import org.jebtk.math.matrix.Matrix;
-import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.MatrixDimFunction;
 import org.jebtk.math.matrix.MatrixGroup;
 import org.jebtk.math.matrix.MatrixReduceFunction;
@@ -86,8 +88,8 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			return Math.pow(mPower, v);
+		public double f(int row, int col, double x, double... y) {
+			return Math.pow(mPower, x);
 		}
 	}
 
@@ -96,8 +98,8 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			return Math.exp(v);
+		public double f(int row, int col, double x, double... y) {
+			return Math.exp(x);
 		}
 	}
 
@@ -119,34 +121,8 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			return Math.pow(v, mPower);
-		}
-	}
-
-	/**
-	 * The Class LogFunction.
-	 */
-	private static class LogFunction implements CellFunction {
-
-		/** The m base. */
-		private int mBase;
-
-		/**
-		 * Instantiates a new log function.
-		 *
-		 * @param base the base
-		 */
-		public LogFunction(int base) {
-			mBase = base;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
-		 */
-		@Override
-		public double apply(int row, int col, double v) {
-			return Mathematics.log(v, mBase);
+		public double f(int row, int col, double x, double... y) {
+			return Math.pow(x, mPower);
 		}
 	}
 
@@ -171,8 +147,8 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			return Math.max(v, mX);
+		public double f(int row, int col, double x, double... y) {
+			return Math.max(x, mX);
 		}
 	}
 
@@ -193,11 +169,9 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			if (Matrix.isValidMatrixNum(v)) {
-				if (v < mStat) {
-					mStat = v;
-				}
+		public double f(int row, int col, double x, double... y) {
+			if (x < mStat) {
+				mStat = x;
 			}
 			
 			return -1.0;
@@ -221,11 +195,9 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			if (Matrix.isValidMatrixNum(v)) {
-				if (v > mStat) {
-					mStat = v;
-				}
+		public double f(int row, int col, double x, double... y) {
+			if (x > mStat) {
+				mStat = x;
 			}
 			
 			return -1.0;
@@ -249,9 +221,9 @@ public class MatrixOperations {
 		 * @see org.jebtk.math.matrix.StatMatrixFunction#apply(int, int, double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			if (Matrix.isValidMatrixNum(v)) {
-				mStat += v;
+		public double f(int row, int col, double x, double... y) {
+			if (Matrix.isValidMatrixNum(x)) {
+				mStat += x;
 			}
 			
 			return -1.0;
@@ -275,9 +247,9 @@ public class MatrixOperations {
 		 * @see org.jebtk.math.matrix.StatMatrixFunction#apply(int, int, double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			if (Matrix.isValidMatrixNum(v)) {
-				mStat += v;
+		public double f(int row, int col, double x, double... y) {
+			if (Matrix.isValidMatrixNum(x)) {
+				mStat += x;
 				++mC;
 			}
 			
@@ -320,8 +292,8 @@ public class MatrixOperations {
 		 * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
 		 */
 		@Override
-		public double apply(int row, int col, double v) {
-			return Mathematics.bound(v, mMin, mMax);
+		public double f(int row, int col, double x, double... y) {
+			return Mathematics.bound(x, mMin, mMax);
 		}
 	}
 
@@ -350,18 +322,13 @@ public class MatrixOperations {
 		/* (non-Javadoc)
 		 * @see org.jebtk.math.matrix.MatrixFunction#apply(int, int, double)
 		 */
-		public double apply(int row, int col, double v) {
-			return Mathematics.bound((v - mMin) / mRange, 0.0, 1.0);
+		public double f(int row, int col, double x, double... y) {
+			return Mathematics.bound((x - mMin) / mRange, 0.0, 1.0);
 		}
 	}
 
 
-	/** The ln function. */
-	private static CellFunction LN_FUNCTION = new CellFunction() {
-		@Override public double apply(int row, int col, double v) {
-			return Math.log(v);
-		}};
-
+	
 
 	/** The min function. */
 	private static MatrixStatFunction MIN_FUNCTION = new MinFunction();
@@ -424,9 +391,9 @@ public class MatrixOperations {
 		}
 
 		@Override
-		public double apply(int row, int col, double value) {
+		public double f(int row, int col, double x, double... y) {
 			if (mFactors[row] != 0) {
-				return value / mFactors[row];
+				return x / mFactors[row];
 			} else {
 				return 0;
 			}
@@ -441,9 +408,9 @@ public class MatrixOperations {
 		}
 
 		@Override
-		public double apply(int row, int col, double value) {
+		public double f(int row, int col, double x, double... y) {
 			if (mFactors[col] != 0) {
-				return value / mFactors[col];
+				return x / mFactors[col];
 			} else {
 				return 0;
 			}
@@ -470,7 +437,7 @@ public class MatrixOperations {
 	 */
 	public static DataFrame medianRatio(final DataFrame m) {
 		
-		DataFrame ret = new DataFrame(m, true);
+		DataFrame ret = new DataFrame(m.copy());
 		
 		double[] geometricMeans = new double[m.getRows()];
 		ret.rowEval(new GeoMeans(), geometricMeans);
@@ -478,7 +445,7 @@ public class MatrixOperations {
 		double[] medians = new double[ret.getCols()];
 		ret.colEval(new MedianFactors(geometricMeans), medians);
 		
-		ret.apply(new ColScale(medians));
+		ret.f(new ColScale(medians));
 
 		return ret;
 	}
@@ -506,7 +473,7 @@ public class MatrixOperations {
 	 * @return the matrix
 	 */
 	public static Matrix ln(Matrix m) {
-		return m.applied(LN_FUNCTION);
+		return m.f(LnFunction.LN_FUNCTION);
 	}
 
 	/**
@@ -568,6 +535,8 @@ public class MatrixOperations {
 	 * @return the matrix
 	 */
 	public static Matrix log(Matrix m, int base) {
+		System.err.println("log " + m.getClass());
+		
 		return m.f(new LogFunction(base));
 	}
 
@@ -594,7 +563,7 @@ public class MatrixOperations {
 	 * @return the annotation matrix
 	 */
 	public static Matrix min(Matrix m, double min) {
-		return m.applied(new MinThresholdFunction(min));
+		return m.f(new MinThresholdFunction(min));
 	}
 
 	/**
@@ -1157,7 +1126,7 @@ public class MatrixOperations {
 	public static Matrix normalize(final Matrix m, 
 			double min,
 			double max) {
-		return m.applied(new NormalizeFunction(min, max));
+		return m.f(new NormalizeFunction(min, max));
 
 	}
 

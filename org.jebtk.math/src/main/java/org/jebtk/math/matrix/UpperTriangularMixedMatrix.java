@@ -91,8 +91,8 @@ public class UpperTriangularMixedMatrix extends UpperTriangularMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new UpperTriangularMixedMatrix(mSize);
+	public Matrix ofSameType(int rows, int cols) {
+		return new UpperTriangularMixedMatrix(Math.max(rows, cols));
 	}
 
 	/* (non-Javadoc)

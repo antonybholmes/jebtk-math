@@ -94,8 +94,8 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new DynamicTextMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new DynamicTextMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

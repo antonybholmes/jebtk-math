@@ -30,6 +30,7 @@ package org.jebtk.math.matrix;
 import java.util.Arrays;
 
 import org.jebtk.core.sys.SysUtils;
+import org.jebtk.math.functions.UnaryFunction;
 
 
 // TODO: Auto-generated Javadoc
@@ -137,8 +138,8 @@ public class DoubleColMatrix extends IndexColMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new DoubleColMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new DoubleColMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)
@@ -216,30 +217,13 @@ public class DoubleColMatrix extends IndexColMatrix {
 	public void columnToDoubleArray(int column, double[] ret) {
 		SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
 	}
-
-	@Override
-	public void apply(CellFunction f) {
-		int r = 0;
-		int c = 0;
-		
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] = f.apply(r, c++, mData[i]);
-			
-			if (c == mDim.mCols) {
-				c = 0;
-				++r;
-			}
-		}
-		
-		fireMatrixChanged();
-	}
 	
 	@Override
 	public void colApply(CellFunction f, int index) {
 		int offset = mColOffsets[index];
 		
 		for (int i = 0; i < mDim.mRows; ++i) {
-			mData[offset] = f.apply(i, 0, mData[offset]);
+			mData[offset] = f.f(i, 0, mData[offset]);
 			
 			++offset;
 		}
@@ -253,7 +237,7 @@ public class DoubleColMatrix extends IndexColMatrix {
 		f.init();
 		
 		for (int i = 0; i < mData.length; ++i) {
-			f.apply(i, 0, mData[i]);
+			f.f(i, 0, mData[i]);
 		}
 		
 		return f.getStat();
@@ -266,7 +250,7 @@ public class DoubleColMatrix extends IndexColMatrix {
 		int offset = mColOffsets[index];
 		
 		for (int i = 0; i < mDim.mRows; ++i) {
-			f.apply(i, 0, mData[offset]);
+			f.f(i, 0, mData[offset]);
 			
 			++offset;
 		}

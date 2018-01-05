@@ -27,9 +27,8 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.jebtk.core.collections.IterHashMap;
+import org.jebtk.core.collections.IterMap;
 import org.jebtk.core.text.TextUtils;
 
 
@@ -47,7 +46,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected Map<Integer, T> mData = null;
+	protected IterMap<Integer, T> mData = null;
 	
 	/**
 	 * Instantiates a new mixed matrix.
@@ -59,22 +58,16 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 		super(rows, columns);
 	}
 	
-	/**
-	 * Instantiates a new sparse matrix.
-	 *
-	 * @param m the m
-	 */
 	public SparseMatrix(Matrix m) {
-		super(m);
+		this(m.getRows(), m.getCols());
+
+		update(m);
 	}
-	
-	/**
-	 * Instantiates a new sparse matrix.
-	 *
-	 * @param m the m
-	 */
+
 	public SparseMatrix(IndexRowMatrix m) {
-		super(m);
+		this(m.getRows(), m.getCols());
+
+		update(m);
 	}
 	
 	/* (non-Javadoc)
@@ -82,7 +75,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 	 */
 	@Override
 	protected void createData(int rows, int columns) {
-		mData = new HashMap<Integer, T>(rows * columns);
+		mData = new IterHashMap<Integer, T>(rows * columns);
 	}
 	
 	/**
@@ -91,7 +84,7 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
 	 * @param m the m
 	 */
 	public void update(SparseMatrix<T> m) {
-		mData = new HashMap<Integer, T>(m.mData);
+		mData = new IterHashMap<Integer, T>(m.mData);
 	}
 
 	/* (non-Javadoc)

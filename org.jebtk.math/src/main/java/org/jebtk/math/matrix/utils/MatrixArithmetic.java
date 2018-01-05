@@ -17,7 +17,6 @@ package org.jebtk.math.matrix.utils;
 
 import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.Matrix;
-import org.jebtk.math.matrix.CellFunction;
 import org.jebtk.math.matrix.MatrixDimFunction;
 
 // TODO: Auto-generated Javadoc
@@ -30,93 +29,6 @@ import org.jebtk.math.matrix.MatrixDimFunction;
  *
  */
 public class MatrixArithmetic {
-	
-	/**
-	 * The Class ArithFunc.
-	 */
-	private static abstract class ArithFunc implements CellFunction {
-
-		/** The m V. */
-		protected double mV;
-
-		/**
-		 * Instantiates a new arith func.
-		 *
-		 * @param v the v
-		 */
-		public ArithFunc(double v) {
-			mV = v;
-		}
-	}
-	
-	/**
-	 * The Class AddFunc.
-	 */
-	private static class AddFunc extends ArithFunc {
-		
-		/**
-		 * Instantiates a new adds the func.
-		 *
-		 * @param v the v
-		 */
-		public AddFunc(double v) {
-			super(v);
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.jebtk.math.matrix.MatrixFunction#apply(int, int, double)
-		 */
-		@Override
-		public double apply(int i, int j, double v) {
-			return v + mV;
-		}
-	}
-	
-	/**
-	 * The Class MultiplyFunc.
-	 */
-	private static class MultiplyFunc extends ArithFunc {
-		
-		/**
-		 * Instantiates a new multiply func.
-		 *
-		 * @param v the v
-		 */
-		public MultiplyFunc(double v) {
-			super(v);
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.jebtk.math.matrix.MatrixFunction#apply(int, int, double)
-		 */
-		@Override
-		public double apply(int i, int j, double v) {
-			return v * mV;
-		}
-	}
-	
-	/**
-	 * The Class DivideFunc.
-	 */
-	private static class DivideFunc extends ArithFunc {
-		
-		/**
-		 * Instantiates a new divide func.
-		 *
-		 * @param v the v
-		 */
-		public DivideFunc(double v) {
-			super(v);
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.jebtk.math.matrix.MatrixFunction#apply(int, int, double)
-		 */
-		@Override
-		public double apply(int i, int j, double v) {
-			return v / mV;
-		}
-	}
 	
 	private static abstract class ArithDimFunc implements MatrixDimFunction {
 
@@ -152,7 +64,6 @@ public class MatrixArithmetic {
 		}
 	}
 	
-	
 	/**
 	 * Adds x to the matrix.
 	 *
@@ -160,7 +71,7 @@ public class MatrixArithmetic {
 	 * @param m the m
 	 */
 	public static void add(double x, Matrix m) {
-		m.apply(new AddFunc(x));
+		m.apply(Matrix.ADD_FUNCTION, x);
 	}
 	
 	/**
@@ -175,7 +86,7 @@ public class MatrixArithmetic {
 	}
 	
 	public static Matrix add(Matrix m, double x) {
-		return m.applied(new AddFunc(x));
+		return m.add(x);
 	}
 	
 	/**
@@ -195,7 +106,7 @@ public class MatrixArithmetic {
 	 * @param m the m
 	 */
 	public static void multiply(double x, Matrix m) {
-		m.apply(new MultiplyFunc(x));
+		m.apply(Matrix.MULT_FUNCTION, x);
 	}
 	
 	/**
@@ -205,7 +116,7 @@ public class MatrixArithmetic {
 	 * @param m the m
 	 */
 	public static void divide(double x, Matrix m) {
-		m.apply(new DivideFunc(x));
+		m.apply(Matrix.DIV_FUNCTION, m);
 	}
 	
 	

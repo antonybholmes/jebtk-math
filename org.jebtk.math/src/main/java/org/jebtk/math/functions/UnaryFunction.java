@@ -1,6 +1,6 @@
 package org.jebtk.math.functions;
 
-public interface Function {
+public interface UnaryFunction {
 	/**
 	 * Apply a function to the value in a cell.
 	 * 
@@ -8,5 +8,5 @@ public interface Function {
 	 * @param b		value 2.
 	 * @return		The value of the binary operation such as add.
 	 */
-	public double f(double a, double b);
+	public double f(double a);
 }

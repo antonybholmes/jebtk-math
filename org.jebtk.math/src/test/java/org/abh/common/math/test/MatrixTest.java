@@ -72,4 +72,21 @@ public class MatrixTest {
 		
 		System.err.println("v " + Arrays.toString(m2.columnToDoubleArray(1)));
 	}
+	
+	@Test
+	public void multText() {
+		Matrix m1 = 
+				DoubleMatrix.createDoubleMatrix(2, 3, 1, 2, 3, 4, 5, 6);
+		
+		Matrix m2 = 
+				DoubleMatrix.createDoubleMatrix(3, 2, 7, 8, 9, 10, 11, 12);
+		
+		Matrix m3 = m1.multiply(m2);
+				
+		for (int i = 0; i < m3.getRows(); ++i) {
+			for (int j = 0; j < m3.getCols(); ++j) {
+				System.err.println("matrix mult " + i + " " + j + " " + m3.getValue(i, j));
+			}
+		}
+	}
 }

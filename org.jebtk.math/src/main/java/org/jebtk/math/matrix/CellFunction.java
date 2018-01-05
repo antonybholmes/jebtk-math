@@ -9,5 +9,5 @@ public interface CellFunction {
 	 * @param value
 	 * @return
 	 */
-	public double apply(int row, int col, double value);
+	public double f(int row, int col, double x, double... y);
 }

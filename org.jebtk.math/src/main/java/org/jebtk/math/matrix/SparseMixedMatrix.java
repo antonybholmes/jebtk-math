@@ -117,7 +117,7 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
+	public Matrix ofSameType(int rows, int cols) {
 		return new SparseMixedMatrix(mDim.mRows, mDim.mCols);
 	}
 
@@ -207,18 +207,6 @@ public class SparseMixedMatrix extends SparseMatrix<Object> {
 			return 0;
 		}
 	}
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i : mData.keySet()) {
-			if (mData.get(i) instanceof Double) {
-				mData.put(i, f.apply(i, 0, (double)mData.get(i)));
-			} 
-		}
-
-		fireMatrixChanged();
-	}
-
 
 	@Override
 	public Matrix transpose() { 

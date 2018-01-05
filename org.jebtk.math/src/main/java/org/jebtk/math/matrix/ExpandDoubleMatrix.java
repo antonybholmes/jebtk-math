@@ -87,8 +87,8 @@ public class ExpandDoubleMatrix extends ExpandMatrix<Double> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new ExpandDoubleMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new ExpandDoubleMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

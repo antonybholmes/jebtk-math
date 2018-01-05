@@ -106,8 +106,8 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return new SparseDoubleMatrix(mDim.mRows, mDim.mCols);
+	public Matrix ofSameType(int rows, int cols) {
+		return new SparseDoubleMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)
@@ -163,16 +163,6 @@ public class SparseDoubleMatrix extends SparseMatrix<Double> {
 	public String getText(int index) {
 		return Double.toString(getValue(index));
 	}
-
-	@Override
-	public void apply(CellFunction f) {
-		for (int i : mData.keySet()) {
-			mData.put(i, f.apply(i, 0, mData.get(i)));
-		}
-
-		fireMatrixChanged();
-	}
-	
 	
 	@Override
 	public Matrix transpose() { 

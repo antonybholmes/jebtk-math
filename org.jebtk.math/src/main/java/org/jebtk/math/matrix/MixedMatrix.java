@@ -98,12 +98,9 @@ public class MixedMatrix extends IndexRowMatrix {
 	 * @param m the m
 	 */
 	public MixedMatrix(Matrix m) {
-		super(m);
+		this(m.getRows(), m.getCols());
 
-		mData = new Object[mSize];
-		//mCellType = new CellType[mSize];
-
-		//update(CellType.TEXT);
+		update(m);
 	}
 
 	/**
@@ -112,12 +109,9 @@ public class MixedMatrix extends IndexRowMatrix {
 	 * @param m the m
 	 */
 	public MixedMatrix(IndexRowMatrix m) {
-		super(m);
+		this(m.getRows(), m.getCols());
 
-		mData = new Object[mSize];
-		//mCellType = new CellType[mSize];
-
-		//update(CellType.TEXT);
+		update(m);
 	}
 
 	/* (non-Javadoc)
@@ -137,8 +131,8 @@ public class MixedMatrix extends IndexRowMatrix {
 	}
 
 	@Override
-	public Matrix ofSameType() {
-		return createMixedMatrix(this);
+	public Matrix ofSameType(int rows, int cols) {
+		return createMixedMatrix(rows, cols);
 	}
 
 	/* (non-Javadoc)

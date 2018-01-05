@@ -700,7 +700,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	 */
 	
 	@Override
-	public Matrix applied(CellFunction f) {
+	public Matrix f(CellFunction f) {
 		// Copy the matrix
 		DataFrame ret = new DataFrame(this, true);
 
@@ -710,7 +710,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	}
 	
 	@Override
-	public Matrix rowApplied(CellFunction f, int index) {
+	public Matrix rowf(CellFunction f, int index) {
 		// Copy the matrix
 		DataFrame ret = new DataFrame(this, true);
 
@@ -720,7 +720,7 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	}
 	
 	@Override
-	public Matrix colApplied(CellFunction f, int index) {
+	public Matrix colf(CellFunction f, int index) {
 		// Copy the matrix
 		DataFrame ret = new DataFrame(this, true);
 
@@ -732,6 +732,20 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	@Override
 	public void apply(CellFunction f) {
 		getMatrix().apply(f);
+	}
+	
+	@Override
+	public void apply(CellFunction f, Matrix m) {
+		if (m instanceof DataFrame) {
+			m = ((DataFrame)m).getMatrix();
+		}
+		
+		getMatrix().apply(f, m);
+	}
+	
+	@Override
+	public void apply(CellFunction f, double v) {
+		getMatrix().apply(f, v);
 	}
 	
 	@Override
@@ -796,12 +810,17 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	}
 	
 	@Override
-	public Matrix add(Matrix m) {
+	public Matrix f(CellFunction f, double v) {
+		return new DataFrame(this, getMatrix().f(f, v));
+	}
+	
+	@Override
+	public Matrix f(CellFunction f, Matrix m) {
 		if (m instanceof DataFrame) {
 			m = ((DataFrame)m).getMatrix();
 		}
 		
-		return new DataFrame(this, getMatrix().add(m));
+		return new DataFrame(this, getMatrix().f(f, m));
 	}
 
 	/* (non-Javadoc)
@@ -843,8 +862,8 @@ public class DataFrame extends Matrix implements NameProperty, MatrixAnnotations
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return getMatrix().ofSameType();
+	public Matrix ofSameType(int rows, int cols) {
+		return getMatrix().ofSameType(rows, cols);
 	}
 
 	/**

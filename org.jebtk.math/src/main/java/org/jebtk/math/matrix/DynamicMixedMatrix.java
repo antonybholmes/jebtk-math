@@ -106,8 +106,8 @@ public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return newDynamicMixedMatrix(this);
+	public Matrix ofSameType(int rows, int cols) {
+		return newDynamicMixedMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)

@@ -37,6 +37,8 @@ import org.jebtk.core.Indexed;
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.text.TextUtils;
+import org.jebtk.math.functions.LnFunction;
+import org.jebtk.math.functions.LogFunction;
 
 
 // TODO: Auto-generated Javadoc
@@ -72,6 +74,32 @@ public abstract class Matrix extends MatrixEventListeners {
 			CollectionUtils.toSet(CellType.TEXT);
 
 
+	public static CellFunction ADD_FUNCTION = new CellFunction() {
+		@Override 
+		public double f(int r, int c, double x, double... y) {
+			return x + y[0];
+		}};
+		
+	public static CellFunction SUB_FUNCTION = new CellFunction() {
+		@Override 
+		public double f(int r, int c, double x, double... y) {
+			return x - y[0];
+		}};
+	
+	public static CellFunction MULT_FUNCTION = new CellFunction() {
+		@Override 
+		public double f(int r, int c, double x, double... y) {
+			return x * y[0];
+		}};
+		
+	public static CellFunction DIV_FUNCTION = new CellFunction() {
+		@Override 
+		public double f(int r, int c, double x, double... y) {
+			return x * y[0];
+		}};
+		
+	/** The Constant CONCURRENT_ROWS. */
+	public static final int CONCURRENT_ROWS = 4;
 	
 	/**
 	 * Instantiates a new matrix.
@@ -903,7 +931,22 @@ public abstract class Matrix extends MatrixEventListeners {
 		return values;
 	}
 
-	public abstract Matrix transpose();
+	/**
+	 * Returns the transpose of the matrix.
+	 * 
+	 * @return
+	 */
+	public Matrix transpose() {
+		Matrix ret = ofSameType(getCols(), getRows());
+		
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				ret.set(j, i, get(i, j));
+			}
+		}
+		
+		return ret;
+	}
 
 	/**
 	 * Dot.
@@ -912,19 +955,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return the matrix
 	 */
 	public Matrix dot(Matrix m) {
-		return dot(this, m);
-	}
-
-	public static Matrix dot(final Matrix m1, final Matrix m2) {
-		Matrix ret = m1.ofSameType();
-		
-		for (int i = 0; i < m1.getRows(); ++i) {
-			for (int j = 0; j < m1.getCols(); ++j) {
-				ret.set(i, j, m1.getValue(i, j) * m2.getValue(i, j));
-			}
-		}
-		
-		return ret;
+		return f(MULT_FUNCTION, m);
 	}
 	
 	/**
@@ -934,15 +965,7 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * @return
 	 */
 	public Matrix add(double v) {
-		Matrix ret = ofSameType();
-		
-		for (int i = 0; i < ret.getRows(); ++i) {
-			for (int j = 0; j < ret.getCols(); ++j) {
-				ret.set(i, j, getValue(i, j) + v);
-			}
-		}
-
-		return ret;
+		return f(ADD_FUNCTION, v);
 	}
 	
 	/**
@@ -956,27 +979,31 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public Matrix add(Matrix m) {
-		return add(this, m);
+		return f(ADD_FUNCTION, m);
 	}
 	
-	/**
-	 * Add the cells of matrix 2 to matrix 1.
-	 * 
-	 * @param m1		Matrix 1.
-	 * @param m2		Matrix 2.
-	 * @param ret		The matrix to update.
-	 * @return 
-	 */
-	public static Matrix add(Matrix m1, Matrix m2) {
-		Matrix ret = m1.ofSameType();
-		
-		for (int i = 0; i < m1.getRows(); ++i) {
-			for (int j = 0; j < m1.getCols(); ++j) {
-				ret.set(i, j, m1.getValue(i, j) + m2.getValue(i, j));
-			}
-		}
-		
-		return ret;
+	public Matrix mult(double x) {
+		return f(MULT_FUNCTION, x);
+	}
+	
+	public Matrix div(double x) {
+		return f(DIV_FUNCTION, x);
+	}
+	
+	public Matrix log2() {
+		return log(2);
+	}
+	
+	public Matrix log10() {
+		return log(10);
+	}
+	
+	public Matrix log(int base) {
+		return f(new LogFunction(base));
+	}
+	
+	public Matrix ln() {
+		return f(LnFunction.LN_FUNCTION);
 	}
 	
 	public Matrix multiply(final Matrix m) {
@@ -984,14 +1011,15 @@ public abstract class Matrix extends MatrixEventListeners {
 	}
 	
 	public static Matrix multiply(final Matrix m1, final Matrix m2) {
-		Matrix ret = m1.ofSameType();
-		
-		int r = m1.getRows();
-		int c = m2.getCols();
+		int n = m1.getRows();
+		int m = m1.getCols();
+		int p = m2.getCols();
 
-		for (int i = 0; i < r; ++i) {
-			for (int j = 0; i < c; ++j) {
-				for (int k = 0; i < c; ++k) {
+		Matrix ret = m1.ofSameType(n, p);
+
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; i < p; ++j) {
+				for (int k = 0; i < m; ++k) {
 					ret.set(i, j, ret.getValue(i, j) + m1.getValue(i, k) * m2.getValue(k, j));
 				}
 			}
@@ -1006,64 +1034,77 @@ public abstract class Matrix extends MatrixEventListeners {
 	 * 
 	 * @return
 	 */
-	public abstract Matrix ofSameType();
+	public Matrix ofSameType() {
+		return ofSameType(getRows(), getCols());
+	}
 	
 	/**
-	 * Return a copy of a matrix where the function has been applied to
-	 * each cell.
+	 * Return an uninittialized matrix of the same type as this one, but with given dimensions.
 	 * 
-	 * @param f
+	 * @param rows
+	 * @param cols
 	 * @return
 	 */
-	public Matrix applied(CellFunction f) {
+	public abstract Matrix ofSameType(int rows, int cols);
+	
+	public Matrix f(CellFunction f) {
 		// Copy the matrix
 		Matrix ret = copy();
 
 		ret.apply(f);
-
+		
 		return ret;
 	}
 	
-	public Matrix f(CellFunction f) {
+	public Matrix f(CellFunction f, double v) {
 		// Copy the matrix
-		Matrix ret = ofSameType();
+		Matrix ret = copy();
 
-		f(f, ret);
-
+		ret.apply(f, v);
+		
 		return ret;
 	}
 	
-	/**
-	 * Apply a function to a matrix and put the results in another matrix.
-	 * 
-	 * @param f
-	 * @param ret
-	 */
-	public void f(CellFunction f, Matrix ret) {
-		for (int i = 0; i < getRows(); ++i) {
-			for (int j = 0; j < getCols(); ++j) {
-				double v = getValue(i, j);
+	public Matrix f(CellFunction f, Matrix m) {
+		// Copy the matrix
+		Matrix ret = copy();
 
-				ret.set(i, j, f.apply(i, j, v));
-			}
-		}
+		ret.apply(f, m);
+		
+		return ret;
 	}
 	
 	public void apply(CellFunction f) {
 		for (int i = 0; i < getRows(); ++i) {
 			for (int j = 0; j < getCols(); ++j) {
-				double v = getValue(i, j);
-
-				if (Mathematics.isValidNumber(v)) {
-					set(i, j, f.apply(i, j, v));
-				}
+				set(i, j, f.f(i, j, getValue(i, j)));
 			}
 		}
 
 		fireMatrixChanged();
 	}
 	
-	public Matrix rowApplied(CellFunction f, int row) {
+	public void apply(CellFunction f, double v) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				set(i, j, f.f(i, j, getValue(i, j), v));
+			}
+		}
+		
+		fireMatrixChanged();
+	}
+	
+	public void apply(CellFunction f, Matrix m) {
+		for (int i = 0; i < getRows(); ++i) {
+			for (int j = 0; j < getCols(); ++j) {
+				set(i, j, f.f(i, j, getValue(i, j), m.getValue(i, j)));
+			}
+		}
+
+		fireMatrixChanged();
+	}
+	
+	public Matrix rowf(CellFunction f, int row) {
 		// Copy the matrix
 		Matrix ret = copy();
 
@@ -1072,7 +1113,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		return ret;
 	}
 	
-	public Matrix colApplied(CellFunction f, int col) {
+	public Matrix colf(CellFunction f, int col) {
 		// Copy the matrix
 		Matrix ret = copy();
 
@@ -1085,17 +1126,17 @@ public abstract class Matrix extends MatrixEventListeners {
 	
 	public void rowApply(CellFunction f) {
 		for (int i = 0; i < getRows(); ++i) {
-			rowApply(f, i);
+			for (int j = 0; j < getCols(); ++j) {
+				set(i, j, f.f(i, j, getValue(i, j)));
+			}
 		}
+		
+		fireMatrixChanged();
 	}
 
 	public void rowApply(CellFunction f, int row) {
 		for (int i = 0; i < getCols(); ++i) {
-			double v = getValue(row, i);
-
-			if (Mathematics.isValidNumber(v)) {
-				set(row, i, f.apply(row, i, v));
-			}
+			set(row, i, f.f(row, i, getValue(row, i)));
 		}
 
 		fireMatrixChanged();
@@ -1128,7 +1169,7 @@ public abstract class Matrix extends MatrixEventListeners {
 			double v = getValue(i, col);
 
 			if (Mathematics.isValidNumber(v)) {
-				set(i, col, f.apply(i, col, v));
+				set(i, col, f.f(i, col, v));
 			}
 		}
 
@@ -1206,7 +1247,7 @@ public abstract class Matrix extends MatrixEventListeners {
 
 		for (int i = 0; i < getRows(); ++i) {
 			for (int j = 0; j < getCols(); ++j) {
-				f.apply(i, j, getValue(i, j));
+				f.f(i, j, getValue(i, j));
 			}
 		}
 
@@ -1217,7 +1258,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		f.init();
 
 		for (int i = 0; i < getCols(); ++i) {
-			f.apply(row, i, getValue(row, i));
+			f.f(row, i, getValue(row, i));
 		}
 
 		return f.getStat();
@@ -1227,7 +1268,7 @@ public abstract class Matrix extends MatrixEventListeners {
 		f.init();
 
 		for (int i = 0; i < getRows(); ++i) {
-			f.apply(i, col, getValue(i, col));
+			f.f(i, col, getValue(i, col));
 		}
 
 		return f.getStat();

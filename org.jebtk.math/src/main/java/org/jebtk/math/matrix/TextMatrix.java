@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.sys.SysUtils;
-import org.jebtk.core.text.TextUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -152,8 +151,8 @@ public class TextMatrix extends IndexRowMatrix {
 	}
 	
 	@Override
-	public Matrix ofSameType() {
-		return createTextMatrix(this);
+	public Matrix ofSameType(int rows, int cols) {
+		return createTextMatrix(rows, cols);
 	}
 	
 	/* (non-Javadoc)
