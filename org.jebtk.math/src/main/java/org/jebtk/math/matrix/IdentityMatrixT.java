@@ -40,12 +40,13 @@ public class IdentityMatrixT extends RegularMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 
-
 	/**
 	 * Create a new empty matrix.
 	 *
-	 * @param rows the rows
-	 * @param columns the columns
+	 * @param rows
+	 *            the rows
+	 * @param columns
+	 *            the columns
 	 */
 	public IdentityMatrixT(int rows) {
 		super(rows, rows);
@@ -55,22 +56,22 @@ public class IdentityMatrixT extends RegularMatrix {
 	public double getValue(int row, int col) {
 		return (mDim.mRows - row - 1) == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public int getInt(int row, int col) {
 		return (mDim.mRows - row - 1) == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public long getLong(int row, int col) {
 		return (mDim.mRows - row - 1) == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public Matrix ofSameType(int rows, int cols) {
 		return new IdentityMatrixT(rows);
 	}
-	
+
 	@Override
 	public Matrix transpose() {
 		return new IdentityMatrix(mDim.mRows);

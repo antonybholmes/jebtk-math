@@ -29,8 +29,8 @@ package org.jebtk.math.matrix;
 
 // TODO: Auto-generated Javadoc
 /**
- * A special matrix that hold no data. It can be used as a placeholder
- * where a matrix is required, but the data in it is immaterial.
+ * A special matrix that hold no data. It can be used as a placeholder where a
+ * matrix is required, but the data in it is immaterial.
  * 
  * @author Antony Holmes Holmes
  */
@@ -41,12 +41,13 @@ public class IdentityMatrix extends RegularMatrix {
 	 */
 	private static final long serialVersionUID = 1L;
 
-
 	/**
 	 * Create a new empty matrix.
 	 *
-	 * @param rows the rows
-	 * @param columns the columns
+	 * @param rows
+	 *            the rows
+	 * @param columns
+	 *            the columns
 	 */
 	public IdentityMatrix(int rows) {
 		super(rows, rows);
@@ -56,22 +57,22 @@ public class IdentityMatrix extends RegularMatrix {
 	public double getValue(int row, int col) {
 		return row == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public int getInt(int row, int col) {
 		return row == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public long getLong(int row, int col) {
 		return row == col ? 1 : 0;
 	}
-	
+
 	@Override
 	public Matrix ofSameType(int rows, int cols) {
 		return new IdentityMatrix(rows);
 	}
-	
+
 	@Override
 	public Matrix transpose() {
 		return new IdentityMatrixT(mDim.mRows);

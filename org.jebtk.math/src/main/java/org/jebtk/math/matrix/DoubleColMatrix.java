@@ -30,7 +30,6 @@ package org.jebtk.math.matrix;
 import java.util.Arrays;
 
 import org.jebtk.core.sys.SysUtils;
-import org.jebtk.math.functions.UnaryFunction;
 
 
 // TODO: Auto-generated Javadoc
