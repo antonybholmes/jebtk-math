@@ -5,9 +5,9 @@ import org.jebtk.math.statistics.Stats;
 
 public class MatrixRowSumFunction implements MatrixReduceFunction {
 
-	@Override
-	public double apply(int index, double[] data) {
-		return new Stats(data).sum();
-	}
+  @Override
+  public double apply(int index, double[] data) {
+    return new Stats(data).sum();
+  }
 
 }

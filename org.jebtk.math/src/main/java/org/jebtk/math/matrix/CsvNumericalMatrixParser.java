@@ -35,47 +35,48 @@ package org.jebtk.math.matrix;
  */
 public class CsvNumericalMatrixParser extends CsvMatrixParser {
 
-	/**
-	 * Instantiates a new text matrix parser.
-	 */
-	public CsvNumericalMatrixParser() {
-		this(true, 0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvNumericalMatrixParser(int rowAnnotations) {
-		this(true, rowAnnotations);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 */
-	public CsvNumericalMatrixParser(boolean hasHeader) {
-		this(hasHeader, 0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvNumericalMatrixParser(boolean hasHeader, 
-			int rowAnnotations) {
-		super(hasHeader, rowAnnotations);
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   */
+  public CsvNumericalMatrixParser() {
+    this(true, 0);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.CsvMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createNumericalMatrix(rows, columns); 
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param rowAnnotations the row annotations
+   */
+  public CsvNumericalMatrixParser(int rowAnnotations) {
+    this(true, rowAnnotations);
+  }
+
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   */
+  public CsvNumericalMatrixParser(boolean hasHeader) {
+    this(hasHeader, 0);
+  }
+
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param rowAnnotations the row annotations
+   */
+  public CsvNumericalMatrixParser(boolean hasHeader, int rowAnnotations) {
+    super(hasHeader, rowAnnotations);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.CsvMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createNumericalMatrix(rows, columns);
+  }
 }

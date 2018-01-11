@@ -20,13 +20,13 @@ package org.jebtk.math.matrix;
  * The Enum AnnotationType.
  */
 public enum MatrixType {
-	
-	/** The numeric. */
-	NUMBER,
-	
-	/** The text. */
-	TEXT,
-	
-	/** The mixed. */
-	MIXED, 
+
+  /** The numeric. */
+  NUMBER,
+
+  /** The text. */
+  TEXT,
+
+  /** The mixed. */
+  MIXED,
 }

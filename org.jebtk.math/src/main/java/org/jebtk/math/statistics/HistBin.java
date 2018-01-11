@@ -32,59 +32,59 @@ package org.jebtk.math.statistics;
  * The class HistBin.
  */
 public class HistBin {
-	
-	/**
-	 * The member x.
-	 */
-	private double mX;
-	
-	/**
-	 * The member count.
-	 */
-	private int mCount;
-	
-	/**
-	 * The member width.
-	 */
-	private double mWidth;
 
-	/**
-	 * Instantiates a new hist bin.
-	 *
-	 * @param x the x
-	 * @param width the width
-	 * @param count the count
-	 */
-	public HistBin(double x, double width, int count) {
-		mX = x;
-		mWidth = width;
-		mCount = count;
-	}
+  /**
+   * The member x.
+   */
+  private double mX;
 
-	/**
-	 * Gets the x.
-	 *
-	 * @return the x
-	 */
-	public double getX() {
-		return mX;
-	}
-	
-	/**
-	 * Gets the count.
-	 *
-	 * @return the count
-	 */
-	public int getCount() {
-		return mCount;
-	}
+  /**
+   * The member count.
+   */
+  private int mCount;
 
-	/**
-	 * Gets the width.
-	 *
-	 * @return the width
-	 */
-	public double getWidth() {
-		return mWidth;
-	}
+  /**
+   * The member width.
+   */
+  private double mWidth;
+
+  /**
+   * Instantiates a new hist bin.
+   *
+   * @param x the x
+   * @param width the width
+   * @param count the count
+   */
+  public HistBin(double x, double width, int count) {
+    mX = x;
+    mWidth = width;
+    mCount = count;
+  }
+
+  /**
+   * Gets the x.
+   *
+   * @return the x
+   */
+  public double getX() {
+    return mX;
+  }
+
+  /**
+   * Gets the count.
+   *
+   * @return the count
+   */
+  public int getCount() {
+    return mCount;
+  }
+
+  /**
+   * Gets the width.
+   *
+   * @return the width
+   */
+  public double getWidth() {
+    return mWidth;
+  }
 }

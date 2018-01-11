@@ -20,10 +20,10 @@ package org.jebtk.math.machine.learning;
  * The Enum DecisionType.
  */
 public enum DecisionType {
-	
-	/** The numerical. */
-	NUMERICAL,
-	
-	/** The text. */
-	TEXT
+
+  /** The numerical. */
+  NUMERICAL,
+
+  /** The text. */
+  TEXT
 }

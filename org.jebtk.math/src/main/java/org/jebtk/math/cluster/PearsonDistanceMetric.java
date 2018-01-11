@@ -32,7 +32,6 @@ import java.util.List;
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.statistics.Statistics;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Pearson correlation distance metric.
@@ -40,59 +39,64 @@ import org.jebtk.math.statistics.Statistics;
  * @author Antony Holmes Holmes
  */
 public class PearsonDistanceMetric extends DistanceMetric {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
-	 */
-	@Override
-	public double distance(double[] d1, double[] d2) {
-		double m1 = Statistics.mean(d1);
-		double m2 = Statistics.mean(d2);
-		
-		double sd1 = Statistics.popStdDev(d1);
-		double sd2 = Statistics.popStdDev(d2);
-		
-		double[] dd1 = Statistics.zscore(d1, m1, sd1);
-		double[] dd2 = Statistics.zscore(d2, m2, sd2);
-		
-		double d = 0;
-		
-		for (int i = 0; i < d1.length; ++i) {
-			d += dd1[i] * dd2[i];
-		}
-		
-		// average d
-		d /= d1.length;
-		
-		return Mathematics.bound(1.0 - d, 0, 2);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List, java.util.List)
-	 */
-	@Override
-	public double distance(List<Double> d1, List<Double> d2) {
-		double m1 = Statistics.mean(d1);
-		double m2 = Statistics.mean(d2);
-		
-		double sd1 = Statistics.popStdDev(d1);
-		double sd2 = Statistics.popStdDev(d2);
-		
-		List<Double> dd1 = Statistics.zscore(d1, m1, sd1);
-		List<Double> dd2 = Statistics.zscore(d2, m2, sd2);
-		
-		double d = 0;
-		
-		for (int i = 0; i < d1.size(); ++i) {
-			d += dd1.get(i) * dd2.get(i);
-		}
-		
-		// average d
-		d /= d1.size();
-		
-		// In case of rounding errors ensure that the distance cannot be
-		// less than zero. This corrects situations such as -1E-15 which
-		// should be zero.
-		return Mathematics.boundMin(1.0 - d, 0);
-	}
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
+   */
+  @Override
+  public double distance(double[] d1, double[] d2) {
+    double m1 = Statistics.mean(d1);
+    double m2 = Statistics.mean(d2);
+
+    double sd1 = Statistics.popStdDev(d1);
+    double sd2 = Statistics.popStdDev(d2);
+
+    double[] dd1 = Statistics.zscore(d1, m1, sd1);
+    double[] dd2 = Statistics.zscore(d2, m2, sd2);
+
+    double d = 0;
+
+    for (int i = 0; i < d1.length; ++i) {
+      d += dd1[i] * dd2[i];
+    }
+
+    // average d
+    d /= d1.length;
+
+    return Mathematics.bound(1.0 - d, 0, 2);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List,
+   * java.util.List)
+   */
+  @Override
+  public double distance(List<Double> d1, List<Double> d2) {
+    double m1 = Statistics.mean(d1);
+    double m2 = Statistics.mean(d2);
+
+    double sd1 = Statistics.popStdDev(d1);
+    double sd2 = Statistics.popStdDev(d2);
+
+    List<Double> dd1 = Statistics.zscore(d1, m1, sd1);
+    List<Double> dd2 = Statistics.zscore(d2, m2, sd2);
+
+    double d = 0;
+
+    for (int i = 0; i < d1.size(); ++i) {
+      d += dd1.get(i) * dd2.get(i);
+    }
+
+    // average d
+    d /= d1.size();
+
+    // In case of rounding errors ensure that the distance cannot be
+    // less than zero. This corrects situations such as -1E-15 which
+    // should be zero.
+    return Mathematics.boundMin(1.0 - d, 0);
+  }
 }

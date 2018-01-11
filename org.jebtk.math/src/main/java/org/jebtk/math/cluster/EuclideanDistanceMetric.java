@@ -36,42 +36,46 @@ import java.util.List;
  * @author Antony Holmes Holmes
  */
 public class EuclideanDistanceMetric extends DistanceMetric {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
-	 */
-	@Override
-	public double distance(final double[] d1, final double[] d2) {
-		double d = 0;
-		double x;
-		
-		for (int i = 0; i < d1.length; ++i) {
-			x = d1[i] - d2[i];
-			d += x * x;
-		}
-		
-		d = Math.sqrt(d);
-		
-		return d;
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List, java.util.List)
-	 */
-	@Override
-	public double distance(final List<Double> d1, final List<Double> d2) {
-		double d = 0;
-		double x;
-		
-		for (int i = 0; i < d1.size(); ++i) {
-			x = d1.get(i) - d2.get(i);
-			d += x * x;
-		}
-		
-		d = Math.sqrt(d);
-		
-		return d;
-	}
-	
-	
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
+   */
+  @Override
+  public double distance(final double[] d1, final double[] d2) {
+    double d = 0;
+    double x;
+
+    for (int i = 0; i < d1.length; ++i) {
+      x = d1[i] - d2[i];
+      d += x * x;
+    }
+
+    d = Math.sqrt(d);
+
+    return d;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List,
+   * java.util.List)
+   */
+  @Override
+  public double distance(final List<Double> d1, final List<Double> d2) {
+    double d = 0;
+    double x;
+
+    for (int i = 0; i < d1.size(); ++i) {
+      x = d1.get(i) - d2.get(i);
+      d += x * x;
+    }
+
+    d = Math.sqrt(d);
+
+    return d;
+  }
+
 }

@@ -35,85 +35,85 @@ package org.jebtk.math.matrix;
  */
 public abstract class RegularMatrix extends Matrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	public final MatrixDim mDim;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	public final int mSize;
+  public final MatrixDim mDim;
 
-	/**
-	 * Create a new matrix defaulting to being entirely numeric.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public RegularMatrix(int rows, int columns) {
-		super(rows, columns);
-		
-		mDim = new MatrixDim(rows, columns);
-		
-		mSize = rows * columns;
-	}
-	
-	@Override
-	public MatrixDim getShape() {
-		return mDim;
-	}
-	
-	public int size() {
-		return mSize;
-	}
-	
-	@Override
-	public void apply(CellFunction f, Matrix m) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				set(i, j, f.f(i, j, getValue(i, j), m.getValue(i, j)));
-			}
-		}
-	}
-	
-	@Override
-	public double[] toDoubleArray() {
-		double[] ret = new double[mSize];
-		
-		toDoubleArray(ret);
-		
-		return ret;
-	}
-	
-	@Override
-	public int[] toIntArray() {
-		int[] ret = new int[mSize];
-		
-		toIntArray(ret);
-		
-		return ret;
-	}
-	
-	@Override
-	public long[] toLongArray() {
-		long[] ret = new long[mSize];
-		
-		toLongArray(ret);
-		
-		return ret;
-	}
-	
-	@Override
-	public String[] toStringArray() {
-		String[] ret = new String[mSize];
-		
-		toStringArray(ret);
-		
-		return ret;
-	}
-	
-	@Override
-	public Matrix ofSameType() {
-		return ofSameType(mDim.mRows, mDim.mCols);
-	}
+  public final int mSize;
+
+  /**
+   * Create a new matrix defaulting to being entirely numeric.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public RegularMatrix(int rows, int columns) {
+    super(rows, columns);
+
+    mDim = new MatrixDim(rows, columns);
+
+    mSize = rows * columns;
+  }
+
+  @Override
+  public MatrixDim getShape() {
+    return mDim;
+  }
+
+  public int size() {
+    return mSize;
+  }
+
+  @Override
+  public void apply(CellFunction f, Matrix m) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        set(i, j, f.f(i, j, getValue(i, j), m.getValue(i, j)));
+      }
+    }
+  }
+
+  @Override
+  public double[] toDoubleArray() {
+    double[] ret = new double[mSize];
+
+    toDoubleArray(ret);
+
+    return ret;
+  }
+
+  @Override
+  public int[] toIntArray() {
+    int[] ret = new int[mSize];
+
+    toIntArray(ret);
+
+    return ret;
+  }
+
+  @Override
+  public long[] toLongArray() {
+    long[] ret = new long[mSize];
+
+    toLongArray(ret);
+
+    return ret;
+  }
+
+  @Override
+  public String[] toStringArray() {
+    String[] ret = new String[mSize];
+
+    toStringArray(ret);
+
+    return ret;
+  }
+
+  @Override
+  public Matrix ofSameType() {
+    return ofSameType(mDim.mRows, mDim.mCols);
+  }
 }

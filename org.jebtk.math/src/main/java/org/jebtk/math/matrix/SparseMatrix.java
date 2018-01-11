@@ -31,7 +31,6 @@ import org.jebtk.core.collections.IterHashMap;
 import org.jebtk.core.collections.IterMap;
 import org.jebtk.core.text.TextUtils;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Number/String matrix using sparse representation.
@@ -41,114 +40,120 @@ import org.jebtk.core.text.TextUtils;
  */
 public abstract class SparseMatrix<T> extends IndexRowMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	protected IterMap<Integer, T> mData = null;
-	
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public SparseMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
-	
-	public SparseMatrix(Matrix m) {
-		this(m.getRows(), m.getCols());
+  protected IterMap<Integer, T> mData = null;
 
-		update(m);
-	}
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public SparseMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	public SparseMatrix(IndexRowMatrix m) {
-		this(m.getRows(), m.getCols());
+  public SparseMatrix(Matrix m) {
+    this(m.getRows(), m.getCols());
 
-		update(m);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#createData(int, int, int)
-	 */
-	@Override
-	protected void createData(int rows, int columns) {
-		mData = new IterHashMap<Integer, T>(rows * columns);
-	}
-	
-	/**
-	 * Update.
-	 *
-	 * @param m the m
-	 */
-	public void update(SparseMatrix<T> m) {
-		mData = new IterHashMap<Integer, T>(m.mData);
-	}
+    update(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
-	 */
-	@Override
-	public Object get(int index) {
-		Object v = mData.get(index);
+  public SparseMatrix(IndexRowMatrix m) {
+    this(m.getRows(), m.getCols());
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).doubleValue();
-		} else {
-			return 0;
-		}
-	}
-	
-	@Override
-	public double getValue(int index) {
-		Object v = mData.get(index);
+    update(m);
+  }
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).doubleValue();
-		} else {
-			return 0;
-		}
-	}
-	
-	@Override
-	public int getInt(int index) {
-		Object v = mData.get(index);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#createData(int, int, int)
+   */
+  @Override
+  protected void createData(int rows, int columns) {
+    mData = new IterHashMap<Integer, T>(rows * columns);
+  }
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).intValue();
-		} else {
-			return 0;
-		}
-	}
-	
-	@Override
-	public long getLong(int index) {
-		Object v = mData.get(index);
+  /**
+   * Update.
+   *
+   * @param m the m
+   */
+  public void update(SparseMatrix<T> m) {
+    mData = new IterHashMap<Integer, T>(m.mData);
+  }
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).longValue();
-		} else {
-			return 0;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
+   */
+  @Override
+  public Object get(int index) {
+    Object v = mData.get(index);
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		Object v = mData.get(index);
+    if (v != null && v instanceof Number) {
+      return ((Number) v).doubleValue();
+    } else {
+      return 0;
+    }
+  }
 
-		if (v != null) {
-			if (v instanceof String) {
-				return (String)v;
-			} else {
-				return v.toString();
-			}
-		} else {
-			return TextUtils.EMPTY_STRING;
-		}
-	}
+  @Override
+  public double getValue(int index) {
+    Object v = mData.get(index);
+
+    if (v != null && v instanceof Number) {
+      return ((Number) v).doubleValue();
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public int getInt(int index) {
+    Object v = mData.get(index);
+
+    if (v != null && v instanceof Number) {
+      return ((Number) v).intValue();
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public long getLong(int index) {
+    Object v = mData.get(index);
+
+    if (v != null && v instanceof Number) {
+      return ((Number) v).longValue();
+    } else {
+      return 0;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    Object v = mData.get(index);
+
+    if (v != null) {
+      if (v instanceof String) {
+        return (String) v;
+      } else {
+        return v.toString();
+      }
+    } else {
+      return TextUtils.EMPTY_STRING;
+    }
+  }
 }

@@ -32,17 +32,17 @@ package org.jebtk.math.matrix;
  * The enum CellType.
  */
 public enum CellType {
-	
-	NUMBER,
-	
-	//DOUBLE,
-	
-	//INT,
-	
-	//LONG,
-	
-	/**
-	 * The text.
-	 */
-	TEXT
+
+  NUMBER,
+
+  // DOUBLE,
+
+  // INT,
+
+  // LONG,
+
+  /**
+   * The text.
+   */
+  TEXT
 }

@@ -32,189 +32,180 @@ import java.util.Map;
 
 import org.jebtk.core.text.TextUtils;
 
-
 // TODO: Auto-generated Javadoc
 /**
- * Fast implementation of the hypergeometric function using the sum of
- * logs.
+ * Fast implementation of the hypergeometric function using the sum of logs.
  *
  * @author Antony Holmes Holmes
  *
  */
 public class Binomial {
-	
-	/**
-	 * The member cached factorial.
-	 */
-	private Map<Integer, Double> mCachedFactorial = 
-			new HashMap<Integer, Double>();
 
-	/**
-	 * The member cached binomial.
-	 */
-	private Map<String, Double> mCachedBinomial = 
-			new HashMap<String, Double>();
-	
-	/**
-	 * The member cached log binomial.
-	 */
-	private Map<String, Double> mCachedLogBinomial = 
-			new HashMap<String, Double>();
+  /**
+   * The member cached factorial.
+   */
+  private Map<Integer, Double> mCachedFactorial = new HashMap<Integer, Double>();
 
-	/**
-	 * Cache some log values to speed up execution.
-	 */
-	public final void cache() {
-		for (int i = 0; i < 10000; ++i) {
-			logFactorial(i);
+  /**
+   * The member cached binomial.
+   */
+  private Map<String, Double> mCachedBinomial = new HashMap<String, Double>();
 
-			//for (int j = 0; j < 10000; ++j) {
-				//logBinomial(i, j);
-			//}
-		}
-	}
-	
-	/**
-	 * Log gamma.
-	 *
-	 * @param n the n
-	 * @return the double
-	 */
-	public final double logGamma(int n) {
-		return logFactorial(n - 1);
-	}
-	
-	/**
-	 * Gamma.
-	 *
-	 * @param n the n
-	 * @return the int
-	 */
-	public final int gamma(int n) {
-		return factorial(n - 1);
-	}
-	
-	/**
-	 * Factorial.
-	 *
-	 * @param n the n
-	 * @return the int
-	 */
-	public final int factorial(int n) {
-		return (int)Math.exp(logFactorial(n));
-	}
+  /**
+   * The member cached log binomial.
+   */
+  private Map<String, Double> mCachedLogBinomial = new HashMap<String, Double>();
 
-	/**
-	 * Return log n!.
-	 *
-	 * @param n the n
-	 * @return log n!
-	 */
-	public double logFactorial(int n) {
-		Double ret = mCachedFactorial.get(n);
-		
-		if (ret != null) {
-			return ret;
-		}
+  /**
+   * Cache some log values to speed up execution.
+   */
+  public final void cache() {
+    for (int i = 0; i < 10000; ++i) {
+      logFactorial(i);
 
-		double f = 0.0;
+      // for (int j = 0; j < 10000; ++j) {
+      // logBinomial(i, j);
+      // }
+    }
+  }
 
-		for (int i = 1; i <= n; i++) {
-			f += Math.log(i);
-		}
+  /**
+   * Log gamma.
+   *
+   * @param n the n
+   * @return the double
+   */
+  public final double logGamma(int n) {
+    return logFactorial(n - 1);
+  }
 
-		mCachedFactorial.put(n, f);
+  /**
+   * Gamma.
+   *
+   * @param n the n
+   * @return the int
+   */
+  public final int gamma(int n) {
+    return factorial(n - 1);
+  }
 
-		return f;
-	}
+  /**
+   * Factorial.
+   *
+   * @param n the n
+   * @return the int
+   */
+  public final int factorial(int n) {
+    return (int) Math.exp(logFactorial(n));
+  }
 
-	/**
-	 * Return the binomial coefficient n choose k.
-	 *
-	 * @param n the n
-	 * @param k the k
-	 * @return the double
-	 */
-	public final double binomial(int n, int k) {
-		return binomial(n, k, getKey(n, k));
-	}
-	
-	/**
-	 * Return the binomial coefficient n choose k.
-	 *
-	 * @param n the n
-	 * @param k the k
-	 * @param key the key
-	 * @return the double
-	 */
-	public final double binomial(int n, int k, String key) {
-		Double ret = mCachedBinomial.get(key);
-		
-		if (ret != null) {
-			//System.err.println("cached pdf " + hkey + " " + ret);
-			
-			return ret;
-		}
-		
-		double logBinomial = logBinomial(n, k);
-		
-		double binomial = Math.exp(logBinomial);
-		
-		//cachedBinomial.put(key, binomial);
-		
-		return binomial;
-	}
+  /**
+   * Return log n!.
+   *
+   * @param n the n
+   * @return log n!
+   */
+  public double logFactorial(int n) {
+    Double ret = mCachedFactorial.get(n);
 
-	/**
-	 * Log binomial.
-	 *
-	 * @param n the n
-	 * @param k the k
-	 * @return the double
-	 */
-	public final double logBinomial(int n, int k) {
-		String key = getKey(n, k);
+    if (ret != null) {
+      return ret;
+    }
 
-		Double ret = mCachedLogBinomial.get(key);
-		
-		if (ret != null) {
-			return ret;
-		}
-		
-		double binomial = logFactorial(n) - logFactorial(k) - logFactorial(n - k);
+    double f = 0.0;
 
-		mCachedLogBinomial.put(key, binomial);
-		
-		return binomial;
-	}
+    for (int i = 1; i <= n; i++) {
+      f += Math.log(i);
+    }
 
+    mCachedFactorial.put(n, f);
 
-	
-	/**
-	 * Gets the key.
-	 *
-	 * @param n the n
-	 * @param k the k
-	 * @return the key
-	 */
-	private static final String getKey(int n, int k)
-	{
-		return new StringBuilder().append(n).append(TextUtils.COLON_DELIMITER).append(k).toString(); //k + ":" + N + ":" + m + ":" + n;
-		
-		//System.err.println(k + " " + N + " " + m  + " " + n + " " + key);
-	}
-	
-	
-	/**
-	 * Clear the cached hypergeometric intermediates. The
-	 * Object will aggressively cache intermediate parts of
-	 * calculations for reuse so a pdf/cdf calculation is
-	 * done at most once, however this may impact memory usage.
-	 */
-	public void clear() {
-		mCachedFactorial.clear();
+    return f;
+  }
 
-		mCachedBinomial.clear();
-		mCachedLogBinomial.clear();
-	}
+  /**
+   * Return the binomial coefficient n choose k.
+   *
+   * @param n the n
+   * @param k the k
+   * @return the double
+   */
+  public final double binomial(int n, int k) {
+    return binomial(n, k, getKey(n, k));
+  }
+
+  /**
+   * Return the binomial coefficient n choose k.
+   *
+   * @param n the n
+   * @param k the k
+   * @param key the key
+   * @return the double
+   */
+  public final double binomial(int n, int k, String key) {
+    Double ret = mCachedBinomial.get(key);
+
+    if (ret != null) {
+      // System.err.println("cached pdf " + hkey + " " + ret);
+
+      return ret;
+    }
+
+    double logBinomial = logBinomial(n, k);
+
+    double binomial = Math.exp(logBinomial);
+
+    // cachedBinomial.put(key, binomial);
+
+    return binomial;
+  }
+
+  /**
+   * Log binomial.
+   *
+   * @param n the n
+   * @param k the k
+   * @return the double
+   */
+  public final double logBinomial(int n, int k) {
+    String key = getKey(n, k);
+
+    Double ret = mCachedLogBinomial.get(key);
+
+    if (ret != null) {
+      return ret;
+    }
+
+    double binomial = logFactorial(n) - logFactorial(k) - logFactorial(n - k);
+
+    mCachedLogBinomial.put(key, binomial);
+
+    return binomial;
+  }
+
+  /**
+   * Gets the key.
+   *
+   * @param n the n
+   * @param k the k
+   * @return the key
+   */
+  private static final String getKey(int n, int k) {
+    return new StringBuilder().append(n).append(TextUtils.COLON_DELIMITER)
+        .append(k).toString(); // k + ":" + N + ":" + m + ":" + n;
+
+    // System.err.println(k + " " + N + " " + m + " " + n + " " + key);
+  }
+
+  /**
+   * Clear the cached hypergeometric intermediates. The Object will aggressively
+   * cache intermediate parts of calculations for reuse so a pdf/cdf calculation
+   * is done at most once, however this may impact memory usage.
+   */
+  public void clear() {
+    mCachedFactorial.clear();
+
+    mCachedBinomial.clear();
+    mCachedLogBinomial.clear();
+  }
 }

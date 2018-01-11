@@ -35,127 +35,134 @@ package org.jebtk.math.matrix;
  */
 public class DynamicDoubleMatrix extends DynamicMatrix<Double> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new dynamic double matrix.
-	 */
-	public DynamicDoubleMatrix() {
-		this(0, 0);
-	}
+  /**
+   * Instantiates a new dynamic double matrix.
+   */
+  public DynamicDoubleMatrix() {
+    this(0, 0);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DynamicDoubleMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public DynamicDoubleMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public DynamicDoubleMatrix(int rows, int columns, double v) {
-		super(rows, columns, v);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public DynamicDoubleMatrix(int rows, int columns, double v) {
+    super(rows, columns, v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public DynamicDoubleMatrix(Matrix m) {
-		super(m);
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public DynamicDoubleMatrix(Matrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new DynamicDoubleMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new DynamicDoubleMatrix(rows, cols);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
-	 */
-	@Override
-	public void update(double v) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				mData.put(i, j, v);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new DynamicDoubleMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int row, int column, double v) {
-		mData.put(row, column, v);
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new DynamicDoubleMatrix(rows, cols);
+  }
 
-		super.update(row, column, v);
-	}
-	
-	@Override
-	public Matrix transpose() {
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(DynamicDoubleMatrix m) {
-		DynamicDoubleMatrix ret = 
-				createDynamicDoubleMatrix(m.getCols(), m.getRows());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.put(i, j, v);
+      }
+    }
+  }
 
-		// Swap row and column indices. We use index lookup to reduce
-		// the number of number of times indices must be looked up to
-		// set cell elements.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
+  @Override
+  public void update(int row, int column, double v) {
+    mData.put(row, column, v);
 
-		for (int i = 0; i < m.getRows(); ++i) {
-			for (int j = 0; j < m.getCols(); ++j) {
-				ret.set(j, i, m.get(i, j));
-			}
-		}
+    super.update(row, column, v);
+  }
 
-		return ret;
-	}
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
 
-	//
-	// Static methods
-	//
-	
-	/**
-	 * Creates the.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @return the dynamic double matrix
-	 */
-	public static DynamicDoubleMatrix createDynamicDoubleMatrix(int rows, int columns) {
-		return new DynamicDoubleMatrix(rows, columns);
-	}
-	
-	/**
-	 * Creates the matrix.
-	 *
-	 * @return the matrix
-	 */
-	public static Matrix createDynamicDoubleMatrix() {
-		return new DynamicDoubleMatrix();
-	}
+  public static Matrix transpose(DynamicDoubleMatrix m) {
+    DynamicDoubleMatrix ret = createDynamicDoubleMatrix(m.getCols(),
+        m.getRows());
+
+    // Swap row and column indices. We use index lookup to reduce
+    // the number of number of times indices must be looked up to
+    // set cell elements.
+
+    for (int i = 0; i < m.getRows(); ++i) {
+      for (int j = 0; j < m.getCols(); ++j) {
+        ret.set(j, i, m.get(i, j));
+      }
+    }
+
+    return ret;
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Creates the.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @return the dynamic double matrix
+   */
+  public static DynamicDoubleMatrix createDynamicDoubleMatrix(int rows,
+      int columns) {
+    return new DynamicDoubleMatrix(rows, columns);
+  }
+
+  /**
+   * Creates the matrix.
+   *
+   * @return the matrix
+   */
+  public static Matrix createDynamicDoubleMatrix() {
+    return new DynamicDoubleMatrix();
+  }
 }

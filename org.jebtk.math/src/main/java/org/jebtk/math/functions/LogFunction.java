@@ -24,24 +24,26 @@ import org.jebtk.math.matrix.CellFunction;
  */
 public class LogFunction implements CellFunction {
 
-	/** The m base. */
-	private int mBase;
+  /** The m base. */
+  private int mBase;
 
-	/**
-	 * Instantiates a new log function.
-	 *
-	 * @param base the base
-	 */
-	public LogFunction(int base) {
-		mBase = base;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.functions.Function#apply(double)
-	 */
-	@Override
-	public double f(int r, int c, double x, double... y) {
-		return Mathematics.log(x, mBase);
-	}
+  /**
+   * Instantiates a new log function.
+   *
+   * @param base the base
+   */
+  public LogFunction(int base) {
+    mBase = base;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.functions.Function#apply(double)
+   */
+  @Override
+  public double f(int r, int c, double x, double... y) {
+    return Mathematics.log(x, mBase);
+  }
 
 }

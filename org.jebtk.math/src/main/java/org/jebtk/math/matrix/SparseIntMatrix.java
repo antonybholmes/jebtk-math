@@ -29,162 +29,169 @@ package org.jebtk.math.matrix;
 
 import org.jebtk.core.Mathematics;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Number/String matrix using sparse representation.
  * 
  * @author Antony Holmes Holmes
  */
-public class SparseIntMatrix extends SparseMatrix<Integer>  {
+public class SparseIntMatrix extends SparseMatrix<Integer> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create a new matrix defaulting to being entirely numeric.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public SparseIntMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Create a new matrix defaulting to being entirely numeric.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public SparseIntMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseIntMatrix(int rows, int columns, double v) {
-		this(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseIntMatrix(int rows, int columns, double v) {
+    this(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseIntMatrix(int rows, int columns, String v) {
-		super(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseIntMatrix(int rows, int columns, String v) {
+    super(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public SparseIntMatrix(Matrix m) {
-		super(m);
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public SparseIntMatrix(Matrix m) {
+    super(m);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param m the m
-	 */
-	public SparseIntMatrix(IndexRowMatrix m) {
-		super(m);
-	}
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param m the m
+   */
+  public SparseIntMatrix(IndexRowMatrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new SparseIntMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new SparseIntMatrix(rows, cols);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new SparseIntMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		update(index, (int)v);
-	}
-	
-	@Override
-	public void update(int index, long v) {
-		update(index, (int)v);
-	}
-	
-	@Override
-	public void update(int index, int v) {
-		mData.put(index, v);
-	}
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new SparseIntMatrix(rows, cols);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
-	 */
-	@Override
-	public Object get(int index) {
-		double v = getValue(index);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
+   */
+  @Override
+  public void update(int index, double v) {
+    update(index, (int) v);
+  }
 
-		if (Mathematics.isValidNumber(v)) {
-			return v;
-		} else {
-			return null;
-		}
-	}
-	
-	@Override
-	public int getInt(int index) {
-		if (mData.containsKey(index)) {
-			return mData.get(index);
-		} else {
-			return 0;
-		}
-	}
+  @Override
+  public void update(int index, long v) {
+    update(index, (int) v);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		return Double.toString(getValue(index));
-	}
-	
-	@Override
-	public Matrix transpose() { 
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(final SparseIntMatrix m) { 
-		SparseIntMatrix ret = new SparseIntMatrix(m.mDim.mCols, m.mDim.mRows);
+  @Override
+  public void update(int index, int v) {
+    mData.put(index, v);
+  }
 
-		int i2 = 0;
-		int c = 0;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
+   */
+  @Override
+  public Object get(int index) {
+    double v = getValue(index);
 
-		for (int i : m.mData.keySet()) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+    if (Mathematics.isValidNumber(v)) {
+      return v;
+    } else {
+      return null;
+    }
+  }
 
-			ret.mData.put(i2, m.mData.get(i));
+  @Override
+  public int getInt(int index) {
+    if (mData.containsKey(index)) {
+      return mData.get(index);
+    } else {
+      return 0;
+    }
+  }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    return Double.toString(getValue(index));
+  }
 
-		return ret;
-	}
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
+
+  public static Matrix transpose(final SparseIntMatrix m) {
+    SparseIntMatrix ret = new SparseIntMatrix(m.mDim.mCols, m.mDim.mRows);
+
+    int i2 = 0;
+    int c = 0;
+
+    for (int i : m.mData.keySet()) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
+
+      ret.mData.put(i2, m.mData.get(i));
+
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
+
+    return ret;
+  }
 }

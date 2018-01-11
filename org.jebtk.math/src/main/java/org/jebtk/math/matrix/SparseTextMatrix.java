@@ -35,168 +35,182 @@ package org.jebtk.math.matrix;
  */
 public class SparseTextMatrix extends SparseMatrix<String> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create a new matrix defaulting to being entirely numeric.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public SparseTextMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Create a new matrix defaulting to being entirely numeric.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public SparseTextMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseTextMatrix(int rows, int columns, double v) {
-		this(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseTextMatrix(int rows, int columns, double v) {
+    this(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseTextMatrix(int rows, int columns, String v) {
-		this(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseTextMatrix(int rows, int columns, String v) {
+    this(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public SparseTextMatrix(Matrix m) {
-		super(m);
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public SparseTextMatrix(Matrix m) {
+    super(m);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param m the m
-	 */
-	public SparseTextMatrix(IndexRowMatrix m) {
-		super(m);
-	}
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param m the m
+   */
+  public SparseTextMatrix(IndexRowMatrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new SparseTextMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new SparseTextMatrix(rows, cols);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new SparseTextMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return CellType.TEXT;
-	}
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new SparseTextMatrix(rows, cols);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
-	 */
-	@Override
-	public void update(int index, Object v) {
-		if (v != null) {
-			if (v instanceof String) {
-				mData.put(index, (String)v);
-			} else {
-				mData.put(index, v.toString());
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
+   */
+  @Override
+  public CellType getCellType(int index) {
+    return CellType.TEXT;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		update(index, Double.toString(v));
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
+   */
+  @Override
+  public void update(int index, Object v) {
+    if (v != null) {
+      if (v instanceof String) {
+        mData.put(index, (String) v);
+      } else {
+        mData.put(index, v.toString());
+      }
+    }
+  }
 
-	@Override
-	public void update(int index, long v) {
-		update(index, Long.toString(v));
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
+   */
+  @Override
+  public void update(int index, double v) {
+    update(index, Double.toString(v));
+  }
 
-	@Override
-	public void update(int index, int v) {
-		update(index, Integer.toString(v));
-	}
+  @Override
+  public void update(int index, long v) {
+    update(index, Long.toString(v));
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#updateText(int, java.lang.String)
-	 */
-	@Override
-	public void update(int index, String v) {
-		mData.put(index, v);
-	}
+  @Override
+  public void update(int index, int v) {
+    update(index, Integer.toString(v));
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
-	 */
-	@Override
-	public Object get(int index) {
-		return mData.get(index);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#updateText(int, java.lang.String)
+   */
+  @Override
+  public void update(int index, String v) {
+    mData.put(index, v);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		return mData.get(index);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
+   */
+  @Override
+  public Object get(int index) {
+    return mData.get(index);
+  }
 
-	@Override
-	public Matrix transpose() { 
-		return transpose(this);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    return mData.get(index);
+  }
 
-	public static Matrix transpose(final SparseTextMatrix m) { 
-		SparseTextMatrix ret = new SparseTextMatrix(m.mDim.mCols, m.mDim.mRows);
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
 
-		int i2 = 0;
-		int c = 0;
+  public static Matrix transpose(final SparseTextMatrix m) {
+    SparseTextMatrix ret = new SparseTextMatrix(m.mDim.mCols, m.mDim.mRows);
 
-		for (int i : m.mData.keySet()) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+    int i2 = 0;
+    int c = 0;
 
-			ret.mData.put(i2, m.mData.get(i));
+    for (int i : m.mData.keySet()) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+      ret.mData.put(i2, m.mData.get(i));
 
-		return ret;
-	}
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
+
+    return ret;
+  }
 }

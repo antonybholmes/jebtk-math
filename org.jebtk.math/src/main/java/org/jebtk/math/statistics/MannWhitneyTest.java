@@ -40,14 +40,14 @@ import org.jebtk.core.collections.CollectionUtils;
  *
  */
 public class MannWhitneyTest {
-	public static double test(List<Double> s1, List<Double> s2) {
-		return test(CollectionUtils.toDoublePrimitive(s1), 
-				CollectionUtils.toDoublePrimitive(s2));
-	}
-	
-	public static double test(double[] s1, double[] s2) {
-		MannWhitneyUTest mw = new MannWhitneyUTest();
-		
-		return mw.mannWhitneyUTest(s1, s2);
-	}
+  public static double test(List<Double> s1, List<Double> s2) {
+    return test(CollectionUtils.toDoublePrimitive(s1),
+        CollectionUtils.toDoublePrimitive(s2));
+  }
+
+  public static double test(double[] s1, double[] s2) {
+    MannWhitneyUTest mw = new MannWhitneyUTest();
+
+    return mw.mannWhitneyUTest(s1, s2);
+  }
 }

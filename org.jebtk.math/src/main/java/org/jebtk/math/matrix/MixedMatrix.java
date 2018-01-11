@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.jebtk.core.text.TextUtils;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Allows strings and numbers to exist in same matrix.
@@ -41,448 +40,492 @@ import org.jebtk.core.text.TextUtils;
  */
 public class MixedMatrix extends IndexRowMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/** Stores the matrix data in a row format. */
-	public final Object[] mData;
-
-	/**  Storest the cell types in a row format. */
-	//public final CellType[] mCellType;
-
-	/**
-	 * Create a new matrix defaulting to being entirely numeric.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public MixedMatrix(int rows, int columns) {
-		super(rows, columns);
-
-		mData = new Object[mSize];
-		//mCellType = new CellType[mSize];
-	}
-
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public MixedMatrix(int rows, int columns, double v) {
-		this(rows, columns);
-
-		set(v);
-	}
-
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public MixedMatrix(int rows, int columns, String v) {
-		this(rows, columns);
-
-		set(v);
-	}
-
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public MixedMatrix(Matrix m) {
-		this(m.getRows(), m.getCols());
-
-		update(m);
-	}
-
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param m the m
-	 */
-	public MixedMatrix(IndexRowMatrix m) {
-		this(m.getRows(), m.getCols());
-
-		update(m);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getType()
-	 */
-	@Override
-	public MatrixType getType() {
-		return MatrixType.MIXED;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new MixedMatrix(this);
-	}
-
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return createMixedMatrix(rows, cols);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int index) {
-		return mData[index] instanceof Number ? CellType.NUMBER : CellType.TEXT; //mCellType[index];
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#get(int)
-	 */
-	@Override
-	public Object get(int index) {
-		Object v = mData[index];
-
-		return v != null ? v : TextUtils.EMPTY_STRING;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getValue(int)
-	 */
-	@Override
-	public double getValue(int index) {
-		Object v = mData[index];
-
-		if (v != null) {
-			if (v instanceof Double) {
-				return (double)v;
-			} else if (v instanceof Long) {
-				return (long)v;
-			} else if (v instanceof Integer) {
-				return (int)v;
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public long getLong(int index) {
-		Object v = mData[index];
-
-		if (v != null) {
-			if (v instanceof Double) {
-				return ((Double)v).longValue();
-			} else if (v instanceof Long) {
-				return (long)v;
-			} else if (v instanceof Integer) {
-				return ((Integer)v).longValue();
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getInt(int index) {
-		Object v = mData[index];
-
-		if (v != null) {
-			if (v instanceof Double) {
-				return ((Double)v).intValue();
-			} else if (v instanceof Long) {
-				return ((Long)v).intValue();
-			} else if (v instanceof Integer) {
-				return (int)v;
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		Object v = mData[index];
-
-		return v != null ? v.toString() : TextUtils.EMPTY_STRING;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(double)
-	 */
-	@Override
-	public void update(double v) {
-		Arrays.fill(mData, v);
-	}
-
-	@Override
-	public void update(long v) {
-		Arrays.fill(mData, v);
-	}
-
-	@Override
-	public void update(int v) {
-		Arrays.fill(mData, v);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(java.lang.String)
-	 */
-	@Override
-	public void update(String v) {
-		Arrays.fill(mData, v);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
-	 */
-	@Override
-	public void update(int index, Object v) {
-		if (v != null) {
-			// This is so only a limited number of object types can go in the
-			// matrix, either numbers or strings.
-			if (v instanceof Double) {
-				update(index, (double)v);
-			} else if (v instanceof Integer) {
-				update(index, (int)v);
-			} else if (v instanceof Long) {
-				update(index, (long)v);
-			} else {
-				update(index, v.toString());
-			}
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, java.lang.String)
-	 */
-	@Override
-	public void update(int index, String v) {
-		mData[index] = v;
-	}
-
-	@Override
-	public void update(int index, int v) {
-		mData[index] = v;
-	}
-
-	@Override
-	public void update(int index, long v) {
-		mData[index] = v;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#update(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		mData[index] = v;
-	}
-
-	/**
-	 * Specialized instance of column copying for numerical matrices.
-	 *
-	 * @param from the from
-	 * @param column the column
-	 * @param toColumn the to column
-	 */
-	@Override
-	public void copyColumn(final DoubleMatrix from, 
-			int column,
-			int toColumn) {
-		int i1 = from.getIndex(0, column);
-		int i2 = getIndex(0, toColumn);
-
-		int r = Math.min(from.getRows(), getRows());
-
-		for (int i = 0; i < r; ++i) {
-			mData[i2] = from.mData[i1];
-
-			i1 += from.mDim.mCols;
-			i2 += mDim.mCols;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.TextMatrix, int, int)
-	 */
-	@Override
-	public void copyColumn(final TextMatrix from, 
-			int column,
-			int toColumn) {
-		int i1 = from.getIndex(0, column);
-		int i2 = getIndex(0, toColumn);
-
-		int r = Math.min(from.getRows(), getRows());
-
-		for (int i = 0; i < r; ++i) {
-			mData[i2] = from.mData[i1];
-
-			i1 += from.mDim.mCols;
-			i2 += mDim.mCols;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.MixedMatrix, int, int)
-	 */
-	@Override
-	public void copyColumn(final MixedMatrix from, 
-			int column,
-			int toColumn) {
-		int i1 = from.getIndex(0, column);
-		int i2 = getIndex(0, toColumn);
-
-		int r = Math.min(from.getRows(), getRows());
-
-		for (int i = 0; i < r; ++i) {
-			mData[i2] = from.mData[i1];
-
-			i1 += from.mDim.mCols;
-			i2 += mDim.mCols;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.DoubleMatrix, int, int)
-	 */
-	@Override
-	public void copyRow(final DoubleMatrix from, 
-			int row,
-			int toRow) {
-		int c = Math.min(from.getCols(), getCols());
-
-		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.TextMatrix, int, int)
-	 */
-	@Override
-	public void copyRow(final TextMatrix from, 
-			int row,
-			int toRow) {
-
-		int c = Math.min(from.getCols(), getCols());
-
-		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.MixedMatrix, int, int)
-	 */
-	@Override
-	public void copyRow(final MixedMatrix from, 
-			int row,
-			int toRow) {
-		int c = Math.min(from.getCols(), getCols());
-
-		//SysUtils.err().println("copy row", from.getColumnCount(), getColumnCount());
-
-		System.arraycopy(from.mData, from.mRowOffsets[row], mData, mRowOffsets[toRow], c);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-	 */
-	@Override
-	public void setValueColumn(int column, List<Double> values) {
-		int r = Math.min(getRows(), values.size());
-
-		int ix = getIndex(0, column);
-
-		for (int i = 0; i < r; ++i) {
-			mData[ix] = values.get(i);
-
-			ix += mDim.mCols;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#setTextColumn(int, java.util.List)
-	 */
-	@Override
-	public void setTextColumn(int column, List<String> values) {
-		int r = Math.min(getRows(), values.size());
-
-		int ix = getIndex(0, column);
-
-		for (int row = 0; row < r; ++row) {
-			mData[ix] = values.get(row);
-
-			ix += mDim.mCols;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() {
-		return transpose(this);
-	}
-
-	public static Matrix transpose(MixedMatrix m) {
-		MixedMatrix ret = createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
-
-		int i2 = 0;
-		int c = 0;
-
-		for (int i = 0; i < m.mData.length; ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
-
-			ret.mData[i2] = m.mData[i];
-
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
-
-		return ret;
-	}
-
-
-
-	//
-	// Static methods
-	//
-
-	/**
-	 * Returns a new empty matrix the same dimensions as the input matrix.
-	 *
-	 * @param m the m
-	 * @return the mixed matrix
-	 */
-	public static MixedMatrix createMixedMatrix(Matrix m) {
-		return createMixedMatrix(m.getRows(), m.getCols());
-	}
-
-	/**
-	 * Creates the mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param cols the cols
-	 * @return the mixed matrix
-	 */
-	public static MixedMatrix createMixedMatrix(int rows, int cols) {
-		return new MixedMatrix(rows, cols);
-	}
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /** Stores the matrix data in a row format. */
+  public final Object[] mData;
+
+  /** Storest the cell types in a row format. */
+  // public final CellType[] mCellType;
+
+  /**
+   * Create a new matrix defaulting to being entirely numeric.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public MixedMatrix(int rows, int columns) {
+    super(rows, columns);
+
+    mData = new Object[mSize];
+    // mCellType = new CellType[mSize];
+  }
+
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public MixedMatrix(int rows, int columns, double v) {
+    this(rows, columns);
+
+    set(v);
+  }
+
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public MixedMatrix(int rows, int columns, String v) {
+    this(rows, columns);
+
+    set(v);
+  }
+
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public MixedMatrix(Matrix m) {
+    this(m.getRows(), m.getCols());
+
+    update(m);
+  }
+
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param m the m
+   */
+  public MixedMatrix(IndexRowMatrix m) {
+    this(m.getRows(), m.getCols());
+
+    update(m);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#getType()
+   */
+  @Override
+  public MatrixType getType() {
+    return MatrixType.MIXED;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new MixedMatrix(this);
+  }
+
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return createMixedMatrix(rows, cols);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
+   */
+  @Override
+  public CellType getCellType(int index) {
+    return mData[index] instanceof Number ? CellType.NUMBER : CellType.TEXT; // mCellType[index];
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#get(int)
+   */
+  @Override
+  public Object get(int index) {
+    Object v = mData[index];
+
+    return v != null ? v : TextUtils.EMPTY_STRING;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#getValue(int)
+   */
+  @Override
+  public double getValue(int index) {
+    Object v = mData[index];
+
+    if (v != null) {
+      if (v instanceof Double) {
+        return (double) v;
+      } else if (v instanceof Long) {
+        return (long) v;
+      } else if (v instanceof Integer) {
+        return (int) v;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public long getLong(int index) {
+    Object v = mData[index];
+
+    if (v != null) {
+      if (v instanceof Double) {
+        return ((Double) v).longValue();
+      } else if (v instanceof Long) {
+        return (long) v;
+      } else if (v instanceof Integer) {
+        return ((Integer) v).longValue();
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public int getInt(int index) {
+    Object v = mData[index];
+
+    if (v != null) {
+      if (v instanceof Double) {
+        return ((Double) v).intValue();
+      } else if (v instanceof Long) {
+        return ((Long) v).intValue();
+      } else if (v instanceof Integer) {
+        return (int) v;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    Object v = mData[index];
+
+    return v != null ? v.toString() : TextUtils.EMPTY_STRING;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    Arrays.fill(mData, v);
+  }
+
+  @Override
+  public void update(long v) {
+    Arrays.fill(mData, v);
+  }
+
+  @Override
+  public void update(int v) {
+    Arrays.fill(mData, v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#update(java.lang.String)
+   */
+  @Override
+  public void update(String v) {
+    Arrays.fill(mData, v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#update(int, java.lang.Object)
+   */
+  @Override
+  public void update(int index, Object v) {
+    if (v != null) {
+      // This is so only a limited number of object types can go in the
+      // matrix, either numbers or strings.
+      if (v instanceof Double) {
+        update(index, (double) v);
+      } else if (v instanceof Integer) {
+        update(index, (int) v);
+      } else if (v instanceof Long) {
+        update(index, (long) v);
+      } else {
+        update(index, v.toString());
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#update(int, java.lang.String)
+   */
+  @Override
+  public void update(int index, String v) {
+    mData[index] = v;
+  }
+
+  @Override
+  public void update(int index, int v) {
+    mData[index] = v;
+  }
+
+  @Override
+  public void update(int index, long v) {
+    mData[index] = v;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#update(int, double)
+   */
+  @Override
+  public void update(int index, double v) {
+    mData[index] = v;
+  }
+
+  /**
+   * Specialized instance of column copying for numerical matrices.
+   *
+   * @param from the from
+   * @param column the column
+   * @param toColumn the to column
+   */
+  @Override
+  public void copyColumn(final DoubleMatrix from, int column, int toColumn) {
+    int i1 = from.getIndex(0, column);
+    int i2 = getIndex(0, toColumn);
+
+    int r = Math.min(from.getRows(), getRows());
+
+    for (int i = 0; i < r; ++i) {
+      mData[i2] = from.mData[i1];
+
+      i1 += from.mDim.mCols;
+      i2 += mDim.mCols;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.
+   * TextMatrix, int, int)
+   */
+  @Override
+  public void copyColumn(final TextMatrix from, int column, int toColumn) {
+    int i1 = from.getIndex(0, column);
+    int i2 = getIndex(0, toColumn);
+
+    int r = Math.min(from.getRows(), getRows());
+
+    for (int i = 0; i < r; ++i) {
+      mData[i2] = from.mData[i1];
+
+      i1 += from.mDim.mCols;
+      i2 += mDim.mCols;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.
+   * MixedMatrix, int, int)
+   */
+  @Override
+  public void copyColumn(final MixedMatrix from, int column, int toColumn) {
+    int i1 = from.getIndex(0, column);
+    int i2 = getIndex(0, toColumn);
+
+    int r = Math.min(from.getRows(), getRows());
+
+    for (int i = 0; i < r; ++i) {
+      mData[i2] = from.mData[i1];
+
+      i1 += from.mDim.mCols;
+      i2 += mDim.mCols;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
+   * DoubleMatrix, int, int)
+   */
+  @Override
+  public void copyRow(final DoubleMatrix from, int row, int toRow) {
+    int c = Math.min(from.getCols(), getCols());
+
+    System.arraycopy(from.mData,
+        from.mRowOffsets[row],
+        mData,
+        mRowOffsets[toRow],
+        c);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
+   * TextMatrix, int, int)
+   */
+  @Override
+  public void copyRow(final TextMatrix from, int row, int toRow) {
+
+    int c = Math.min(from.getCols(), getCols());
+
+    System.arraycopy(from.mData,
+        from.mRowOffsets[row],
+        mData,
+        mRowOffsets[toRow],
+        c);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
+   * MixedMatrix, int, int)
+   */
+  @Override
+  public void copyRow(final MixedMatrix from, int row, int toRow) {
+    int c = Math.min(from.getCols(), getCols());
+
+    // SysUtils.err().println("copy row", from.getColumnCount(),
+    // getColumnCount());
+
+    System.arraycopy(from.mData,
+        from.mRowOffsets[row],
+        mData,
+        mRowOffsets[toRow],
+        c);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
+   */
+  @Override
+  public void setValueColumn(int column, List<Double> values) {
+    int r = Math.min(getRows(), values.size());
+
+    int ix = getIndex(0, column);
+
+    for (int i = 0; i < r; ++i) {
+      mData[ix] = values.get(i);
+
+      ix += mDim.mCols;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#setTextColumn(int, java.util.List)
+   */
+  @Override
+  public void setTextColumn(int column, List<String> values) {
+    int r = Math.min(getRows(), values.size());
+
+    int ix = getIndex(0, column);
+
+    for (int row = 0; row < r; ++row) {
+      mData[ix] = values.get(row);
+
+      ix += mDim.mCols;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#transpose()
+   */
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
+
+  public static Matrix transpose(MixedMatrix m) {
+    MixedMatrix ret = createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
+
+    int i2 = 0;
+    int c = 0;
+
+    for (int i = 0; i < m.mData.length; ++i) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
+
+      ret.mData[i2] = m.mData[i];
+
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
+
+    return ret;
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Returns a new empty matrix the same dimensions as the input matrix.
+   *
+   * @param m the m
+   * @return the mixed matrix
+   */
+  public static MixedMatrix createMixedMatrix(Matrix m) {
+    return createMixedMatrix(m.getRows(), m.getCols());
+  }
+
+  /**
+   * Creates the mixed matrix.
+   *
+   * @param rows the rows
+   * @param cols the cols
+   * @return the mixed matrix
+   */
+  public static MixedMatrix createMixedMatrix(int rows, int cols) {
+    return new MixedMatrix(rows, cols);
+  }
 }

@@ -33,78 +33,78 @@ package org.jebtk.math.statistics;
  */
 public class NormKernelDensity extends KernelDensity {
 
+  /**
+   * The constant GAUSSIAN_BANDWIDTH_FACTOR.
+   */
+  private static final double GAUSSIAN_BANDWIDTH_FACTOR = 0.2; // 1.0 / 5.0;
 
+  /**
+   * The constant KERNEL.
+   */
+  private static final Kernel KERNEL = new GaussianKernel();
 
-	/**
-	 * The constant GAUSSIAN_BANDWIDTH_FACTOR.
-	 */
-	private static final double GAUSSIAN_BANDWIDTH_FACTOR = 0.2; //1.0 / 5.0;
+  /** The Constant FACTOR. */
+  private static final double FACTOR = Math.pow(4.0 / 3.0, 0.2);
 
-	/**
-	 * The constant KERNEL.
-	 */
-	private static final Kernel KERNEL = new GaussianKernel();
+  /** The Constant POWER_MAP. */
+  // Cache powers that we keep using
+  private static final double[] POWER_MAP = new double[100];
 
-	/** The Constant FACTOR. */
-	private static final double FACTOR = Math.pow(4.0 / 3.0, 0.2);
-	
-	/** The Constant POWER_MAP. */
-	// Cache powers that we keep using
-	private static final double[] POWER_MAP = new double[100];
-	
-	static {
-		// Precache some likely values to speed things up a bit.
-		
-		for (int i = 0; i < 100; ++i) {
-			POWER_MAP[i] = Math.pow(i, -GAUSSIAN_BANDWIDTH_FACTOR);
-		}
-	}
+  static {
+    // Precache some likely values to speed things up a bit.
 
+    for (int i = 0; i < 100; ++i) {
+      POWER_MAP[i] = Math.pow(i, -GAUSSIAN_BANDWIDTH_FACTOR);
+    }
+  }
 
-	/**
-	 * Instantiates a new norm kernel density.
-	 *
-	 * @param dist the dist
-	 */
-	public NormKernelDensity(double[] dist) {
-		super(dist, KERNEL);
-	}
+  /**
+   * Instantiates a new norm kernel density.
+   *
+   * @param dist the dist
+   */
+  public NormKernelDensity(double[] dist) {
+    super(dist, KERNEL);
+  }
 
-	/**
-	 * Bandwidth estimate. See https://en.wikipedia.org/wiki/Kernel_density_estimation
-	 *
-	 * @param dist the dist
-	 * @return the double
-	 */
-	@Override
-	public double bandwidthEstimate(double[] dist) {
-		Stats stats = new Stats(dist);
-		
-		if (stats.sum() == 0) {
-			return 1;
-		}
+  /**
+   * Bandwidth estimate. See
+   * https://en.wikipedia.org/wiki/Kernel_density_estimation
+   *
+   * @param dist the dist
+   * @return the double
+   */
+  @Override
+  public double bandwidthEstimate(double[] dist) {
+    Stats stats = new Stats(dist);
 
-		int n = dist.length;
+    if (stats.sum() == 0) {
+      return 1;
+    }
 
-		// Use the MATLAB method
-		double sd = stats.madStdDev(); //Statistics.sampleStandardDeviation(dist);
+    int n = dist.length;
 
-		//System.err.println("sd " + sd + " " + Math.pow(n, -GAUSSIAN_BANDWIDTH_FACTOR) + " " +Arrays.toString(dist));
+    // Use the MATLAB method
+    double sd = stats.madStdDev(); // Statistics.sampleStandardDeviation(dist);
 
-		if (sd > 0) {
-			if (n < 100) {
-				// Use the cache
-				return FACTOR * sd * POWER_MAP[n];
-			} else {
-				// Do the calculation each time, but we are assuming that
-				// it will be rare to get 100 samples per phenotype
-				return FACTOR * sd * Math.pow(n, -GAUSSIAN_BANDWIDTH_FACTOR);
-			}
+    // System.err.println("sd " + sd + " " + Math.pow(n,
+    // -GAUSSIAN_BANDWIDTH_FACTOR) + " " +Arrays.toString(dist));
 
-			//sd * Math.pow(4.0 / (3.0 * n), GAUSSIAN_BANDWIDTH_FACTOR); //0.1157; //1.06 * sd * Math.pow(dist.size(), GAUSSIAN_BANDWIDTH_FACTOR);
-			//return sd * Math.pow(4.0 / (3.0 * n), GAUSSIAN_BANDWIDTH_FACTOR);
-		} else {
-			return 1;
-		}
-	}
+    if (sd > 0) {
+      if (n < 100) {
+        // Use the cache
+        return FACTOR * sd * POWER_MAP[n];
+      } else {
+        // Do the calculation each time, but we are assuming that
+        // it will be rare to get 100 samples per phenotype
+        return FACTOR * sd * Math.pow(n, -GAUSSIAN_BANDWIDTH_FACTOR);
+      }
+
+      // sd * Math.pow(4.0 / (3.0 * n), GAUSSIAN_BANDWIDTH_FACTOR); //0.1157;
+      // //1.06 * sd * Math.pow(dist.size(), GAUSSIAN_BANDWIDTH_FACTOR);
+      // return sd * Math.pow(4.0 / (3.0 * n), GAUSSIAN_BANDWIDTH_FACTOR);
+    } else {
+      return 1;
+    }
+  }
 }

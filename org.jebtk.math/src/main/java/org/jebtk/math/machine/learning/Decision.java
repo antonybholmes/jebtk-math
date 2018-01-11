@@ -23,76 +23,78 @@ import java.util.Iterator;
  * The Class Decision.
  */
 public class Decision implements Iterable<String> {
-	
-	/** The m att idx. */
-	private int mAttIdx;
-	
-	/** The m type. */
-	private DecisionType mType;
-	
-	/** The m values. */
-	private Collection<String> mValues = null;
-	
-	/** The m pivot. */
-	private double mPivot = Double.NaN;
 
-	/**
-	 * Should return the tree branch to follow based on the value.
-	 *
-	 * @param attIdx the att idx
-	 * @param pivot the pivot
-	 */
-	public Decision(int attIdx, double pivot) {
-		mAttIdx = attIdx;
-		mPivot = pivot;
-		mType = DecisionType.NUMERICAL;
-	}
-	
-	/**
-	 * Instantiates a new decision.
-	 *
-	 * @param attIdx the att idx
-	 * @param values the values
-	 */
-	public Decision(int attIdx, Collection<String> values) {
-		mAttIdx = attIdx;
-		mValues = values;
-		mType = DecisionType.TEXT;
-	}
-	
-	/**
-	 * Returns the attribute index in the list of values that will be
-	 * processed. Samples
-	 *
-	 * @return the att idx
-	 */
-	public int getAttIdx() {
-		return mAttIdx;
-	}
-	
-	/**
-	 * Gets the type.
-	 *
-	 * @return the type
-	 */
-	public DecisionType getType() {
-		return mType;
-	}
+  /** The m att idx. */
+  private int mAttIdx;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Iterable#iterator()
-	 */
-	@Override
-	public Iterator<String> iterator() {
-		return mValues.iterator();
-	}
+  /** The m type. */
+  private DecisionType mType;
 
-	/**
-	 * Returns the test pivot value.
-	 *
-	 * @return the pivot
-	 */
-	public double getPivot() {
-		return mPivot;
-	}
+  /** The m values. */
+  private Collection<String> mValues = null;
+
+  /** The m pivot. */
+  private double mPivot = Double.NaN;
+
+  /**
+   * Should return the tree branch to follow based on the value.
+   *
+   * @param attIdx the att idx
+   * @param pivot the pivot
+   */
+  public Decision(int attIdx, double pivot) {
+    mAttIdx = attIdx;
+    mPivot = pivot;
+    mType = DecisionType.NUMERICAL;
+  }
+
+  /**
+   * Instantiates a new decision.
+   *
+   * @param attIdx the att idx
+   * @param values the values
+   */
+  public Decision(int attIdx, Collection<String> values) {
+    mAttIdx = attIdx;
+    mValues = values;
+    mType = DecisionType.TEXT;
+  }
+
+  /**
+   * Returns the attribute index in the list of values that will be processed.
+   * Samples
+   *
+   * @return the att idx
+   */
+  public int getAttIdx() {
+    return mAttIdx;
+  }
+
+  /**
+   * Gets the type.
+   *
+   * @return the type
+   */
+  public DecisionType getType() {
+    return mType;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Iterable#iterator()
+   */
+  @Override
+  public Iterator<String> iterator() {
+    return mValues.iterator();
+  }
+
+  /**
+   * Returns the test pivot value.
+   *
+   * @return the pivot
+   */
+  public double getPivot() {
+    return mPivot;
+  }
 }

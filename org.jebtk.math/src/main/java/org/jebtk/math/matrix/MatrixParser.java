@@ -35,13 +35,13 @@ import java.nio.file.Path;
  * A standardized way to parse a file and convert it into a matrix object.
  */
 public interface MatrixParser {
-	
-	/**
-	 * Parses the file.
-	 *
-	 * @param file the file
-	 * @return the annotation matrix
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	public DataFrame parse(Path file) throws IOException;
+
+  /**
+   * Parses the file.
+   *
+   * @param file the file
+   * @return the annotation matrix
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
+  public DataFrame parse(Path file) throws IOException;
 }

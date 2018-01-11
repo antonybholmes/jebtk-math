@@ -35,220 +35,236 @@ import org.jebtk.math.matrix.DataFrame;
  */
 public abstract class MatrixOperation {
 
-	/**
-	 * The member previous op.
-	 */
-	private MatrixOperation mPreviousOp;
+  /**
+   * The member previous op.
+   */
+  private MatrixOperation mPreviousOp;
 
-	/**
-	 * Instantiates a new matrix operation.
-	 *
-	 * @param child the child
-	 */
-	public MatrixOperation(MatrixOperation child) {
-		mPreviousOp = child;
-	}
+  /**
+   * Instantiates a new matrix operation.
+   *
+   * @param child the child
+   */
+  public MatrixOperation(MatrixOperation child) {
+    mPreviousOp = child;
+  }
 
-	/**
-	 * Apply a series of operations to a matrix and return the resulting
-	 * new matrix.
-	 *
-	 * @param m the m
-	 * @return the annotation matrix
-	 */
-	public DataFrame to(DataFrame m) {
-		return op(mPreviousOp.to(m));
-	}
+  /**
+   * Apply a series of operations to a matrix and return the resulting new
+   * matrix.
+   *
+   * @param m the m
+   * @return the annotation matrix
+   */
+  public DataFrame to(DataFrame m) {
+    return op(mPreviousOp.to(m));
+  }
 
-	/**
-	 * Op should be overridden to perform the actual matrix transformation.
-	 *
-	 * @param m the m
-	 * @return the annotation matrix
-	 */
-	public abstract DataFrame op(DataFrame m);
+  /**
+   * Op should be overridden to perform the actual matrix transformation.
+   *
+   * @param m the m
+   * @return the annotation matrix
+   */
+  public abstract DataFrame op(DataFrame m);
 
+  /**
+   * Does nothing to a matrix. Designed to start a transformation pipeline. This
+   * should never be inserted arbitrarily into a pipeline.
+   *
+   */
+  private static class NullMatrixOperation extends MatrixOperation {
 
+    /**
+     * Instantiates a new null matrix operation.
+     */
+    public NullMatrixOperation() {
+      super(null);
+    }
 
-	/**
-	 * Does nothing to a matrix. Designed to start a transformation pipeline.
-	 * This should never be inserted arbitrarily into a pipeline.
-	 *
-	 */
-	private static class NullMatrixOperation extends MatrixOperation {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#to(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame to(DataFrame m) {
+      return m;
+    }
 
-		/**
-		 * Instantiates a new null matrix operation.
-		 */
-		public NullMatrixOperation() {
-			super(null);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame op(DataFrame m) {
+      return null;
+    }
+  }
 
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#to(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame to(DataFrame m) {
-			return m;
-		}
+  /**
+   * Initialize a matrix transformation pipeline to operate on a matrix in a
+   * functional manner.
+   *
+   * @return the matrix operation
+   */
+  public static MatrixOperation transform() {
+    return new NullMatrixOperation();
+  }
 
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame op(DataFrame m) {
-			return null;
-		}
-	}
+  /**
+   * The Class MinMatrixOperation.
+   */
+  private static class MinMatrixOperation extends MatrixOperation {
 
-	/**
-	 * Initialize a matrix transformation pipeline to operate on a matrix
-	 * in a functional manner.
-	 *
-	 * @return the matrix operation
-	 */
-	public static MatrixOperation transform() {
-		return new NullMatrixOperation();
-	}
-	
-	/**
-	 * The Class MinMatrixOperation.
-	 */
-	private static class MinMatrixOperation extends MatrixOperation {
+    /**
+     * The member x.
+     */
+    private double mX;
 
-		/**
-		 * The member x.
-		 */
-		private double mX;
+    /**
+     * Instantiates a new adds the matrix operation.
+     *
+     * @param mo the mo
+     * @param x the x
+     */
+    public MinMatrixOperation(MatrixOperation mo, double x) {
+      super(mo);
 
-		/**
-		 * Instantiates a new adds the matrix operation.
-		 *
-		 * @param mo the mo
-		 * @param x the x
-		 */
-		public MinMatrixOperation(MatrixOperation mo, double x) {
-			super(mo);
+      mX = x;
+    }
 
-			mX = x;
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame op(DataFrame m) {
+      return MatrixOperations.min(m, mX);
+    }
+  }
 
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame op(DataFrame m) {
-			return MatrixOperations.min(m, mX);
-		}
-	}
-	
-	/**
-	 * Min.
-	 *
-	 * @param x the x
-	 * @return the matrix operation
-	 */
-	public MatrixOperation min(double x) {
-		return new MinMatrixOperation(this, x);
-	}
+  /**
+   * Min.
+   *
+   * @param x the x
+   * @return the matrix operation
+   */
+  public MatrixOperation min(double x) {
+    return new MinMatrixOperation(this, x);
+  }
 
-	//
-	// Log functions
-	//
+  //
+  // Log functions
+  //
 
-	/**
-	 * The class Log2MatrixOperation.
-	 */
-	private static class Log2MatrixOperation extends MatrixOperation {
-		
-		/**
-		 * Instantiates a new log2 matrix operation.
-		 *
-		 * @param mo the mo
-		 */
-		public Log2MatrixOperation(MatrixOperation mo) {
-			super(mo);
-		}
+  /**
+   * The class Log2MatrixOperation.
+   */
+  private static class Log2MatrixOperation extends MatrixOperation {
 
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame op(DataFrame m) {
-			return MatrixOperations.log2(m);
-		}
-	}
+    /**
+     * Instantiates a new log2 matrix operation.
+     *
+     * @param mo the mo
+     */
+    public Log2MatrixOperation(MatrixOperation mo) {
+      super(mo);
+    }
 
-	/**
-	 * Log2.
-	 *
-	 * @return the matrix operation
-	 */
-	public MatrixOperation log2() {
-		return new Log2MatrixOperation(this);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame op(DataFrame m) {
+      return MatrixOperations.log2(m);
+    }
+  }
 
-	/**
-	 * The class Log10MatrixOperation.
-	 */
-	private static class Log10MatrixOperation extends MatrixOperation {
-		
-		/**
-		 * Instantiates a new log10 matrix operation.
-		 *
-		 * @param mo the mo
-		 */
-		public Log10MatrixOperation(MatrixOperation mo) {
-			super(mo);
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame op(DataFrame m) {
-			return MatrixOperations.log10(m);
-		}
-	}
+  /**
+   * Log2.
+   *
+   * @return the matrix operation
+   */
+  public MatrixOperation log2() {
+    return new Log2MatrixOperation(this);
+  }
 
-	/**
-	 * Log10.
-	 *
-	 * @return the matrix operation
-	 */
-	public MatrixOperation log10() {
-		return new Log10MatrixOperation(this);
-	}
-	
-	/**
-	 * The class Log10MatrixOperation.
-	 */
-	private static class LnMatrixOperation extends MatrixOperation {
-		
-		/**
-		 * Instantiates a new log10 matrix operation.
-		 *
-		 * @param mo the mo
-		 */
-		public LnMatrixOperation(MatrixOperation mo) {
-			super(mo);
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.DataFrame)
-		 */
-		@Override
-		public DataFrame op(DataFrame m) {
-			return MatrixOperations.ln(m);
-		}
-	}
+  /**
+   * The class Log10MatrixOperation.
+   */
+  private static class Log10MatrixOperation extends MatrixOperation {
 
-	/**
-	 * Log10.
-	 *
-	 * @return the matrix operation
-	 */
-	public MatrixOperation ln() {
-		return new LnMatrixOperation(this);
-	}
+    /**
+     * Instantiates a new log10 matrix operation.
+     *
+     * @param mo the mo
+     */
+    public Log10MatrixOperation(MatrixOperation mo) {
+      super(mo);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame op(DataFrame m) {
+      return MatrixOperations.log10(m);
+    }
+  }
+
+  /**
+   * Log10.
+   *
+   * @return the matrix operation
+   */
+  public MatrixOperation log10() {
+    return new Log10MatrixOperation(this);
+  }
+
+  /**
+   * The class Log10MatrixOperation.
+   */
+  private static class LnMatrixOperation extends MatrixOperation {
+
+    /**
+     * Instantiates a new log10 matrix operation.
+     *
+     * @param mo the mo
+     */
+    public LnMatrixOperation(MatrixOperation mo) {
+      super(mo);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.lib.math.matrix.MatrixOperation#op(org.abh.lib.math.matrix.
+     * DataFrame)
+     */
+    @Override
+    public DataFrame op(DataFrame m) {
+      return MatrixOperations.ln(m);
+    }
+  }
+
+  /**
+   * Log10.
+   *
+   * @return the matrix operation
+   */
+  public MatrixOperation ln() {
+    return new LnMatrixOperation(this);
+  }
 }

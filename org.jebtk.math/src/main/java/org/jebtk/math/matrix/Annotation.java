@@ -48,372 +48,370 @@ import org.jebtk.math.matrix.utils.MatrixOperations;
  */
 public class Annotation extends ChangeListeners implements Iterable<String> {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * The member names.
-	 */
-	private List<String> mNames = 
-			new CyclicList<String>(new UniqueArrayList<String>());
+  /**
+   * The member names.
+   */
+  private List<String> mNames = new CyclicList<String>(
+      new UniqueArrayList<String>());
 
-	/**
-	 * The member name index map.
-	 */
-	//private Map<Integer, String> mNameIndexMap = 
-	//		new HashMap<Integer, String>();
+  /**
+   * The member name index map.
+   */
+  // private Map<Integer, String> mNameIndexMap =
+  // new HashMap<Integer, String>();
 
-	/**
-	 * The member annotation.
-	 */
-	private Map<String, IndexRowMatrix> mAnnotationMap;
+  /**
+   * The member annotation.
+   */
+  private Map<String, IndexRowMatrix> mAnnotationMap;
 
-	/** The m size. */
-	private int mSize = 0;
+  /** The m size. */
+  private int mSize = 0;
 
-	/**
-	 * Instantiates a new annotation.
-	 *
-	 * @param size the size
-	 */
-	public Annotation(int size) {
-		mSize = size;
+  /**
+   * Instantiates a new annotation.
+   *
+   * @param size the size
+   */
+  public Annotation(int size) {
+    mSize = size;
 
-		mAnnotationMap = new HashMap<String, IndexRowMatrix>(10);
-	}
+    mAnnotationMap = new HashMap<String, IndexRowMatrix>(10);
+  }
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param values the values
-	 */
-	public void setAnnotation(String name, 
-			Collection<? extends Object> values) {
-		autoCreate(name, MatrixType.MIXED);
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param values the values
+   */
+  public void setAnnotation(String name, Collection<? extends Object> values) {
+    autoCreate(name, MatrixType.MIXED);
 
-		MatrixOperations.toRow(values, 0, mAnnotationMap.get(name));
-	}
+    MatrixOperations.toRow(values, 0, mAnnotationMap.get(name));
+  }
 
-	/**
-	 * Sets the num annotation.
-	 *
-	 * @param name the name
-	 * @param values the values
-	 */
-	public void setNumAnnotation(String name, 
-			Collection<? extends Number> values) {
-		autoCreate(name, MatrixType.NUMBER);
+  /**
+   * Sets the num annotation.
+   *
+   * @param name the name
+   * @param values the values
+   */
+  public void setNumAnnotation(String name,
+      Collection<? extends Number> values) {
+    autoCreate(name, MatrixType.NUMBER);
 
-		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
-	}
+    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  }
 
-	/**
-	 * Sets the num annotation.
-	 *
-	 * @param name the name
-	 * @param values the values
-	 */
-	public void setNumAnnotation(String name, double[] values) {
-		autoCreate(name, MatrixType.NUMBER);
+  /**
+   * Sets the num annotation.
+   *
+   * @param name the name
+   * @param values the values
+   */
+  public void setNumAnnotation(String name, double[] values) {
+    autoCreate(name, MatrixType.NUMBER, NumberType.DOUBLE);
 
-		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
-	}
+    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  }
 
-	/**
-	 * Sets the num annotation.
-	 *
-	 * @param name the name
-	 * @param values the values
-	 */
-	public void setNumAnnotation(String name, int[] values) {
-		autoCreate(name, MatrixType.NUMBER, NumberType.INT);
+  /**
+   * Sets the num annotation.
+   *
+   * @param name the name
+   * @param values the values
+   */
+  public void setNumAnnotation(String name, int[] values) {
+    autoCreate(name, MatrixType.NUMBER, NumberType.INT);
 
-		MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
-	}
+    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  }
 
-	/**
-	 * Sets the text annotation.
-	 *
-	 * @param name the name
-	 * @param values the values
-	 */
-	public void setTextAnnotation(String name, Collection<String> values) {
-		autoCreate(name, MatrixType.TEXT);
+  /**
+   * Sets the text annotation.
+   *
+   * @param name the name
+   * @param values the values
+   */
+  public void setTextAnnotation(String name, Collection<String> values) {
+    autoCreate(name, MatrixType.TEXT);
 
-		MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
-	}
+    MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
+  }
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param m the m
-	 */
-	public void setAnnotation(String name, Matrix m) {
-		//SysUtils.err().println(name, m.getType());
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param m the m
+   */
+  public void setAnnotation(String name, Matrix m) {
+    // SysUtils.err().println(name, m.getType());
 
-		switch (m.getType()) {
-		case NUMBER:
-			autoCreate(name, MatrixType.NUMBER);
-			break;
-		case TEXT:
-			autoCreate(name, MatrixType.TEXT);
-			break;
-		default:
-			autoCreate(name, MatrixType.MIXED);
-			break;
-		}
+    switch (m.getType()) {
+    case NUMBER:
+      autoCreate(name, MatrixType.NUMBER);
+      break;
+    case TEXT:
+      autoCreate(name, MatrixType.TEXT);
+      break;
+    default:
+      autoCreate(name, MatrixType.MIXED);
+      break;
+    }
 
-		mAnnotationMap.get(name).copyRow(m, 0, 0);
-	}
+    mAnnotationMap.get(name).copyRow(m, 0, 0);
+  }
 
-	/**
-	 * Auto create.
-	 *
-	 * @param name the name
-	 * @param type the type
-	 * @return the matrix
-	 */
-	private Matrix autoCreate(String name, MatrixType type) {
-		return autoCreate(name, type, NumberType.DOUBLE);
-	}
-	
-	/**
-	 * Ensure a key exists and keep track of the order it is added.
-	 *
-	 * @param name the name
-	 * @param type the type
-	 * @param intMode the int mode
-	 * @return the matrix
-	 */
-	private Matrix autoCreate(String name, 
-			MatrixType type,
-			NumberType numberType) {
-		if (!mAnnotationMap.containsKey(name)) {
-			switch(type) {
-			case NUMBER:
-				switch(numberType) {
-				case INT:
-					mAnnotationMap.put(name, new IntMatrix(1, mSize));
-					break;
-				case LONG:
-					mAnnotationMap.put(name, new LongMatrix(1, mSize));
-					break;
-				default:
-					mAnnotationMap.put(name, new DoubleMatrix(1, mSize));
-					break;
-				}
+  /**
+   * Auto create.
+   *
+   * @param name the name
+   * @param type the type
+   * @return the matrix
+   */
+  private Matrix autoCreate(String name, MatrixType type) {
+    return autoCreate(name, type, NumberType.DOUBLE);
+  }
 
-				break;
-			case TEXT:
-				mAnnotationMap.put(name, new TextMatrix(1, mSize));
-				break;
-			default:
-				mAnnotationMap.put(name, new MixedMatrix(1, mSize));
-				break;
-			}
+  /**
+   * Ensure a key exists and keep track of the order it is added.
+   *
+   * @param name the name
+   * @param type the type
+   * @param intMode the int mode
+   * @return the matrix
+   */
+  private Matrix autoCreate(String name,
+      MatrixType type,
+      NumberType numberType) {
+    if (!mAnnotationMap.containsKey(name)) {
+      switch (type) {
+      case NUMBER:
+        switch (numberType) {
+        case INT:
+          mAnnotationMap.put(name, new IntMatrix(1, mSize));
+          break;
+        case LONG:
+          mAnnotationMap.put(name, new LongMatrix(1, mSize));
+          break;
+        default:
+          mAnnotationMap.put(name, new DoubleMatrix(1, mSize));
+          break;
+        }
 
-			//mNameIndexMap.put(mNames.size(), name);
-			mNames.add(name);
+        break;
+      case TEXT:
+        mAnnotationMap.put(name, new TextMatrix(1, mSize));
+        break;
+      default:
+        mAnnotationMap.put(name, new MixedMatrix(1, mSize));
+        break;
+      }
 
-			fireChanged();
-		}
+      // mNameIndexMap.put(mNames.size(), name);
+      mNames.add(name);
 
-		return mAnnotationMap.get(name);
-	}
+      fireChanged();
+    }
 
-	/**
-	 * Returns an annotation by its index (i.e. the
-	 * order in which it was created).
-	 *
-	 * @param index the index
-	 * @return the annotation
-	 */
-	public Matrix getAnnotation(int index) {
-		return getAnnotation(getName(index));
-	}
+    return mAnnotationMap.get(name);
+  }
 
-	/**
-	 * Returns a list of the annotations by name.
-	 *
-	 * @param name the name
-	 * @return the annotation
-	 */
-	public Matrix getAnnotation(String name) {
-		return autoCreate(name, MatrixType.MIXED);
-	}
+  /**
+   * Returns an annotation by its index (i.e. the order in which it was
+   * created).
+   *
+   * @param index the index
+   * @return the annotation
+   */
+  public Matrix getAnnotation(int index) {
+    return getAnnotation(getName(index));
+  }
 
-	/**
-	 * Gets the values.
-	 *
-	 * @param index the index
-	 * @return the values
-	 */
-	public double[] getValues(int index) {
-		return getValues(getName(index));
-	}
+  /**
+   * Returns a list of the annotations by name.
+   *
+   * @param name the name
+   * @return the annotation
+   */
+  public Matrix getAnnotation(String name) {
+    return autoCreate(name, MatrixType.MIXED);
+  }
 
-	/**
-	 * Gets the values.
-	 *
-	 * @param name the name
-	 * @return the values
-	 */
-	public double[] getValues(String name) {
-		return mAnnotationMap.get(name).rowToDoubleArray(0);
-	}
+  /**
+   * Gets the values.
+   *
+   * @param index the index
+   * @return the values
+   */
+  public double[] getValues(int index) {
+    return getValues(getName(index));
+  }
 
-	/**
-	 * Gets the text.
-	 *
-	 * @param index the index
-	 * @return the text
-	 */
-	public List<String> getText(int index) {
-		return getText(getName(index));
-	}
+  /**
+   * Gets the values.
+   *
+   * @param name the name
+   * @return the values
+   */
+  public double[] getValues(String name) {
+    return mAnnotationMap.get(name).rowToDoubleArray(0);
+  }
 
-	/**
-	 * Gets the text.
-	 *
-	 * @param name the name
-	 * @return the text
-	 */
-	public List<String> getText(String name) {
-		return mAnnotationMap.get(name).rowAsText(0);
-	}
+  /**
+   * Gets the text.
+   *
+   * @param index the index
+   * @return the text
+   */
+  public List<String> getText(int index) {
+    return getText(getName(index));
+  }
 
-	/**
-	 * Gets the annotation.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @return the annotation
-	 */
-	public Object getAnnotation(String name, int index) {
-		return mAnnotationMap.get(name).get(0, index);
-	}
+  /**
+   * Gets the text.
+   *
+   * @param name the name
+   * @return the text
+   */
+  public List<String> getText(String name) {
+    return mAnnotationMap.get(name).rowAsText(0);
+  }
 
-	/**
-	 * Gets the value.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @return the value
-	 */
-	public double getValue(String name, int index) {
-		return mAnnotationMap.get(name).getValue(0, index);
-	}
+  /**
+   * Gets the annotation.
+   *
+   * @param name the name
+   * @param index the index
+   * @return the annotation
+   */
+  public Object getAnnotation(String name, int index) {
+    return mAnnotationMap.get(name).get(0, index);
+  }
 
-	/**
-	 * Gets the text.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @return the text
-	 */
-	public String getText(String name, int index) {
-		return mAnnotationMap.get(name).getText(0, index);
-	}
+  /**
+   * Gets the value.
+   *
+   * @param name the name
+   * @param index the index
+   * @return the value
+   */
+  public double getValue(String name, int index) {
+    return mAnnotationMap.get(name).getValue(0, index);
+  }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Iterable#iterator()
-	 */
-	@Override
-	public Iterator<String> iterator() {
-		return mNames.iterator();
-	}
+  /**
+   * Gets the text.
+   *
+   * @param name the name
+   * @param index the index
+   * @return the text
+   */
+  public String getText(String name, int index) {
+    return mAnnotationMap.get(name).getText(0, index);
+  }
 
-	/**
-	 * Clear.
-	 */
-	public void clear() {
-		mNames.clear();
-		mAnnotationMap.clear();
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Iterable#iterator()
+   */
+  @Override
+  public Iterator<String> iterator() {
+    return mNames.iterator();
+  }
 
-	/**
-	 * Returns a list of the annotation names
-	 * in the order in which they were added.
-	 * This method returns a copy to prevent
-	 * the internal list from becoming
-	 * corrupted.
-	 *
-	 * @return the names
-	 */
-	public List<String> getNames() {
-		return Collections.unmodifiableList(mNames);
-	}
+  /**
+   * Clear.
+   */
+  public void clear() {
+    mNames.clear();
+    mAnnotationMap.clear();
+  }
 
-	/**
-	 * Gets the name.
-	 *
-	 * @param index 	the index. Annotations are accessed using negative
-	 * 					indices
-	 * @return the name
-	 */
-	public String getName(int index) {
-		String name = mNames.get(index);
+  /**
+   * Returns a list of the annotation names in the order in which they were
+   * added. This method returns a copy to prevent the internal list from
+   * becoming corrupted.
+   *
+   * @return the names
+   */
+  public List<String> getNames() {
+    return Collections.unmodifiableList(mNames);
+  }
 
-		//System.err.println("annotation name " + index + " " + name);
+  /**
+   * Gets the name.
+   *
+   * @param index the index. Annotations are accessed using negative indices
+   * @return the name
+   */
+  public String getName(int index) {
+    String name = mNames.get(index);
 
-		return name;
-	}
+    // System.err.println("annotation name " + index + " " + name);
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void setAnnotation(String name, int index, double value) {
-		autoCreate(name, MatrixType.MIXED);
+    return name;
+  }
 
-		// modify the internal representation rather than a copy
-		mAnnotationMap.get(name).set(0, index, value);
-	}
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param index the index
+   * @param value the value
+   */
+  public void setAnnotation(String name, int index, double value) {
+    autoCreate(name, MatrixType.MIXED);
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void setAnnotation(String name, int index, int value) {
-		autoCreate(name, MatrixType.MIXED);
+    // modify the internal representation rather than a copy
+    mAnnotationMap.get(name).set(0, index, value);
+  }
 
-		// modify the internal representation rather than a copy
-		mAnnotationMap.get(name).set(0, index, value);
-	}
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param index the index
+   * @param value the value
+   */
+  public void setAnnotation(String name, int index, int value) {
+    autoCreate(name, MatrixType.MIXED);
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void setAnnotation(String name, int index, String value) {
-		autoCreate(name, MatrixType.MIXED);
+    // modify the internal representation rather than a copy
+    mAnnotationMap.get(name).set(0, index, value);
+  }
 
-		// modify the internal representation rather than a copy
-		mAnnotationMap.get(name).set(0, index, value);
-	}
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param index the index
+   * @param value the value
+   */
+  public void setAnnotation(String name, int index, String value) {
+    autoCreate(name, MatrixType.MIXED);
 
-	/**
-	 * Sets the annotation.
-	 *
-	 * @param name the name
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void setAnnotation(String name, int index, Object value) {
-		autoCreate(name, MatrixType.MIXED);
+    // modify the internal representation rather than a copy
+    mAnnotationMap.get(name).set(0, index, value);
+  }
 
-		// modify the internal representation rather than a copy
-		mAnnotationMap.get(name).set(0, index, value);
-	}
+  /**
+   * Sets the annotation.
+   *
+   * @param name the name
+   * @param index the index
+   * @param value the value
+   */
+  public void setAnnotation(String name, int index, Object value) {
+    autoCreate(name, MatrixType.MIXED);
+
+    // modify the internal representation rather than a copy
+    mAnnotationMap.get(name).set(0, index, value);
+  }
 }

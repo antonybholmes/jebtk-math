@@ -32,293 +32,285 @@ import java.util.Map;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 import org.jebtk.core.AgeMap;
 
-
 // TODO: Auto-generated Javadoc
 /**
- * Fast implementation of the hypergeometric function using the sum of
- * logs.
+ * Fast implementation of the hypergeometric function using the sum of logs.
  *
  * @author Antony Holmes Holmes
  *
  */
 public class Hypergeometric {
 
-	/**
-	 * The member cached pdf.
-	 */
-	private Map<String, Double> mCachedPdf = 
-			new AgeMap<String, Double>(10000);
-	
-	/**
-	 * The member cached cdf.
-	 */
-	private Map<String, Double> mCachedCdf = 
-			new AgeMap<String, Double>(10000);
-	
-	/**
-	 * The member two tail cdf.
-	 */
-	private Map<String, Double> mTwoTailCdf = 
-			new AgeMap<String, Double>(10000);
-	
-	/**
-	 * The member one tail cdf.
-	 */
-	private Map<String, Double> mOneTailCdf = 
-			new AgeMap<String, Double>(10000);
+  /**
+   * The member cached pdf.
+   */
+  private Map<String, Double> mCachedPdf = new AgeMap<String, Double>(10000);
 
-	/**
-	 * Gets the key.
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @return the key
-	 */
-	private static String getKey(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize) {
-		return successes + "." + sampleSize + "." + populationSuccesses + "." + populationSize;
-	}
-	
-	/**
-	 * Lookup.
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @param cache the cache
-	 * @return the double
-	 */
-	private static double lookup(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize,
-			Map<String, Double> cache) {
-		
-		String key = getKey(successes, sampleSize, populationSuccesses, populationSize);
-		
-		if (cache.containsKey(key)) {
-			return cache.get(key);
-		} else {
-			return -1;
-		}
-	}
-	
-	/**
-	 * Store.
-	 *
-	 * @param p the p
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @param cache the cache
-	 */
-	private static void store(double p,
-			int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize,
-			Map<String, Double> cache) {
-		
-		String key = getKey(successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize);
-		
-		cache.put(key, p);
-	}
-	
-	/**
-	 * Compute the hypergeometric PDF.
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @return the double
-	 */
-	public final double pdf(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize) {
-		double pdf = lookup(successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mCachedPdf);
-		
-		if (pdf != -1) {
-			return pdf;
-		}
+  /**
+   * The member cached cdf.
+   */
+  private Map<String, Double> mCachedCdf = new AgeMap<String, Double>(10000);
 
-		HypergeometricDistribution d = new HypergeometricDistribution(null, 
-				populationSize, 
-				populationSuccesses,
-				sampleSize);
+  /**
+   * The member two tail cdf.
+   */
+  private Map<String, Double> mTwoTailCdf = new AgeMap<String, Double>(10000);
 
-		pdf = d.probability(successes);
-		
-		store(pdf,
-				successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mCachedPdf);
-		
-		return pdf;
-	}
+  /**
+   * The member one tail cdf.
+   */
+  private Map<String, Double> mOneTailCdf = new AgeMap<String, Double>(10000);
 
+  /**
+   * Gets the key.
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @return the key
+   */
+  private static String getKey(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize) {
+    return successes + "." + sampleSize + "." + populationSuccesses + "."
+        + populationSize;
+  }
 
-	/**
-	 * Compute the hypergeometric CDF.
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @return the double
-	 */
-	public final double cdf(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize) {
-		double cdf = lookup(successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mCachedCdf);
-		
-		if (cdf != -1) {
-			return cdf;
-		}
+  /**
+   * Lookup.
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @param cache the cache
+   * @return the double
+   */
+  private static double lookup(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize,
+      Map<String, Double> cache) {
 
-		HypergeometricDistribution d = new HypergeometricDistribution(null, 
-				populationSize, 
-				populationSuccesses, 
-				sampleSize);
+    String key = getKey(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize);
 
-		cdf = d.cumulativeProbability(successes);
-		
-		store(cdf,
-				successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mCachedCdf);
-		
-		return cdf;
-	}
-	
-	
-	/**
-	 * Cdf two tail.
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @return the double
-	 */
-	public final double cdfTwoTail(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize) {
-		double cdf = lookup(successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mTwoTailCdf);
-		
-		if (cdf != -1) {
-			return cdf;
-		}
-		
-		double cdf0 = pdf(successes, sampleSize, populationSuccesses, populationSize);
-		
-		cdf = 0;
+    if (cache.containsKey(key)) {
+      return cache.get(key);
+    } else {
+      return -1;
+    }
+  }
 
-		for (int i = 0; i <= sampleSize; ++i) {
-			double c = pdf(i, sampleSize, populationSuccesses, populationSize);
-			
-			if (c <= cdf0) {
-				//System.err.println("cdf " + c);
-				cdf += c;
-			}
-			
-			
-		}
+  /**
+   * Store.
+   *
+   * @param p the p
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @param cache the cache
+   */
+  private static void store(double p,
+      int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize,
+      Map<String, Double> cache) {
 
-		cdf = Math.min(1.0, cdf);
-		
-		store(cdf,
-				successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mTwoTailCdf);
-		
-		return cdf;
-	}
-	
-	/**
-	 * The probability of seeing this number of successes or more 
-	 * (up to sample size).
-	 *
-	 * @param successes the successes
-	 * @param sampleSize the sample size
-	 * @param populationSuccesses the population successes
-	 * @param populationSize the population size
-	 * @return the double
-	 */
-	public final double cdfOneTail(int successes, 
-			int sampleSize, 
-			int populationSuccesses, 
-			int populationSize) {
-		double cdf = lookup(successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mOneTailCdf);
-		
-		if (cdf != -1) {
-			return cdf;
-		}
-		
-		HypergeometricDistribution d = new HypergeometricDistribution(null, 
-				populationSize, 
-				populationSuccesses, 
-				sampleSize);
+    String key = getKey(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize);
 
-		cdf = d.upperCumulativeProbability(successes);
-	
-		store(cdf,
-				successes, 
-				sampleSize, 
-				populationSuccesses, 
-				populationSize,
-				mOneTailCdf);
-		
-		return cdf;
-	}
-	
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		Hypergeometric g = new Hypergeometric();
-		
-		System.err.println(g.cdfOneTail(128, 250, 186, 500));
-		
-		HypergeometricDistribution d = 
-				new HypergeometricDistribution(500, 186, 250);
-		
-		System.err.println(d.upperCumulativeProbability(128));
-	}
+    cache.put(key, p);
+  }
+
+  /**
+   * Compute the hypergeometric PDF.
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @return the double
+   */
+  public final double pdf(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize) {
+    double pdf = lookup(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mCachedPdf);
+
+    if (pdf != -1) {
+      return pdf;
+    }
+
+    HypergeometricDistribution d = new HypergeometricDistribution(null,
+        populationSize, populationSuccesses, sampleSize);
+
+    pdf = d.probability(successes);
+
+    store(pdf,
+        successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mCachedPdf);
+
+    return pdf;
+  }
+
+  /**
+   * Compute the hypergeometric CDF.
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @return the double
+   */
+  public final double cdf(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize) {
+    double cdf = lookup(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mCachedCdf);
+
+    if (cdf != -1) {
+      return cdf;
+    }
+
+    HypergeometricDistribution d = new HypergeometricDistribution(null,
+        populationSize, populationSuccesses, sampleSize);
+
+    cdf = d.cumulativeProbability(successes);
+
+    store(cdf,
+        successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mCachedCdf);
+
+    return cdf;
+  }
+
+  /**
+   * Cdf two tail.
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @return the double
+   */
+  public final double cdfTwoTail(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize) {
+    double cdf = lookup(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mTwoTailCdf);
+
+    if (cdf != -1) {
+      return cdf;
+    }
+
+    double cdf0 = pdf(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize);
+
+    cdf = 0;
+
+    for (int i = 0; i <= sampleSize; ++i) {
+      double c = pdf(i, sampleSize, populationSuccesses, populationSize);
+
+      if (c <= cdf0) {
+        // System.err.println("cdf " + c);
+        cdf += c;
+      }
+
+    }
+
+    cdf = Math.min(1.0, cdf);
+
+    store(cdf,
+        successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mTwoTailCdf);
+
+    return cdf;
+  }
+
+  /**
+   * The probability of seeing this number of successes or more (up to sample
+   * size).
+   *
+   * @param successes the successes
+   * @param sampleSize the sample size
+   * @param populationSuccesses the population successes
+   * @param populationSize the population size
+   * @return the double
+   */
+  public final double cdfOneTail(int successes,
+      int sampleSize,
+      int populationSuccesses,
+      int populationSize) {
+    double cdf = lookup(successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mOneTailCdf);
+
+    if (cdf != -1) {
+      return cdf;
+    }
+
+    HypergeometricDistribution d = new HypergeometricDistribution(null,
+        populationSize, populationSuccesses, sampleSize);
+
+    cdf = d.upperCumulativeProbability(successes);
+
+    store(cdf,
+        successes,
+        sampleSize,
+        populationSuccesses,
+        populationSize,
+        mOneTailCdf);
+
+    return cdf;
+  }
+
+  /**
+   * The main method.
+   *
+   * @param args the arguments
+   */
+  public static void main(String[] args) {
+    Hypergeometric g = new Hypergeometric();
+
+    System.err.println(g.cdfOneTail(128, 250, 186, 500));
+
+    HypergeometricDistribution d = new HypergeometricDistribution(500, 186,
+        250);
+
+    System.err.println(d.upperCumulativeProbability(128));
+  }
 }

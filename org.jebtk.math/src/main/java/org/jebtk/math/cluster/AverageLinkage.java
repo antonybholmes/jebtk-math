@@ -37,96 +37,100 @@ import org.jebtk.math.matrix.Matrix;
  * The class AverageLinkage.
  */
 public class AverageLinkage implements Linkage {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.cluster.Linkage#getLinkage(org.abh.lib.math.matrix.Matrix, org.abh.lib.math.cluster.Cluster, org.abh.lib.math.cluster.Cluster)
-	 */
-	@Override
-	public double getLinkage(final Matrix distanceMatrix, 
-			final Cluster c1, 
-			final Cluster c2) {
-		double d = 0;
-		
-		double t = 0;
-		
-		if (!c1.isParent() && !c2.isParent()) {
-			// both nodes are leaves so compare to each other
-			
-			d = distanceMatrix.getValue(c1.getId(), c2.getId());
-			
-			t = 1;
-		} else if (!c1.isParent() && c2.isParent()) {
-			// c1 is leaf, c2 is parent. Get the distance between c1 and
-			// all the nodes in c2.
-			
-			int id1 = c1.getId();
-			
-			Deque<Cluster> stack = new ArrayDeque<Cluster>();
-			
-			stack.push(c2);
-			
-			while (!stack.isEmpty()) {
-				Cluster c = stack.pop();
-				
-				if (c.isParent()) {
-					stack.push(c.getChild2());
-					stack.push(c.getChild1());
-				} else {
-					d += distanceMatrix.getValue(id1, c.getId());
-					++t;
-				}
-			}
-		} else if (c1.isParent() && !c2.isParent()) {
-			int id2 = c2.getId();
-			
-			Deque<Cluster> stack = new ArrayDeque<Cluster>();
-			
-			stack.push(c1);
-			
-			while (!stack.isEmpty()) {
-				Cluster c = stack.pop();
-				
-				if (c.isParent()) {
-					stack.push(c.getChild2());
-					stack.push(c.getChild1());
-				} else {
-					d += distanceMatrix.getValue(id2, c.getId());
-					++t;
-				}
-			}
-		} else {
-			// Distance between all possible nodes
-			
-			Deque<Cluster> stack1 = new ArrayDeque<Cluster>();
-			stack1.push(c1);
-			
-			while (!stack1.isEmpty()) {
-				Cluster cp1 = stack1.pop();
-				
-				if (cp1.isParent()) {
-					stack1.push(cp1.getChild2());
-					stack1.push(cp1.getChild1());
-				} else {
-					Deque<Cluster> stack2 = new ArrayDeque<Cluster>();
-					stack2.push(c2);
-					
-					while (!stack2.isEmpty()) {
-						Cluster cp2 = stack2.pop();
-						
-						if (cp2.isParent()) {
-							stack2.push(cp2.getChild2());
-							stack2.push(cp2.getChild1());
-						} else {
-							d += distanceMatrix.getValue(cp1.getId(), cp2.getId());
-							++t;
-						}
-					}
-				}
-			}
-		}
-		
-		d /= t;
-		
-		return d;
-	}	
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.lib.math.cluster.Linkage#getLinkage(org.abh.lib.math.matrix.Matrix,
+   * org.abh.lib.math.cluster.Cluster, org.abh.lib.math.cluster.Cluster)
+   */
+  @Override
+  public double getLinkage(final Matrix distanceMatrix,
+      final Cluster c1,
+      final Cluster c2) {
+    double d = 0;
+
+    double t = 0;
+
+    if (!c1.isParent() && !c2.isParent()) {
+      // both nodes are leaves so compare to each other
+
+      d = distanceMatrix.getValue(c1.getId(), c2.getId());
+
+      t = 1;
+    } else if (!c1.isParent() && c2.isParent()) {
+      // c1 is leaf, c2 is parent. Get the distance between c1 and
+      // all the nodes in c2.
+
+      int id1 = c1.getId();
+
+      Deque<Cluster> stack = new ArrayDeque<Cluster>();
+
+      stack.push(c2);
+
+      while (!stack.isEmpty()) {
+        Cluster c = stack.pop();
+
+        if (c.isParent()) {
+          stack.push(c.getChild2());
+          stack.push(c.getChild1());
+        } else {
+          d += distanceMatrix.getValue(id1, c.getId());
+          ++t;
+        }
+      }
+    } else if (c1.isParent() && !c2.isParent()) {
+      int id2 = c2.getId();
+
+      Deque<Cluster> stack = new ArrayDeque<Cluster>();
+
+      stack.push(c1);
+
+      while (!stack.isEmpty()) {
+        Cluster c = stack.pop();
+
+        if (c.isParent()) {
+          stack.push(c.getChild2());
+          stack.push(c.getChild1());
+        } else {
+          d += distanceMatrix.getValue(id2, c.getId());
+          ++t;
+        }
+      }
+    } else {
+      // Distance between all possible nodes
+
+      Deque<Cluster> stack1 = new ArrayDeque<Cluster>();
+      stack1.push(c1);
+
+      while (!stack1.isEmpty()) {
+        Cluster cp1 = stack1.pop();
+
+        if (cp1.isParent()) {
+          stack1.push(cp1.getChild2());
+          stack1.push(cp1.getChild1());
+        } else {
+          Deque<Cluster> stack2 = new ArrayDeque<Cluster>();
+          stack2.push(c2);
+
+          while (!stack2.isEmpty()) {
+            Cluster cp2 = stack2.pop();
+
+            if (cp2.isParent()) {
+              stack2.push(cp2.getChild2());
+              stack2.push(cp2.getChild1());
+            } else {
+              d += distanceMatrix.getValue(cp1.getId(), cp2.getId());
+              ++t;
+            }
+          }
+        }
+      }
+    }
+
+    d /= t;
+
+    return d;
+  }
 }

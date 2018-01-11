@@ -18,58 +18,57 @@ package org.jebtk.math.test;
 import java.util.ArrayList;
 import java.util.List;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * The class Find.
  */
 public class Find {
-	
-	/**
-	 * Instantiates a new find.
-	 */
-	private Find() {
-		// Do nothing
-	}
-	
-	/**
-	 * Finds the indices of values less than x.
-	 *
-	 * @param values the values
-	 * @param x the x
-	 * @return the list
-	 */
-	public static List<Integer> lt(List<Double> values, double x) {
-		return find(values, new LessThanCondition(x));
-	}
-	
-	/**
-	 * Ge.
-	 *
-	 * @param values the values
-	 * @param x the x
-	 * @return the list
-	 */
-	public static List<Integer> ge(List<Double> values, double x) {
-		return find(values, new GreaterThanEqualToCondition(x));
-	}
-	
-	/**
-	 * Returns the list of indices where a condition is met.
-	 *
-	 * @param values the values
-	 * @param condition the condition
-	 * @return the list
-	 */
-	public static List<Integer> find(List<Double> values, Condition condition) {
-		List<Integer> indices = new ArrayList<Integer>();
-		
-		for (int i = 0; i < values.size(); ++i) {
-			if (condition.test(values.get(i))) {
-				indices.add(i);
-			}
-		}
-		
-		return indices;
-	}
+
+  /**
+   * Instantiates a new find.
+   */
+  private Find() {
+    // Do nothing
+  }
+
+  /**
+   * Finds the indices of values less than x.
+   *
+   * @param values the values
+   * @param x the x
+   * @return the list
+   */
+  public static List<Integer> lt(List<Double> values, double x) {
+    return find(values, new LessThanCondition(x));
+  }
+
+  /**
+   * Ge.
+   *
+   * @param values the values
+   * @param x the x
+   * @return the list
+   */
+  public static List<Integer> ge(List<Double> values, double x) {
+    return find(values, new GreaterThanEqualToCondition(x));
+  }
+
+  /**
+   * Returns the list of indices where a condition is met.
+   *
+   * @param values the values
+   * @param condition the condition
+   * @return the list
+   */
+  public static List<Integer> find(List<Double> values, Condition condition) {
+    List<Integer> indices = new ArrayList<Integer>();
+
+    for (int i = 0; i < values.size(); ++i) {
+      if (condition.test(values.get(i))) {
+        indices.add(i);
+      }
+    }
+
+    return indices;
+  }
 }

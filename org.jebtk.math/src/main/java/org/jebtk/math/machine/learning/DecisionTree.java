@@ -22,73 +22,73 @@ import org.jebtk.core.tree.TreeNode;
  * The Class DecisionTree.
  */
 public class DecisionTree extends TreeNode<Decision> {
-	
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new decision tree.
-	 *
-	 * @param name the name
-	 */
-	public DecisionTree(String name) {
-		super(name);
-	}
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new decision tree.
-	 *
-	 * @param name the name
-	 * @param d the d
-	 */
-	public DecisionTree(String name, Decision d) {
-		super(name, d);
-	}
+  /**
+   * Instantiates a new decision tree.
+   *
+   * @param name the name
+   */
+  public DecisionTree(String name) {
+    super(name);
+  }
 
-	/**
-	 * Classify.
-	 *
-	 * @param values the values
-	 * @return the string
-	 */
-	public String classify(double[] values) {
-		return classify(this, values);
-	}
-	
-	//public String classify(String[] values) {
-	//	return classify(this, values);
-	//}
-	
-	/**
-	 * Classify some data based on a decision tree.
-	 *
-	 * @param root the root
-	 * @param values the values
-	 * @return the string
-	 */
-	public static String classify(TreeNode<Decision> root, double[] values) {
-		
-		TreeNode<Decision> current = root;
-		
-		while (current.getValue() != null) {
-			Decision decision = current.getValue();
-			
-			int attIdx = decision.getAttIdx();
-			
-			double v = values[attIdx];
-			
-			int child;
-			
-			if (v <= decision.getPivot()) {
-				child = 0;
-			} else {
-				child = 1;
-			}
-			
-			// Move along to the next decision node.
-			current = current.getChild(child);
-		}
-		
-		return current.getName();
-	}
+  /**
+   * Instantiates a new decision tree.
+   *
+   * @param name the name
+   * @param d the d
+   */
+  public DecisionTree(String name, Decision d) {
+    super(name, d);
+  }
+
+  /**
+   * Classify.
+   *
+   * @param values the values
+   * @return the string
+   */
+  public String classify(double[] values) {
+    return classify(this, values);
+  }
+
+  // public String classify(String[] values) {
+  // return classify(this, values);
+  // }
+
+  /**
+   * Classify some data based on a decision tree.
+   *
+   * @param root the root
+   * @param values the values
+   * @return the string
+   */
+  public static String classify(TreeNode<Decision> root, double[] values) {
+
+    TreeNode<Decision> current = root;
+
+    while (current.getValue() != null) {
+      Decision decision = current.getValue();
+
+      int attIdx = decision.getAttIdx();
+
+      double v = values[attIdx];
+
+      int child;
+
+      if (v <= decision.getPivot()) {
+        child = 0;
+      } else {
+        child = 1;
+      }
+
+      // Move along to the next decision node.
+      current = current.getChild(child);
+    }
+
+    return current.getName();
+  }
 }

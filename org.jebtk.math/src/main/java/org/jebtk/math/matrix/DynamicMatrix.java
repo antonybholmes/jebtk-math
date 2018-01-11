@@ -31,145 +31,147 @@ import org.jebtk.core.collections.DefaultHashMapMap;
 import org.jebtk.core.collections.MapMap;
 import org.jebtk.core.text.TextUtils;
 
-
 // TODO: Auto-generated Javadoc
 /**
- * Matrix that can be dynamically resized to match maximum row/column.
- * This matrix uses lazy instantiation so cells are only created as they
- * are referenced. Thus there will be a performance loss at the expense
- * of flexibility. This matrix has both the properties of a matrix and
- * a map. The matrix's nominal dimensions are increased to match the largest
- * row and column encountered.
+ * Matrix that can be dynamically resized to match maximum row/column. This
+ * matrix uses lazy instantiation so cells are only created as they are
+ * referenced. Thus there will be a performance loss at the expense of
+ * flexibility. This matrix has both the properties of a matrix and a map. The
+ * matrix's nominal dimensions are increased to match the largest row and column
+ * encountered.
  *
  * @author Antony Holmes Holmes
  * @param <T> the generic type
  */
 public abstract class DynamicMatrix<T> extends ResizableMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Dynamically resizing map of maps to store text for each cell.
-	 */
-	protected final MapMap<Integer, Integer, T> mData;
+  /**
+   * Dynamically resizing map of maps to store text for each cell.
+   */
+  protected final MapMap<Integer, Integer, T> mData;
 
-	/**
-	 * Instantiates a new dynamic matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DynamicMatrix(int rows, int columns) {
-		super(rows, columns);
+  /**
+   * Instantiates a new dynamic matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public DynamicMatrix(int rows, int columns) {
+    super(rows, columns);
 
-		mData = DefaultHashMapMap.create(rows, columns);
-	}
+    mData = DefaultHashMapMap.create(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public DynamicMatrix(int rows, int columns, T v) {
-		super(rows, columns);
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public DynamicMatrix(int rows, int columns, T v) {
+    super(rows, columns);
 
-		mData = DefaultHashMapMap.create(rows, columns, v);
+    mData = DefaultHashMapMap.create(rows, columns, v);
 
-		// update size uses the zero based row and column to calculate size
-		// so we need to adjust for this
-		//updateSize(rows - 1, columns - 1);
-	}
+    // update size uses the zero based row and column to calculate size
+    // so we need to adjust for this
+    // updateSize(rows - 1, columns - 1);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public DynamicMatrix(Matrix m) {
-		this(m.getRows(), m.getCols());
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public DynamicMatrix(Matrix m) {
+    this(m.getRows(), m.getCols());
 
-		update(m);
-	}
+    update(m);
+  }
 
-	/**
-	 * Instantiates a new dynamic matrix.
-	 *
-	 * @param m the m
-	 */
-	public DynamicMatrix(DynamicMatrix<T> m) {
-		super(m.getRows(), m.getCols());
+  /**
+   * Instantiates a new dynamic matrix.
+   *
+   * @param m the m
+   */
+  public DynamicMatrix(DynamicMatrix<T> m) {
+    super(m.getRows(), m.getCols());
 
-		mData = DefaultHashMapMap.create(m.getRows(), m.getCols());
+    mData = DefaultHashMapMap.create(m.getRows(), m.getCols());
 
-		update(m);
-	}
+    update(m);
+  }
 
-	/**
-	 * Specialized update method for dynamic matrices to quickly copy data
-	 * from one matrix to another.
-	 *
-	 * @param m the m
-	 */
-	public void update(DynamicMatrix<T> m) {
-		for (int row : m.mData.keySet()) {
-			mData.put(row, m.mData.get(row));
-		}
-	}
+  /**
+   * Specialized update method for dynamic matrices to quickly copy data from
+   * one matrix to another.
+   *
+   * @param m the m
+   */
+  public void update(DynamicMatrix<T> m) {
+    for (int row : m.mData.keySet()) {
+      mData.put(row, m.mData.get(row));
+    }
+  }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
+   */
+  @Override
+  public double getValue(int row, int column) {
+    Object v = mData.get(row, column);
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
-	 */
-	@Override
-	public double getValue(int row, int column) {
-		Object v = mData.get(row, column);
+    if (v != null && v instanceof Number) {
+      return ((Double) v).doubleValue();
+    } else {
+      return 0;
+    }
+  }
 
-		if (v != null && v instanceof Number) {
-			return ((Double)v).doubleValue();
-		} else {
-			return 0;
-		}
-	}
-	
-	@Override
-	public int getInt(int row, int column) {
-		Object v = mData.get(row, column);
+  @Override
+  public int getInt(int row, int column) {
+    Object v = mData.get(row, column);
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).intValue();
-		} else {
-			return 0;
-		}
-	}
-	
-	@Override
-	public long getLong(int row, int column) {
-		Object v = mData.get(row, column);
+    if (v != null && v instanceof Number) {
+      return ((Number) v).intValue();
+    } else {
+      return 0;
+    }
+  }
 
-		if (v != null && v instanceof Number) {
-			return ((Number)v).longValue();
-		} else {
-			return 0;
-		}
-	}
+  @Override
+  public long getLong(int row, int column) {
+    Object v = mData.get(row, column);
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int row, int column) {
-		Object v = mData.get(row, column);
+    if (v != null && v instanceof Number) {
+      return ((Number) v).longValue();
+    } else {
+      return 0;
+    }
+  }
 
-		if (v != null) {
-			return v.toString();
-		} else {
-			return TextUtils.EMPTY_STRING;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int row, int column) {
+    Object v = mData.get(row, column);
+
+    if (v != null) {
+      return v.toString();
+    } else {
+      return TextUtils.EMPTY_STRING;
+    }
+  }
 }

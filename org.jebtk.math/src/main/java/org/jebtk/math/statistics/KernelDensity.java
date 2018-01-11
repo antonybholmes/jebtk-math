@@ -32,298 +32,290 @@ import java.util.Arrays;
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.Linspace;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * The class KernelDensity.
  */
 public abstract class KernelDensity {
 
-	/** The Constant DEFAULT_POINTS. */
-	private static final int DEFAULT_POINTS = 100;
-	
-	/** The m dist. */
-	private double[] mDist;
-	
-	/** The m lx. */
-	private double[] mLx;
-	
-	/** The m cdf. */
-	private double[] mCdf;
+  /** The Constant DEFAULT_POINTS. */
+  private static final int DEFAULT_POINTS = 100;
 
+  /** The m dist. */
+  private double[] mDist;
 
-	/**
-	 * Instantiates a new kernel density.
-	 *
-	 * @param dist the dist
-	 * @param kernel the kernel
-	 */
-	public KernelDensity(double[] dist, Kernel kernel) {
-		mDist = new double[dist.length];
+  /** The m lx. */
+  private double[] mLx;
 
-		// Clone the dist since we are going to modify it
-		System.arraycopy(dist, 0, mDist, 0, dist.length);
+  /** The m cdf. */
+  private double[] mCdf;
 
-		// Ensure array is sorted for stats that assumed ordered data
-		Arrays.sort(mDist);
-		
-		// evaluation points to create a smooth function
-		mLx = evalPoints(dist);
-		
-		double bandwidth = bandwidthEstimate(dist);
-		
-		double[] pdf = kde(mLx, dist, bandwidth, kernel);
-		
-		mCdf = cdf(mLx, pdf);
-		
-		//System.err.println("lx " + Arrays.toString(mLx));
-		//System.err.println("pdf " + Arrays.toString(pdf));
-		//System.err.println("cdf " +  Arrays.toString(mCdf));
-	}
-	
-	/**
-	 * Cdf.
-	 *
-	 * @param xp the xp
-	 * @return the double[]
-	 */
-	public double[] cdf(double[] xp) {
-		double[] ret = new double[xp.length];
+  /**
+   * Instantiates a new kernel density.
+   *
+   * @param dist the dist
+   * @param kernel the kernel
+   */
+  public KernelDensity(double[] dist, Kernel kernel) {
+    mDist = new double[dist.length];
 
-		for (int i = 0; i < xp.length; ++i) {
-			double x = xp[i];
+    // Clone the dist since we are going to modify it
+    System.arraycopy(dist, 0, mDist, 0, dist.length);
 
-			int ci = 0;
+    // Ensure array is sorted for stats that assumed ordered data
+    Arrays.sort(mDist);
 
-			// integrate f(x) dx
-			if (x <= mLx[0]) {
-				// x is before the the points we are evaluating so just use
-				// the first point as an estimate of the pdf
-				ci = 0;
-			} else if (x >= mLx[mLx.length - 1]) {
-				// comes after the cdf finishes so use the maximum cdf to
-				// approximate the point
-				ci = mLx.length - 1;
-			} else {
-				// Search until we hit the first point equal to or greater
-				// than x. If the cdf has enough points, this will give a
-				// reasonably close approximation of the cdf for x.
-				for (int j = 1; j < mCdf.length - 1; ++j) {
-					if (mLx[j] >= x) {
-						//System.err.println("sum " + j + " " + x + " " + cdfPoints.get(j));
-						
-						break;
-					}
+    // evaluation points to create a smooth function
+    mLx = evalPoints(dist);
 
-					++ci;
+    double bandwidth = bandwidthEstimate(dist);
 
-					// Trapezoid rule
-					//sum += pdf.get(j) + pdf.get(j + 1); // * (evalPoints.get(j + 1) - evalPoints.get(j));
+    double[] pdf = kde(mLx, dist, bandwidth, kernel);
 
-					
-				}
-			}
+    mCdf = cdf(mLx, pdf);
 
-			//sum *= h;
+    // System.err.println("lx " + Arrays.toString(mLx));
+    // System.err.println("pdf " + Arrays.toString(pdf));
+    // System.err.println("cdf " + Arrays.toString(mCdf));
+  }
 
-			//System.err.println("sumd " + x + " " + i + " " + ci + " " + cdf.get(ci));
-			//System.err.println("eh " + cdf);
-			
-			ret[i] = mCdf[ci];
-		}
-		
-		//PrintUtils.out().println("=====");
-		//PrintUtils.out().columns(cdfPoints, pdf);
-		//PrintUtils.out().columns(cdfPoints, cdf);
-		//PrintUtils.out().columns(dist);
-		//PrintUtils.out().println(bandwidth);
-		//PrintUtils.out().println("=====");
-		
-		//System.exit(0);
-		
-		//System.err.println("cdf " + Arrays.toString(ret));
+  /**
+   * Cdf.
+   *
+   * @param xp the xp
+   * @return the double[]
+   */
+  public double[] cdf(double[] xp) {
+    double[] ret = new double[xp.length];
 
-		return ret;
-	}
-	
-	
-	
+    for (int i = 0; i < xp.length; ++i) {
+      double x = xp[i];
 
-	
-	/**
-	 * Bandwidth estimate.
-	 *
-	 * @param dist the dist
-	 * @return the double
-	 */
-	public abstract double bandwidthEstimate(double[] dist);
-	
-	//
-	// Static methods
-	//
+      int ci = 0;
 
-	/**
-	 * Integrate the pdf to make a cdf using the evaluation points to
-	 * form a distribution.
-	 *
-	 * @param cdfPoints 	Used to determine the x gap only.
-	 * @param pdf 		y at each cdfPoint/x.
-	 * @return the double[]
-	 */
-	private static double[] cdf(final double[] cdfPoints,
-			final double[] pdf) {
-		
+      // integrate f(x) dx
+      if (x <= mLx[0]) {
+        // x is before the the points we are evaluating so just use
+        // the first point as an estimate of the pdf
+        ci = 0;
+      } else if (x >= mLx[mLx.length - 1]) {
+        // comes after the cdf finishes so use the maximum cdf to
+        // approximate the point
+        ci = mLx.length - 1;
+      } else {
+        // Search until we hit the first point equal to or greater
+        // than x. If the cdf has enough points, this will give a
+        // reasonably close approximation of the cdf for x.
+        for (int j = 1; j < mCdf.length - 1; ++j) {
+          if (mLx[j] >= x) {
+            // System.err.println("sum " + j + " " + x + " " +
+            // cdfPoints.get(j));
 
-		// Assume points are evenly distributed along x
-		double h = (cdfPoints[1] - cdfPoints[0]) / 2.0;
+            break;
+          }
 
-		double sum = pdf[0] * h;
-		
-		double[] ret = new double[cdfPoints.length];
+          ++ci;
 
-		ret[0] = Mathematics.bound(sum, 0, 1);
-		
-		//System.err.println("pdf " + pdf.length + " " + cdfPoints.length);
-		
-		for (int i = 1; i < pdf.length; ++i) {
-			sum += h * (pdf[i - 1] + pdf[i]); // * (evalPoints.get(j + 1) - evalPoints.get(j));
+          // Trapezoid rule
+          // sum += pdf.get(j) + pdf.get(j + 1); // * (evalPoints.get(j + 1) -
+          // evalPoints.get(j));
 
-			// Bound sum between 0 and 1 for cdf
-			ret[i] = sum; //Mathematics.bound(sum, 0, 1);
-		}
+        }
+      }
 
-		return ret;
-	}
+      // sum *= h;
 
+      // System.err.println("sumd " + x + " " + i + " " + ci + " " +
+      // cdf.get(ci));
+      // System.err.println("eh " + cdf);
 
+      ret[i] = mCdf[ci];
+    }
 
-	/**
-	 * For integration purposes, we need a range of points in the distribution
-	 * we can evaluate the pdf at.
-	 *
-	 * @param dist the dist
-	 * @return the list
-	 */
-	public static double[] evalPoints(double[] dist) {
-		return evalPoints(dist, DEFAULT_POINTS);
-	}
+    // PrintUtils.out().println("=====");
+    // PrintUtils.out().columns(cdfPoints, pdf);
+    // PrintUtils.out().columns(cdfPoints, cdf);
+    // PrintUtils.out().columns(dist);
+    // PrintUtils.out().println(bandwidth);
+    // PrintUtils.out().println("=====");
 
-	/**
-	 * Eval points.
-	 *
-	 * @param dist the dist
-	 * @param n the n
-	 * @return the list
-	 */
-	public static double[] evalPoints(double[] dist, int n) {
-		double min;
-		double max;
-		
-		if (Mathematics.sum(dist) == 0) {
-			min = -3;
-			max = 3;
-		} else {
-			Stats stats = new Stats(dist);
-			
-			// Use Sample STDEV, as per MATLAB
-			double sd = stats.sampleStdDev();
-			double m = stats.mean();
-			double d = sd * 4;
+    // System.exit(0);
 
-			min = m - d;
-			max = m + d;
-		}
-		
-		//double min = dist[0];
-		// max = dist.get(dist.length - 1);
+    // System.err.println("cdf " + Arrays.toString(ret));
 
-		return evalPoints(min, max, n);
-	}
+    return ret;
+  }
 
-	/**
-	 * Eval points.
-	 *
-	 * @param min the min
-	 * @param max the max
-	 * @param n the n
-	 * @return the list
-	 */
-	public static double[] evalPoints(double min, double max, int n) {
-		double[] values = Linspace.genArray(min, max, n);
-		
-		/*
-		double[] values = new double[](n);
+  /**
+   * Bandwidth estimate.
+   *
+   * @param dist the dist
+   * @return the double
+   */
+  public abstract double bandwidthEstimate(double[] dist);
 
-		double x = min; //Mathematics.min(dist);
+  //
+  // Static methods
+  //
 
-		double d = (max - min) / (n - 1);
+  /**
+   * Integrate the pdf to make a cdf using the evaluation points to form a
+   * distribution.
+   *
+   * @param cdfPoints Used to determine the x gap only.
+   * @param pdf y at each cdfPoint/x.
+   * @return the double[]
+   */
+  private static double[] cdf(final double[] cdfPoints, final double[] pdf) {
 
-		for (int i = 0; i < n; ++i) {
-			values.add(x);
+    // Assume points are evenly distributed along x
+    double h = (cdfPoints[1] - cdfPoints[0]) / 2.0;
 
-			x += d;
-		}
-		*/
-		
-		//System.err.println(Arrays.toString(values));
+    double sum = pdf[0] * h;
 
-		return values;
-	}
+    double[] ret = new double[cdfPoints.length];
 
-	/**
-	 * Evaluate the points of xp relative to dist. Thus given a point x
-	 * we can estimate its density in the distribution dist which is
-	 * a finite number of points in an unknown distribution.
-	 *
-	 * @param xp the xp
-	 * @param dist the dist
-	 * @param bandwidth the bandwidth
-	 * @param kernel the kernel
-	 * @return the list
-	 */
-	public static double[] kde(final double[] xp,
-			double[] dist,
-			double bandwidth,
-			Kernel kernel) {
-		int n = xp.length;
-		
-		double[] values = new double[n];
+    ret[0] = Mathematics.bound(sum, 0, 1);
 
-		for (int i = 0; i < n; ++i) {
-			values[i] = kde(xp[i], dist, bandwidth, kernel);
-		}
+    // System.err.println("pdf " + pdf.length + " " + cdfPoints.length);
 
-		return values;
-	}
+    for (int i = 1; i < pdf.length; ++i) {
+      sum += h * (pdf[i - 1] + pdf[i]); // * (evalPoints.get(j + 1) -
+                                        // evalPoints.get(j));
 
-	/**
-	 * The Kernel Density estimator (KDE).
-	 *
-	 * @param x the x
-	 * @param dist the dist
-	 * @param bandwidth the bandwidth
-	 * @param kernel the kernel
-	 * @return the double
-	 */
-	public static double kde(double x,
-			double[] dist,
-			double bandwidth,
-			Kernel kernel) {
-		double n = dist.length;
+      // Bound sum between 0 and 1 for cdf
+      ret[i] = sum; // Mathematics.bound(sum, 0, 1);
+    }
 
-		double f = 1.0 / (bandwidth * n);
+    return ret;
+  }
 
-		double sum = 0;
+  /**
+   * For integration purposes, we need a range of points in the distribution we
+   * can evaluate the pdf at.
+   *
+   * @param dist the dist
+   * @return the list
+   */
+  public static double[] evalPoints(double[] dist) {
+    return evalPoints(dist, DEFAULT_POINTS);
+  }
 
-		//System.err.println("kde " + x + " " + dist);
-		
-		for (double xi : dist) {
-			sum += kernel.evaluate((x - xi) / bandwidth);
-		}
+  /**
+   * Eval points.
+   *
+   * @param dist the dist
+   * @param n the n
+   * @return the list
+   */
+  public static double[] evalPoints(double[] dist, int n) {
+    double min;
+    double max;
 
-		//System.err.println("kde " + x + " " + Arrays.toString(dist) + " " + bandwidth);
-		
-		return f * sum;
-	}
+    if (Mathematics.sum(dist) == 0) {
+      min = -3;
+      max = 3;
+    } else {
+      Stats stats = new Stats(dist);
+
+      // Use Sample STDEV, as per MATLAB
+      double sd = stats.sampleStdDev();
+      double m = stats.mean();
+      double d = sd * 4;
+
+      min = m - d;
+      max = m + d;
+    }
+
+    // double min = dist[0];
+    // max = dist.get(dist.length - 1);
+
+    return evalPoints(min, max, n);
+  }
+
+  /**
+   * Eval points.
+   *
+   * @param min the min
+   * @param max the max
+   * @param n the n
+   * @return the list
+   */
+  public static double[] evalPoints(double min, double max, int n) {
+    double[] values = Linspace.genArray(min, max, n);
+
+    /*
+     * double[] values = new double[](n);
+     * 
+     * double x = min; //Mathematics.min(dist);
+     * 
+     * double d = (max - min) / (n - 1);
+     * 
+     * for (int i = 0; i < n; ++i) { values.add(x);
+     * 
+     * x += d; }
+     */
+
+    // System.err.println(Arrays.toString(values));
+
+    return values;
+  }
+
+  /**
+   * Evaluate the points of xp relative to dist. Thus given a point x we can
+   * estimate its density in the distribution dist which is a finite number of
+   * points in an unknown distribution.
+   *
+   * @param xp the xp
+   * @param dist the dist
+   * @param bandwidth the bandwidth
+   * @param kernel the kernel
+   * @return the list
+   */
+  public static double[] kde(final double[] xp,
+      double[] dist,
+      double bandwidth,
+      Kernel kernel) {
+    int n = xp.length;
+
+    double[] values = new double[n];
+
+    for (int i = 0; i < n; ++i) {
+      values[i] = kde(xp[i], dist, bandwidth, kernel);
+    }
+
+    return values;
+  }
+
+  /**
+   * The Kernel Density estimator (KDE).
+   *
+   * @param x the x
+   * @param dist the dist
+   * @param bandwidth the bandwidth
+   * @param kernel the kernel
+   * @return the double
+   */
+  public static double kde(double x,
+      double[] dist,
+      double bandwidth,
+      Kernel kernel) {
+    double n = dist.length;
+
+    double f = 1.0 / (bandwidth * n);
+
+    double sum = 0;
+
+    // System.err.println("kde " + x + " " + dist);
+
+    for (double xi : dist) {
+      sum += kernel.evaluate((x - xi) / bandwidth);
+    }
+
+    // System.err.println("kde " + x + " " + Arrays.toString(dist) + " " +
+    // bandwidth);
+
+    return f * sum;
+  }
 
 }

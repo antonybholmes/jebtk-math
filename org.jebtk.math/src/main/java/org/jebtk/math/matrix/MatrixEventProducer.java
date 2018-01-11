@@ -36,30 +36,30 @@ import org.jebtk.core.event.ChangeEvent;
  * @author Antony Holmes Holmes
  */
 public interface MatrixEventProducer {
-	
-	/**
-	 * The constant MATRIX_CHANGED_EVENT.
-	 */
-	public static final String MATRIX_CHANGED_EVENT = "matrix_changed";
-	
-	/**
-	 * Add an action listener.
-	 *
-	 * @param l the l
-	 */
-	public void addMatrixListener(MatrixEventListener l);
-	
-	/**
-	 * Remove an action listener.
-	 *
-	 * @param l the l
-	 */
-	public void removeMatrixListener(MatrixEventListener l);
-	
-	/**
-	 * fire an event.
-	 *
-	 * @param event the event
-	 */
-	public void fireMatrixChanged(ChangeEvent event);
+
+  /**
+   * The constant MATRIX_CHANGED_EVENT.
+   */
+  public static final String MATRIX_CHANGED_EVENT = "matrix_changed";
+
+  /**
+   * Add an action listener.
+   *
+   * @param l the l
+   */
+  public void addMatrixListener(MatrixEventListener l);
+
+  /**
+   * Remove an action listener.
+   *
+   * @param l the l
+   */
+  public void removeMatrixListener(MatrixEventListener l);
+
+  /**
+   * fire an event.
+   *
+   * @param event the event
+   */
+  public void fireMatrixChanged(ChangeEvent event);
 }

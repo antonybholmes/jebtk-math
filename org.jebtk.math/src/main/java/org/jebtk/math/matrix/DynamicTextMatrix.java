@@ -35,168 +35,184 @@ package org.jebtk.math.matrix;
  */
 public class DynamicTextMatrix extends DynamicMatrix<String> {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new dynamic text matrix.
-	 */
-	public DynamicTextMatrix() {
-		this(0, 0);
-	}
+  /**
+   * Instantiates a new dynamic text matrix.
+   */
+  public DynamicTextMatrix() {
+    this(0, 0);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DynamicTextMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public DynamicTextMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public DynamicTextMatrix(int rows, int columns, String v) {
-		super(rows, columns, v);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public DynamicTextMatrix(int rows, int columns, String v) {
+    super(rows, columns, v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public DynamicTextMatrix(Matrix m) {
-		super(m);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getType()
-	 */
-	@Override
-	public MatrixType getType() {
-		return MatrixType.TEXT;
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public DynamicTextMatrix(Matrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new DynamicTextMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new DynamicTextMatrix(rows, cols);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
-	 */
-	@Override
-	public void update(String v) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				mData.put(i, j, v);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#getType()
+   */
+  @Override
+  public MatrixType getType() {
+    return MatrixType.TEXT;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.Object)
-	 */
-	@Override
-	public void update(int row, int column, Object v) {
-		if (v == null) {
-			return;
-		}
-		
-		if (v instanceof String) {
-			mData.put(row, column, (String)v);
-		} else {
-			mData.put(row, column, v.toString());
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new DynamicTextMatrix(this);
+  }
 
-		updateSize(row, column);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.String)
-	 */
-	@Override
-	public void update(int row, int column, String v) {
-		mData.put(row, column, v);
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new DynamicTextMatrix(rows, cols);
+  }
 
-		updateSize(row, column);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int row, int column, double v) {
-		update(row, column, Double.toString(v));
-	}
-	
-	@Override
-	public void update(int row, int column, int v) {
-		update(row, column, Integer.toString(v));
-	}
-	
-	@Override
-	public void update(int row, int column, long v) {
-		update(row, column, Long.toString(v));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
-	 */
-	@Override
-	public CellType getCellType(int row, int column) {
-		return CellType.TEXT;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() {
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(DynamicTextMatrix m) {
-		
-		// Return a fixed sized array where possible
-		TextMatrix ret = TextMatrix.createTextMatrix(m.getCols(), m.getRows());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
+   */
+  @Override
+  public void update(String v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.put(i, j, v);
+      }
+    }
+  }
 
-		// Swap row and column indices. We use index lookup to reduce
-		// the number of number of times indices must be looked up to
-		// set cell elements.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int,
+   * java.lang.Object)
+   */
+  @Override
+  public void update(int row, int column, Object v) {
+    if (v == null) {
+      return;
+    }
 
-		for (int i = 0; i < m.getRows(); ++i) {
-			for (int j = 0; j < m.getCols(); ++j) {
-				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
-			}
-		}
-		
-		return ret;
-	}
-	
-	
-	/**
-	 * Creates the matrix.
-	 *
-	 * @return the matrix
-	 */
-	public static Matrix createMatrix() {
-		return new DynamicTextMatrix();
-	}
+    if (v instanceof String) {
+      mData.put(row, column, (String) v);
+    } else {
+      mData.put(row, column, v.toString());
+    }
+
+    updateSize(row, column);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int,
+   * java.lang.String)
+   */
+  @Override
+  public void update(int row, int column, String v) {
+    mData.put(row, column, v);
+
+    updateSize(row, column);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
+  @Override
+  public void update(int row, int column, double v) {
+    update(row, column, Double.toString(v));
+  }
+
+  @Override
+  public void update(int row, int column, int v) {
+    update(row, column, Integer.toString(v));
+  }
+
+  @Override
+  public void update(int row, int column, long v) {
+    update(row, column, Long.toString(v));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
+   */
+  @Override
+  public CellType getCellType(int row, int column) {
+    return CellType.TEXT;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#transpose()
+   */
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
+
+  public static Matrix transpose(DynamicTextMatrix m) {
+
+    // Return a fixed sized array where possible
+    TextMatrix ret = TextMatrix.createTextMatrix(m.getCols(), m.getRows());
+
+    // Swap row and column indices. We use index lookup to reduce
+    // the number of number of times indices must be looked up to
+    // set cell elements.
+
+    for (int i = 0; i < m.getRows(); ++i) {
+      for (int j = 0; j < m.getCols(); ++j) {
+        ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+   * Creates the matrix.
+   *
+   * @return the matrix
+   */
+  public static Matrix createMatrix() {
+    return new DynamicTextMatrix();
+  }
 }

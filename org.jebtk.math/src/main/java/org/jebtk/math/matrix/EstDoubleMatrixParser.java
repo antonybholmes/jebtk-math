@@ -33,19 +33,25 @@ package org.jebtk.math.matrix;
  */
 public class EstDoubleMatrixParser extends EstMatrixParser<Double> {
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.EstMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	protected DataFrame createMatrix(int rows, int columns) {
-		return new DataFrame(DoubleMatrix.createDoubleMatrix(rows, columns));
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.EstMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  protected DataFrame createMatrix(int rows, int columns) {
+    return new DataFrame(DoubleMatrix.createDoubleMatrix(rows, columns));
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.EstMatrixParser#set(org.abh.lib.math.matrix.Matrix, int, int, java.lang.String)
-	 */
-	@Override
-	protected void set(Matrix matrix, int row, int column, String value) {
-		matrix.set(row, column, Double.parseDouble(value));
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.lib.math.matrix.EstMatrixParser#set(org.abh.lib.math.matrix.Matrix,
+   * int, int, java.lang.String)
+   */
+  @Override
+  protected void set(Matrix matrix, int row, int column, String value) {
+    matrix.set(row, column, Double.parseDouble(value));
+  }
 }

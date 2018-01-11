@@ -35,222 +35,240 @@ package org.jebtk.math.matrix;
  */
 public class DynamicMixedMatrix extends DynamicMatrix<Object> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new dynamic mixed matrix.
-	 */
-	public DynamicMixedMatrix() {
-		this(0, 0);
-	}
+  /**
+   * Instantiates a new dynamic mixed matrix.
+   */
+  public DynamicMixedMatrix() {
+    this(0, 0);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public DynamicMixedMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public DynamicMixedMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public DynamicMixedMatrix(int rows, int columns, double v) {
-		super(rows, columns, v);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public DynamicMixedMatrix(int rows, int columns, double v) {
+    super(rows, columns, v);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public DynamicMixedMatrix(int rows, int columns, String v) {
-		super(rows, columns, v);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public DynamicMixedMatrix(int rows, int columns, String v) {
+    super(rows, columns, v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public DynamicMixedMatrix(Matrix m) {
-		super(m);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#getType()
-	 */
-	@Override
-	public MatrixType getType() {
-		return MatrixType.MIXED;
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public DynamicMixedMatrix(Matrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new DynamicMixedMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return newDynamicMixedMatrix(rows, cols);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.Object)
-	 */
-	@Override
-	public void update(int row, int column, Object v) {
-		if (v == null) {
-			return;
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#getType()
+   */
+  @Override
+  public MatrixType getType() {
+    return MatrixType.MIXED;
+  }
 
-		if (v instanceof Double) {
-			mData.put(row, column, (Double)v);
-		} else if (v instanceof Number) {
-			mData.put(row, column, ((Number)v).doubleValue());
-		} else if (v instanceof String) {
-			mData.put(row, column, (String)v);
-		} else {
-			mData.put(row, column, v.toString());
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
-	 */
-	@Override
-	public void update(String v) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				mData.put(i, j, v);
-			}
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
-	 */
-	@Override
-	public void update(double v) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				mData.put(i, j, v);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new DynamicMixedMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int row, int column, double v) {
-		mData.put(row, column, v);
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return newDynamicMixedMatrix(rows, cols);
+  }
 
-		super.update(row, column, v);
-	}
-	
-	@Override
-	public void update(int row, int column, int v) {
-		mData.put(row, column, v);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int,
+   * java.lang.Object)
+   */
+  @Override
+  public void update(int row, int column, Object v) {
+    if (v == null) {
+      return;
+    }
 
-		super.update(row, column, v);
-	}
-	
-	@Override
-	public void update(int row, int column, long v) {
-		mData.put(row, column, v);
+    if (v instanceof Double) {
+      mData.put(row, column, (Double) v);
+    } else if (v instanceof Number) {
+      mData.put(row, column, ((Number) v).doubleValue());
+    } else if (v instanceof String) {
+      mData.put(row, column, (String) v);
+    } else {
+      mData.put(row, column, v.toString());
+    }
+  }
 
-		super.update(row, column, v);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
+   */
+  @Override
+  public void update(String v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.put(i, j, v);
+      }
+    }
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, java.lang.String)
-	 */
-	@Override
-	public void update(int row, int column, String v) {
-		mData.put(row, column, v);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.put(i, j, v);
+      }
+    }
+  }
 
-		super.update(row, column, v);
-	}
-	
-	
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
-	 */
-	@Override
-	public CellType getCellType(int row, int column) {
-		Object v = mData.get(row, column);
-		
-		if (v != null && v instanceof Number) {
-			return CellType.NUMBER;
-		} else {
-			return CellType.TEXT;
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() {
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(DynamicMixedMatrix m) {
-		
-		// Return a fixed sized array where possible
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
+  @Override
+  public void update(int row, int column, double v) {
+    mData.put(row, column, v);
 
-		// Swap row and column indices. We use index lookup to reduce
-		// the number of number of times indices must be looked up to
-		// set cell elements.
+    super.update(row, column, v);
+  }
 
-		for (int i = 0; i < m.getRows(); ++i) {
-			for (int j = 0; j < m.getCols(); ++j) {
-				ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
-			}
-		}
-		
-		return ret;
-	}
-	
-	public DynamicMixedMatrix newDynamicMixedMatrix(Matrix m) {
-		return new DynamicMixedMatrix(m.getRows(), m.getCols());
-	}
-	
-	/**
-	 * Creates the dynamic mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @return the dynamic mixed matrix
-	 */
-	public DynamicMixedMatrix newDynamicMixedMatrix(int rows, int columns) {
-		return new DynamicMixedMatrix(rows, columns);
-	}
+  @Override
+  public void update(int row, int column, int v) {
+    mData.put(row, column, v);
 
-	/**
-	 * Creates the dynamic mixed matrix.
-	 *
-	 * @return the matrix
-	 */
-	public static Matrix newDynamicMixedMatrix() {
-		return new DynamicMixedMatrix();
-	}
+    super.update(row, column, v);
+  }
+
+  @Override
+  public void update(int row, int column, long v) {
+    mData.put(row, column, v);
+
+    super.update(row, column, v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int,
+   * java.lang.String)
+   */
+  @Override
+  public void update(int row, int column, String v) {
+    mData.put(row, column, v);
+
+    super.update(row, column, v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
+   */
+  @Override
+  public CellType getCellType(int row, int column) {
+    Object v = mData.get(row, column);
+
+    if (v != null && v instanceof Number) {
+      return CellType.NUMBER;
+    } else {
+      return CellType.TEXT;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#transpose()
+   */
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
+
+  public static Matrix transpose(DynamicMixedMatrix m) {
+
+    // Return a fixed sized array where possible
+    MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
+
+    // Swap row and column indices. We use index lookup to reduce
+    // the number of number of times indices must be looked up to
+    // set cell elements.
+
+    for (int i = 0; i < m.getRows(); ++i) {
+      for (int j = 0; j < m.getCols(); ++j) {
+        ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
+      }
+    }
+
+    return ret;
+  }
+
+  public DynamicMixedMatrix newDynamicMixedMatrix(Matrix m) {
+    return new DynamicMixedMatrix(m.getRows(), m.getCols());
+  }
+
+  /**
+   * Creates the dynamic mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @return the dynamic mixed matrix
+   */
+  public DynamicMixedMatrix newDynamicMixedMatrix(int rows, int columns) {
+    return new DynamicMixedMatrix(rows, columns);
+  }
+
+  /**
+   * Creates the dynamic mixed matrix.
+   *
+   * @return the matrix
+   */
+  public static Matrix newDynamicMixedMatrix() {
+    return new DynamicMixedMatrix();
+  }
 }

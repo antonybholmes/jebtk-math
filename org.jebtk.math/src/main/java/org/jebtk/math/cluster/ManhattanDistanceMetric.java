@@ -36,34 +36,38 @@ import java.util.List;
  * @author Antony Holmes Holmes
  */
 public class ManhattanDistanceMetric extends DistanceMetric {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
-	 */
-	@Override
-	public double distance(final double[] d1, final double[] d2) {
-		double d = 0;
 
-		for (int i = 0; i < d1.length; ++i) {
-			d += Math.abs(d1[i] - d2[i]);
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
+   */
+  @Override
+  public double distance(final double[] d1, final double[] d2) {
+    double d = 0;
 
-		return d;
-	}
+    for (int i = 0; i < d1.length; ++i) {
+      d += Math.abs(d1[i] - d2[i]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List, java.util.List)
-	 */
-	@Override
-	public double distance(List<Double> d1, List<Double> d2) {
-		double d = 0;
+    return d;
+  }
 
-		for (int i = 0; i < d1.size(); ++i) {
-			d += Math.abs(d1.get(i) - d2.get(i));
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List,
+   * java.util.List)
+   */
+  @Override
+  public double distance(List<Double> d1, List<Double> d2) {
+    double d = 0;
 
-		return d;
-	}
-	
-	
+    for (int i = 0; i < d1.size(); ++i) {
+      d += Math.abs(d1.get(i) - d2.get(i));
+    }
+
+    return d;
+  }
+
 }

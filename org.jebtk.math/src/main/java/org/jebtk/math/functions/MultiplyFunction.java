@@ -21,24 +21,26 @@ package org.jebtk.math.functions;
  */
 public class MultiplyFunction implements UnaryFunction {
 
-	/** The m V. */
-	private double mV;
+  /** The m V. */
+  private double mV;
 
-	/**
-	 * Instantiates a new multiply function.
-	 *
-	 * @param v the v
-	 */
-	public MultiplyFunction(double v) {
-		mV = v;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.functions.Function#apply(double)
-	 */
-	@Override
-	public double f(double x) {
-		return x * mV;
-	}
+  /**
+   * Instantiates a new multiply function.
+   *
+   * @param v the v
+   */
+  public MultiplyFunction(double v) {
+    mV = v;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.functions.Function#apply(double)
+   */
+  @Override
+  public double f(double x) {
+    return x * mV;
+  }
 
 }

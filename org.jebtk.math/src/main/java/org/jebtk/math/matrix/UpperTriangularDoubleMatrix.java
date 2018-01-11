@@ -31,180 +31,194 @@ import org.jebtk.core.sys.SysUtils;
 
 // TODO: Auto-generated Javadoc
 /**
- * Representation of an upper triangular square matrix.
- * This stores only the upper half of the matrix so
- * scales better with size and reduces redundancy
- * in a symmetrical matrix. There is a small time penalty
- * since lookups are not conventional.
+ * Representation of an upper triangular square matrix. This stores only the
+ * upper half of the matrix so scales better with size and reduces redundancy in
+ * a symmetrical matrix. There is a small time penalty since lookups are not
+ * conventional.
  * 
  * @author Antony Holmes Holmes
  *
  */
 public class UpperTriangularDoubleMatrix extends UpperTriangularMatrix {
-	
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The member data.
-	 */
-	public final double[] mData;
-	
-	/**
-	 * Instantiates a new distance matrix.
-	 *
-	 * @param size the size
-	 */
-	public UpperTriangularDoubleMatrix(int size) {
-		super(size);
-		
-		mData = new double[mOccupied];
-	}
-	
-	/**
-	 * Instantiates a new upper triangular double matrix.
-	 *
-	 * @param m the m
-	 */
-	public UpperTriangularDoubleMatrix(UpperTriangularDoubleMatrix m) {
-		this(m.mSize);
-		
-		SysUtils.arraycopy(m.mData, mData);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new UpperTriangularDoubleMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new UpperTriangularDoubleMatrix(Math.max(rows, cols));
-	}
-	
-	/**
-	 * Sets the value in every matrix element.
-	 *
-	 * @param value the value
-	 */
-	@Override
-	public void update(double value) {
-		for (int i = 0; i < mData.length; ++i) {
-			mData[i] = value;
-		}
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getValue(int, int)
-	 */
-	@Override
-	public double getValue(int index) {
-		return mData[index];
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		return Double.toString(mData[index]);
-	}
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#get(int, int)
-	 */
-	@Override
-	public Object get(int index) {
-		return getValue(index);
-	}
-	
-	@Override
-	public void update(int index, int value) {
-		update(index, (double)value);
-	}
-	
-	@Override
-	public void update(int index, long value) {
-		update(index, (double)value);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int index, double value) {
-		mData[index] = value;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#update(java.lang.String)
-	 */
-	@Override
-	public void update(String value) {
-		// Do nothing
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.UpperTriangularMatrix#transpose()
-	 */
-	@Override
-	public Matrix transpose() { 
-		return copy();
-	}
-	
-	
-	@Override
-	public void apply(CellFunction f) {
-		int ix = 0;
-		
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = i; i < mDim.mCols; ++j) {
-				mData[ix] = f.f(i, j, mData[ix]);
-				
-				++ix;
-			}
-		}
-		
-		fireMatrixChanged();
-	}
-	
-	@Override
-	public double stat(MatrixStatFunction f) {
-		f.init();
-		
-		for (int i = 0; i < mData.length; ++i) {
-			f.f(i, 0, mData[i]);
-		}
-		
-		return f.getStat();
-	}
-	
-	//
-	// Static methods
-	//
-	
-	/**
-	 * Creates the upper triangular matrix.
-	 *
-	 * @param m the m
-	 * @return the upper triangular double matrix
-	 */
-	public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(Matrix m) {
-		return createUpperTriangularMatrix(m.getRows());
-	}
-	
-	/**
-	 * Creates the upper triangular matrix.
-	 *
-	 * @param rows the rows
-	 * @return the upper triangular double matrix
-	 */
-	public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(int rows) {
-		return new UpperTriangularDoubleMatrix(rows);
-	}
+  /**
+   * The member data.
+   */
+  public final double[] mData;
+
+  /**
+   * Instantiates a new distance matrix.
+   *
+   * @param size the size
+   */
+  public UpperTriangularDoubleMatrix(int size) {
+    super(size);
+
+    mData = new double[mOccupied];
+  }
+
+  /**
+   * Instantiates a new upper triangular double matrix.
+   *
+   * @param m the m
+   */
+  public UpperTriangularDoubleMatrix(UpperTriangularDoubleMatrix m) {
+    this(m.mSize);
+
+    SysUtils.arraycopy(m.mData, mData);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new UpperTriangularDoubleMatrix(this);
+  }
+
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new UpperTriangularDoubleMatrix(Math.max(rows, cols));
+  }
+
+  /**
+   * Sets the value in every matrix element.
+   *
+   * @param value the value
+   */
+  @Override
+  public void update(double value) {
+    for (int i = 0; i < mData.length; ++i) {
+      mData[i] = value;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#getValue(int, int)
+   */
+  @Override
+  public double getValue(int index) {
+    return mData[index];
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    return Double.toString(mData[index]);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#get(int, int)
+   */
+  @Override
+  public Object get(int index) {
+    return getValue(index);
+  }
+
+  @Override
+  public void update(int index, int value) {
+    update(index, (double) value);
+  }
+
+  @Override
+  public void update(int index, long value) {
+    update(index, (double) value);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#update(int, int, double)
+   */
+  @Override
+  public void update(int index, double value) {
+    mData[index] = value;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#update(java.lang.String)
+   */
+  @Override
+  public void update(String value) {
+    // Do nothing
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.UpperTriangularMatrix#transpose()
+   */
+  @Override
+  public Matrix transpose() {
+    return copy();
+  }
+
+  @Override
+  public void apply(CellFunction f) {
+    int ix = 0;
+
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = i; i < mDim.mCols; ++j) {
+        mData[ix] = f.f(i, j, mData[ix]);
+
+        ++ix;
+      }
+    }
+
+    fireMatrixChanged();
+  }
+
+  @Override
+  public double stat(MatrixStatFunction f) {
+    f.init();
+
+    for (int i = 0; i < mData.length; ++i) {
+      f.f(i, 0, mData[i]);
+    }
+
+    return f.getStat();
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Creates the upper triangular matrix.
+   *
+   * @param m the m
+   * @return the upper triangular double matrix
+   */
+  public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(
+      Matrix m) {
+    return createUpperTriangularMatrix(m.getRows());
+  }
+
+  /**
+   * Creates the upper triangular matrix.
+   *
+   * @param rows the rows
+   * @return the upper triangular double matrix
+   */
+  public static UpperTriangularDoubleMatrix createUpperTriangularMatrix(
+      int rows) {
+    return new UpperTriangularDoubleMatrix(rows);
+  }
 }

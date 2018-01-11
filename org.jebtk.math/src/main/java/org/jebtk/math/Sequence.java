@@ -30,7 +30,6 @@ package org.jebtk.math;
 import java.util.ArrayList;
 import java.util.List;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Generates vectors of numbers.
@@ -38,38 +37,39 @@ import java.util.List;
  * @author Antony Holmes Holmes
  */
 public class Sequence {
-	
-	/**
-	 * Generate 100 evenly spaced points between start and end.
-	 *
-	 * @param start the start
-	 * @param end the end
-	 * @return the list
-	 */
-	public static List<Integer> generate(int start, int end) {
-		return generate(start, end, 100);
-		
-	}
-	
-	/**
-	 * Generate.
-	 *
-	 * @param start the start
-	 * @param end the end
-	 * @param gap the gap
-	 * @return the list
-	 */
-	public static List<Integer> generate(int start, int end, int gap) {
-		List<Integer> values = new ArrayList<Integer>(Math.abs(end - start) / gap + 1);
-		
-		int s = start;
-		
-		while (s <= end) {
-			values.add(s);
-			
-			s += gap;
-		}
-		
-		return values;
-	}
+
+  /**
+   * Generate 100 evenly spaced points between start and end.
+   *
+   * @param start the start
+   * @param end the end
+   * @return the list
+   */
+  public static List<Integer> generate(int start, int end) {
+    return generate(start, end, 100);
+
+  }
+
+  /**
+   * Generate.
+   *
+   * @param start the start
+   * @param end the end
+   * @param gap the gap
+   * @return the list
+   */
+  public static List<Integer> generate(int start, int end, int gap) {
+    List<Integer> values = new ArrayList<Integer>(
+        Math.abs(end - start) / gap + 1);
+
+    int s = start;
+
+    while (s <= end) {
+      values.add(s);
+
+      s += gap;
+    }
+
+    return values;
+  }
 }

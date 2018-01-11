@@ -29,7 +29,6 @@ package org.jebtk.math.statistics;
 
 import java.util.List;
 
-import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.jebtk.core.collections.CollectionUtils;
 
@@ -41,54 +40,54 @@ import org.jebtk.core.collections.CollectionUtils;
  *
  */
 public class TTest {
-	
 
-	
-	/**
-	 * Returns the t-statistic for two samples.
-	 *
-	 * @param s1 the s1
-	 * @param s2 the s2
-	 * @return the double
-	 */
-	public static double tStat(List<Double> s1, List<Double> s2) {
-		
-		double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
-		
-		double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
-		
-		return TestUtils.t(sample1, sample2);
-	}
-	
-	/**
-	 * TTest unequal variance, heteroscedastic.
-	 *
-	 * @param s1 the s1
-	 * @param s2 the s2
-	 * @return the double
-	 */
-	public static double twoTailUnequalVarianceTTest(List<Double> s1, List<Double> s2) {
-		
-		double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
-		
-		double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
-		
-		return TestUtils.tTest(sample1, sample2);
-	}
-	
-	/**
-	 * TTest equal variance, heteroscedastic.
-	 *
-	 * @param s1 the s1
-	 * @param s2 the s2
-	 * @return the double
-	 */
-	public static double twoTailEqualVarianceTTest(List<Double> s1, List<Double> s2) {
-		
-		double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
-		
-		double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
-		
-		return TestUtils.homoscedasticTTest(sample1, sample2);
-	}
+  /**
+   * Returns the t-statistic for two samples.
+   *
+   * @param s1 the s1
+   * @param s2 the s2
+   * @return the double
+   */
+  public static double tStat(List<Double> s1, List<Double> s2) {
+
+    double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
+
+    double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
+
+    return TestUtils.t(sample1, sample2);
+  }
+
+  /**
+   * TTest unequal variance, heteroscedastic.
+   *
+   * @param s1 the s1
+   * @param s2 the s2
+   * @return the double
+   */
+  public static double twoTailUnequalVarianceTTest(List<Double> s1,
+      List<Double> s2) {
+
+    double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
+
+    double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
+
+    return TestUtils.tTest(sample1, sample2);
+  }
+
+  /**
+   * TTest equal variance, heteroscedastic.
+   *
+   * @param s1 the s1
+   * @param s2 the s2
+   * @return the double
+   */
+  public static double twoTailEqualVarianceTTest(List<Double> s1,
+      List<Double> s2) {
+
+    double[] sample1 = CollectionUtils.toDoublePrimitive(s1);
+
+    double[] sample2 = CollectionUtils.toDoublePrimitive(s2);
+
+    return TestUtils.homoscedasticTTest(sample1, sample2);
+  }
 }

@@ -48,194 +48,199 @@ import org.jebtk.core.text.TextUtils;
  */
 public class MixedMatrixParser implements MatrixParser {
 
-	/**
-	 * The member row annotations.
-	 */
-	protected int mRowAnnotations = -1;
+  /**
+   * The member row annotations.
+   */
+  protected int mRowAnnotations = -1;
 
-	/**
-	 * The member has header.
-	 */
-	protected boolean mHasHeader = false;
+  /**
+   * The member has header.
+   */
+  protected boolean mHasHeader = false;
 
-	/**
-	 * The member delimiter.
-	 */
-	protected String mDelimiter = null;
+  /**
+   * The member delimiter.
+   */
+  protected String mDelimiter = null;
 
-	/** The m skip matches. */
-	private Collection<String> mSkipMatches;
-	
-	//private DataFrameCreator mDataFrameCreator =
-	//		new DataFrameCreator();
+  /** The m skip matches. */
+  private Collection<String> mSkipMatches;
 
+  // private DataFrameCreator mDataFrameCreator =
+  // new DataFrameCreator();
 
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param skipMatches the skip matches
-	 * @param rowAnnotations the row annotations
-	 * @param delimiter the delimiter
-	 */
-	public MixedMatrixParser(boolean hasHeader,
-			Collection<String> skipMatches,
-			int rowAnnotations, 
-			String delimiter) {
-		// If row annotations >0, you must have a header otherwise the file
-		// is garbage
-		mHasHeader = hasHeader || rowAnnotations > 0;
-		mSkipMatches = skipMatches;
-		mRowAnnotations = rowAnnotations;
-		mDelimiter = delimiter;
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param skipMatches the skip matches
+   * @param rowAnnotations the row annotations
+   * @param delimiter the delimiter
+   */
+  public MixedMatrixParser(boolean hasHeader, Collection<String> skipMatches,
+      int rowAnnotations, String delimiter) {
+    // If row annotations >0, you must have a header otherwise the file
+    // is garbage
+    mHasHeader = hasHeader || rowAnnotations > 0;
+    mSkipMatches = skipMatches;
+    mRowAnnotations = rowAnnotations;
+    mDelimiter = delimiter;
+  }
 
-	/**
-	 * Sets the.
-	 *
-	 * @param matrix the matrix
-	 * @param row the row
-	 * @param column the column
-	 * @param value the value
-	 */
-	protected void set(Matrix matrix, int row, int column, String value) {
+  /**
+   * Sets the.
+   *
+   * @param matrix the matrix
+   * @param row the row
+   * @param column the column
+   * @param value the value
+   */
+  protected void set(Matrix matrix, int row, int column, String value) {
 
-		if (TextUtils.isNumber(value)) {
-			matrix.update(row, column, Double.parseDouble(value));
-		} else {
-			matrix.update(row, column, value);
-		}
-	}
+    if (TextUtils.isNumber(value)) {
+      matrix.update(row, column, Double.parseDouble(value));
+    } else {
+      matrix.update(row, column, value);
+    }
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
-	 */
-	@Override
-	public DataFrame parse(Path file) throws IOException {
-		DataFrame matrix = null;
-		
-		String line;
-		List<String> tokens;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
+   */
+  @Override
+  public DataFrame parse(Path file) throws IOException {
+    DataFrame matrix = null;
 
-		//
-		// Work out if we need to skip annotation rows that should be
-		// ignored
-		
-		int skipLines = ReaderUtils.countHeaderLines(file, mSkipMatches);
-		
-		//
-		// Count rows
-		//
+    String line;
+    List<String> tokens;
 
-		int rows = mHasHeader ? 0 : 1;
-		int columns = -1;
+    //
+    // Work out if we need to skip annotation rows that should be
+    // ignored
 
-		Splitter split = Splitter.on(mDelimiter);
+    int skipLines = ReaderUtils.countHeaderLines(file, mSkipMatches);
 
-		BufferedReader reader = FileUtils.newBufferedReader(file);
-		
-		try {
-			ReaderUtils.skipLines(reader, skipLines);
-			
-			line = reader.readLine();
+    //
+    // Count rows
+    //
 
-			tokens = split.text(line); //ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line)); //TextUtils.tabSplit(line);
+    int rows = mHasHeader ? 0 : 1;
+    int columns = -1;
 
-			columns = tokens.size(); // - mRowAnnotations;
+    Splitter split = Splitter.on(mDelimiter);
 
-			// The first line is read as a header so there is one less line
-			// being read than there are rows
+    BufferedReader reader = FileUtils.newBufferedReader(file);
 
-			while ((line = reader.readLine()) != null) {
-				if (Io.isEmptyLine(line)) {
-					continue;
-				}
+    try {
+      ReaderUtils.skipLines(reader, skipLines);
 
-				++rows;
-			}
-		} finally {
-			reader.close();
-		}
+      line = reader.readLine();
 
-		matrix = createMatrix(rows, columns - mRowAnnotations); //new MixedSparseMatrix(rows, columns); //new MixedMatrix(rows, columns);
+      tokens = split.text(line); // ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line));
+                                 // //TextUtils.tabSplit(line);
 
+      columns = tokens.size(); // - mRowAnnotations;
 
-		reader = FileUtils.newBufferedReader(file);
+      // The first line is read as a header so there is one less line
+      // being read than there are rows
 
-		//List<List<Object>> annotations = null;
-		List<String> rowAnnotationNames = null;
+      while ((line = reader.readLine()) != null) {
+        if (Io.isEmptyLine(line)) {
+          continue;
+        }
 
-		int row = 0;
-		int offset = 0;
+        ++rows;
+      }
+    } finally {
+      reader.close();
+    }
 
-		try {
-			if (skipLines > 0) {
-				for (int i = 0; i < skipLines; ++i) {
-					reader.readLine();
-				}
-			}
-			
-			if (mHasHeader) {
-				// add column names
-				line = reader.readLine();
-				tokens = split.text(TextUtils.removeExcelQuotes(line));
+    matrix = createMatrix(rows, columns - mRowAnnotations); // new
+                                                            // MixedSparseMatrix(rows,
+                                                            // columns); //new
+                                                            // MixedMatrix(rows,
+                                                            // columns);
 
-				matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
+    reader = FileUtils.newBufferedReader(file);
 
-				//annotations = new ArrayList<List<Object>>();
-				rowAnnotationNames = CollectionUtils.subList(tokens, 0, mRowAnnotations);
+    // List<List<Object>> annotations = null;
+    List<String> rowAnnotationNames = null;
 
-				offset = -rowAnnotationNames.size();
+    int row = 0;
+    int offset = 0;
 
-				for (String name : rowAnnotationNames) {
-					// Cause the annotation to be initialized
-					matrix.getRowAnnotations(name);
-				}
+    try {
+      if (skipLines > 0) {
+        for (int i = 0; i < skipLines; ++i) {
+          reader.readLine();
+        }
+      }
 
-				//for (int i = 0; i < mRowAnnotations; ++i) {
-				//		annotations.add(CollectionUtils.replicate(null, rows));
-				//}
+      if (mHasHeader) {
+        // add column names
+        line = reader.readLine();
+        tokens = split.text(TextUtils.removeExcelQuotes(line));
 
-				//++row;
-			}
+        matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
 
-			while ((line = reader.readLine()) != null) {
-				if (Io.isEmptyLine(line)) {
-					continue;
-				}
+        // annotations = new ArrayList<List<Object>>();
+        rowAnnotationNames = CollectionUtils
+            .subList(tokens, 0, mRowAnnotations);
 
-				tokens = split.text(TextUtils.removeExcelQuotes(line));
+        offset = -rowAnnotationNames.size();
 
-				//if (mHasHeader) {
-				//for (int i = 0; i < mRowAnnotations; ++i) {
-				//	annotations.get(i).set(row, tokens.get(i));
-				//}
-				//}
+        for (String name : rowAnnotationNames) {
+          // Cause the annotation to be initialized
+          matrix.getRowAnnotations(name);
+        }
 
-				// the first token is the column name so ignore it
-				//for (int i = mRowAnnotations; i < tokens.size(); ++i) {
-				for (int i = 0; i < tokens.size(); ++i) {
-					//System.err.println("txt parser " + i + " " + offset);
+        // for (int i = 0; i < mRowAnnotations; ++i) {
+        // annotations.add(CollectionUtils.replicate(null, rows));
+        // }
 
-					set(matrix, row, i + offset, tokens.get(i));
-				}
+        // ++row;
+      }
 
-				++row;
-			}
+      while ((line = reader.readLine()) != null) {
+        if (Io.isEmptyLine(line)) {
+          continue;
+        }
 
-			//if (mHasHeader) {
-			//	for (int i = 0; i < mRowAnnotations; ++i) {
-			//		matrix.setRowAnnotations(rowAnnotationNames.get(i), annotations.get(i));
-			//	}
-			//}
-		} finally {
-			reader.close();
-		}
+        tokens = split.text(TextUtils.removeExcelQuotes(line));
 
-		return matrix;
-	}
-	
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createDataFrame(rows, columns); 
-	}
+        // if (mHasHeader) {
+        // for (int i = 0; i < mRowAnnotations; ++i) {
+        // annotations.get(i).set(row, tokens.get(i));
+        // }
+        // }
+
+        // the first token is the column name so ignore it
+        // for (int i = mRowAnnotations; i < tokens.size(); ++i) {
+        for (int i = 0; i < tokens.size(); ++i) {
+          // System.err.println("txt parser " + i + " " + offset);
+
+          set(matrix, row, i + offset, tokens.get(i));
+        }
+
+        ++row;
+      }
+
+      // if (mHasHeader) {
+      // for (int i = 0; i < mRowAnnotations; ++i) {
+      // matrix.setRowAnnotations(rowAnnotationNames.get(i),
+      // annotations.get(i));
+      // }
+      // }
+    } finally {
+      reader.close();
+    }
+
+    return matrix;
+  }
+
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createDataFrame(rows, columns);
+  }
 }

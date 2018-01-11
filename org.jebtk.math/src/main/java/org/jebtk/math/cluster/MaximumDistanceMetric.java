@@ -36,42 +36,47 @@ import java.util.List;
  * @author Antony Holmes Holmes
  */
 public class MaximumDistanceMetric extends DistanceMetric {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
-	 */
-	@Override
-	public double distance(double[] d1, double[] d2) {
-		double d = Double.MIN_VALUE;
-		double x;
-		
-		for (int i = 0; i < d1.length; ++i) {
-			x = Math.abs(d1[i] - d2[i]);
-			
-			if (x > d) {
-				d = x;
-			}
-		}
 
-		return d;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.cluster.DistanceMetric#distance(double[], double[])
+   */
+  @Override
+  public double distance(double[] d1, double[] d2) {
+    double d = Double.MIN_VALUE;
+    double x;
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List, java.util.List)
-	 */
-	@Override
-	public double distance(List<Double> d1, List<Double> d2) {
-		double d = Double.MIN_VALUE;
-		double x;
-		
-		for (int i = 0; i < d1.size(); ++i) {
-			x = Math.abs(d1.get(i) - d2.get(i));
-			
-			if (x > d) {
-				d = x;
-			}
-		}
+    for (int i = 0; i < d1.length; ++i) {
+      x = Math.abs(d1[i] - d2[i]);
 
-		return d;
-	}
+      if (x > d) {
+        d = x;
+      }
+    }
+
+    return d;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.cluster.DistanceMetric#distance(java.util.List,
+   * java.util.List)
+   */
+  @Override
+  public double distance(List<Double> d1, List<Double> d2) {
+    double d = Double.MIN_VALUE;
+    double x;
+
+    for (int i = 0; i < d1.size(); ++i) {
+      x = Math.abs(d1.get(i) - d2.get(i));
+
+      if (x > d) {
+        d = x;
+      }
+    }
+
+    return d;
+  }
 }

@@ -32,26 +32,26 @@ package org.jebtk.math.matrix;
  * The class MatrixCell.
  */
 public class MatrixCellRef {
-	
-	/**
-	 * The row.
-	 */
-	public int row;
-	
-	/**
-	 * The column.
-	 */
-	public int column;
-	
-	/**
-	 * Instantiates a new matrix cell.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 */
-	public MatrixCellRef(int row, int column) {
-		this.row = row;
-		this.column = column;
-	}
-	
+
+  /**
+   * The row.
+   */
+  public int row;
+
+  /**
+   * The column.
+   */
+  public int column;
+
+  /**
+   * Instantiates a new matrix cell.
+   *
+   * @param row the row
+   * @param column the column
+   */
+  public MatrixCellRef(int row, int column) {
+    this.row = row;
+    this.column = column;
+  }
+
 }

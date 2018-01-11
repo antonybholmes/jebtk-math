@@ -34,16 +34,16 @@ import org.jebtk.math.matrix.Matrix;
  * The interface Linkage.
  */
 public interface Linkage {
-	
-	/**
-	 * Given a distance matrix of clusters.
-	 *
-	 * @param distanceMatrix the distance matrix
-	 * @param c1 the c1
-	 * @param c2 the c2
-	 * @return the linkage
-	 */
-	public abstract double getLinkage(final Matrix distanceMatrix, 
-			final Cluster c1, 
-			final Cluster c2);
+
+  /**
+   * Given a distance matrix of clusters.
+   *
+   * @param distanceMatrix the distance matrix
+   * @param c1 the c1
+   * @param c2 the c2
+   * @return the linkage
+   */
+  public abstract double getLinkage(final Matrix distanceMatrix,
+      final Cluster c1,
+      final Cluster c2);
 }

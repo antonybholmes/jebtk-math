@@ -36,37 +36,41 @@ import java.util.List;
  * @author Antony Holmes Holmes
  */
 public class TextMatrixParser extends MixedMatrixParser {
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param skipMatches 		can be used to define rows/columns that
-	 * 							should be skipped
-	 * @param rowAnnotations 	the row annotations
-	 * @param delimiter 		the delimiter
-	 */
-	public TextMatrixParser(boolean hasHeader,
-			List<String> skipMatches,
-			int rowAnnotations, 
-			String delimiter) {
-		super(hasHeader, skipMatches, rowAnnotations, delimiter);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createTextMatrix(rows, columns); 
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.jebtk.math.matrix.MixedMatrixParser#set(org.jebtk.math.matrix.Matrix, int, int, java.lang.String)
-	 */
-	@Override
-	protected void set(Matrix matrix, int row, int column, String value) {
-		// We are only interested in strings.
-		matrix.update(row, column, value);
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param skipMatches can be used to define rows/columns that should be
+   *          skipped
+   * @param rowAnnotations the row annotations
+   * @param delimiter the delimiter
+   */
+  public TextMatrixParser(boolean hasHeader, List<String> skipMatches,
+      int rowAnnotations, String delimiter) {
+    super(hasHeader, skipMatches, rowAnnotations, delimiter);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createTextMatrix(rows, columns);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.jebtk.math.matrix.MixedMatrixParser#set(org.jebtk.math.matrix.Matrix,
+   * int, int, java.lang.String)
+   */
+  @Override
+  protected void set(Matrix matrix, int row, int column, String value) {
+    // We are only interested in strings.
+    matrix.update(row, column, value);
+  }
 }

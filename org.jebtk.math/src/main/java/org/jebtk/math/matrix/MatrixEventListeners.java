@@ -27,10 +27,8 @@
  */
 package org.jebtk.math.matrix;
 
-
 import org.jebtk.core.event.ChangeEvent;
 import org.jebtk.core.event.EventProducer;
-
 
 // TODO: Auto-generated Javadoc
 /**
@@ -38,43 +36,56 @@ import org.jebtk.core.event.EventProducer;
  *
  * @author Antony Holmes Holmes
  */
-public class MatrixEventListeners extends EventProducer<MatrixEventListener> implements MatrixEventProducer {
-	
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.MatrixEventProducer#addMatrixListener(org.abh.lib.math.matrix.MatrixEventListener)
-	 */
-	@Override
-	public void addMatrixListener(MatrixEventListener l) {
-		mListeners.add(l);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.MatrixEventProducer#removeMatrixListener(org.abh.lib.math.matrix.MatrixEventListener)
-	 */
-	@Override
-	public void removeMatrixListener(MatrixEventListener l) {
-		mListeners.remove(l);
-	}
-	
-	/**
-	 * Should be fired when the matrix is updated.
-	 */
-	public void fireMatrixChanged() {
-		fireMatrixChanged(new ChangeEvent(this, MATRIX_CHANGED_EVENT));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.MatrixEventProducer#fireMatrixChanged(org.abh.lib.event.ChangeEvent)
-	 */
-	@Override
-	public void fireMatrixChanged(ChangeEvent e) {
-		for (MatrixEventListener l : mListeners) {
-			l.matrixChanged(e);
-		}
-	}
+public class MatrixEventListeners extends EventProducer<MatrixEventListener>
+    implements MatrixEventProducer {
+
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.lib.math.matrix.MatrixEventProducer#addMatrixListener(org.abh.lib.
+   * math.matrix.MatrixEventListener)
+   */
+  @Override
+  public void addMatrixListener(MatrixEventListener l) {
+    mListeners.add(l);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.lib.math.matrix.MatrixEventProducer#removeMatrixListener(org.abh.
+   * lib.math.matrix.MatrixEventListener)
+   */
+  @Override
+  public void removeMatrixListener(MatrixEventListener l) {
+    mListeners.remove(l);
+  }
+
+  /**
+   * Should be fired when the matrix is updated.
+   */
+  public void fireMatrixChanged() {
+    fireMatrixChanged(new ChangeEvent(this, MATRIX_CHANGED_EVENT));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.abh.lib.math.matrix.MatrixEventProducer#fireMatrixChanged(org.abh.lib.
+   * event.ChangeEvent)
+   */
+  @Override
+  public void fireMatrixChanged(ChangeEvent e) {
+    for (MatrixEventListener l : mListeners) {
+      l.matrixChanged(e);
+    }
+  }
 }

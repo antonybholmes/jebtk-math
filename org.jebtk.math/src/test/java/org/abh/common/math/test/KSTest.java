@@ -27,26 +27,26 @@ import org.junit.Test;
  * The Class KSTest.
  */
 public class KSTest {
-	
-	/**
-	 * Ks test.
-	 */
-	@Test
-	public void ksTest() {
-		double[] v = {-2.1000, -1.3000, -0.4000, 1.9000, 5.1000, 6.2000};
-		
-		KernelDensity density = new NormKernelDensity(v);
-		
-		//double[] v = {0, 10};
-		
-		//List<Double> a = CollectionUtils.toList(v);
-		
-		//List<Double> p = Linspace.generate(-3, 3, 100);
-		
-		double[] p1y = density.cdf(v);
-		
-		System.err.println(Arrays.toString(p1y));
-		
-		Assert.assertEquals("pl1 0.25 = 17.5", 1, 1, 0);
-	}
+
+  /**
+   * Ks test.
+   */
+  @Test
+  public void ksTest() {
+    double[] v = { -2.1000, -1.3000, -0.4000, 1.9000, 5.1000, 6.2000 };
+
+    KernelDensity density = new NormKernelDensity(v);
+
+    // double[] v = {0, 10};
+
+    // List<Double> a = CollectionUtils.toList(v);
+
+    // List<Double> p = Linspace.generate(-3, 3, 100);
+
+    double[] p1y = density.cdf(v);
+
+    System.err.println(Arrays.toString(p1y));
+
+    Assert.assertEquals("pl1 0.25 = 17.5", 1, 1, 0);
+  }
 }

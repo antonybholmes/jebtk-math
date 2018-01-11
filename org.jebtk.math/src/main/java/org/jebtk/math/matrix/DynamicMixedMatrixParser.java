@@ -29,7 +29,6 @@ package org.jebtk.math.matrix;
 
 import java.util.Collection;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * Parses a text file and creates a matrix from it.
@@ -37,26 +36,27 @@ import java.util.Collection;
  * @author Antony Holmes Holmes
  */
 public class DynamicMixedMatrixParser extends MixedMatrixParser {
-	
-	/**
-	 * Instantiates a new dynamic matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param skipMatches the skip matches
-	 * @param rowAnnotations the row annotations
-	 * @param delimiter the delimiter
-	 */
-	public DynamicMixedMatrixParser(Collection<String> skipMatches,
-			int rowAnnotations, 
-			String delimiter) {
-		super(false, skipMatches, rowAnnotations, delimiter);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createDynamicMatrix(); 
-	}
+  /**
+   * Instantiates a new dynamic matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param skipMatches the skip matches
+   * @param rowAnnotations the row annotations
+   * @param delimiter the delimiter
+   */
+  public DynamicMixedMatrixParser(Collection<String> skipMatches,
+      int rowAnnotations, String delimiter) {
+    super(false, skipMatches, rowAnnotations, delimiter);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createDynamicMatrix();
+  }
 }

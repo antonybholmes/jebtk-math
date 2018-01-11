@@ -35,45 +35,43 @@ package org.jebtk.math.matrix;
  */
 public class IdentityMatrixT extends RegularMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create a new empty matrix.
-	 *
-	 * @param rows
-	 *            the rows
-	 * @param columns
-	 *            the columns
-	 */
-	public IdentityMatrixT(int rows) {
-		super(rows, rows);
-	}
+  /**
+   * Create a new empty matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public IdentityMatrixT(int rows) {
+    super(rows, rows);
+  }
 
-	@Override
-	public double getValue(int row, int col) {
-		return (mDim.mRows - row - 1) == col ? 1 : 0;
-	}
+  @Override
+  public double getValue(int row, int col) {
+    return (mDim.mRows - row - 1) == col ? 1 : 0;
+  }
 
-	@Override
-	public int getInt(int row, int col) {
-		return (mDim.mRows - row - 1) == col ? 1 : 0;
-	}
+  @Override
+  public int getInt(int row, int col) {
+    return (mDim.mRows - row - 1) == col ? 1 : 0;
+  }
 
-	@Override
-	public long getLong(int row, int col) {
-		return (mDim.mRows - row - 1) == col ? 1 : 0;
-	}
+  @Override
+  public long getLong(int row, int col) {
+    return (mDim.mRows - row - 1) == col ? 1 : 0;
+  }
 
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new IdentityMatrixT(rows);
-	}
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new IdentityMatrixT(rows);
+  }
 
-	@Override
-	public Matrix transpose() {
-		return new IdentityMatrix(mDim.mRows);
-	}
+  @Override
+  public Matrix transpose() {
+    return new IdentityMatrix(mDim.mRows);
+  }
 }

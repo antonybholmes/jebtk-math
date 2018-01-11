@@ -29,89 +29,86 @@ package org.jebtk.math.matrix;
 
 // TODO: Auto-generated Javadoc
 /**
- * For matrices that use an index approach to store values in a 1D array
- * with appropriate offset calculations. This is column wise so accessing
- * a whole column is faster than a row.
+ * For matrices that use an index approach to store values in a 1D array with
+ * appropriate offset calculations. This is column wise so accessing a whole
+ * column is faster than a row.
  * 
  * @author Antony Holmes Holmes
  */
 public abstract class IndexColMatrix extends IndexMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * The offsets in the array where each new row begins.
-	 */
-	public final int[] mColOffsets;
+  /**
+   * The offsets in the array where each new row begins.
+   */
+  public final int[] mColOffsets;
 
+  /**
+   * Instantiates a new index matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public IndexColMatrix(int rows, int columns) {
+    super(rows, columns);
 
-	/**
-	 * Instantiates a new index matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public IndexColMatrix(int rows, int columns) {
-		super(rows, columns);
+    // Cache the offsets to improve lookup times
+    mColOffsets = new int[mDim.mCols];
 
-		// Cache the offsets to improve lookup times
-		mColOffsets = new int[mDim.mCols];
-		
-		createOffsets();
-	}
+    createOffsets();
+  }
 
-	private void createOffsets() {
-		mColOffsets[0] = 0;
+  private void createOffsets() {
+    mColOffsets[0] = 0;
 
-		for (int i = 1; i < mDim.mCols; ++i) {
-			// Use only additions
-			mColOffsets[i] = mColOffsets[i - 1] + mDim.mRows; //i * columns;
-		}
-	}
+    for (int i = 1; i < mDim.mCols; ++i) {
+      // Use only additions
+      mColOffsets[i] = mColOffsets[i - 1] + mDim.mRows; // i * columns;
+    }
+  }
 
-	/**
-	 * Instantiates a new indexable matrix.
-	 *
-	 * @param m the m
-	 */
-	public IndexColMatrix(Matrix m) {
-		super(m);
-		
-		// Cache the offsets to improve lookup times
-		mColOffsets = new int[mDim.mCols];
-		
-		createOffsets();
-	}
+  /**
+   * Instantiates a new indexable matrix.
+   *
+   * @param m the m
+   */
+  public IndexColMatrix(Matrix m) {
+    super(m);
 
+    // Cache the offsets to improve lookup times
+    mColOffsets = new int[mDim.mCols];
 
-	/**
-	 * Instantiates a new indexable matrix.
-	 *
-	 * @param m the m
-	 */
-	public IndexColMatrix(IndexColMatrix m) {
-		super(m);
-		
-		// Cache the offsets to improve lookup times
-		mColOffsets = new int[mDim.mCols];
+    createOffsets();
+  }
 
-		createOffsets();
-	}
+  /**
+   * Instantiates a new indexable matrix.
+   *
+   * @param m the m
+   */
+  public IndexColMatrix(IndexColMatrix m) {
+    super(m);
 
-	/**
-	 * Gets the index of a row cell lookup. This is the position in a 1D
-	 * row centric array corresponding to the cell indicated by row and
-	 * column.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the index
-	 */
-	@Override
-	public int getIndex(int row, int column) {
-		return mColOffsets[column] + row;
-	}
+    // Cache the offsets to improve lookup times
+    mColOffsets = new int[mDim.mCols];
+
+    createOffsets();
+  }
+
+  /**
+   * Gets the index of a row cell lookup. This is the position in a 1D row
+   * centric array corresponding to the cell indicated by row and column.
+   *
+   * @param row the row
+   * @param column the column
+   * @return the index
+   */
+  @Override
+  public int getIndex(int row, int column) {
+    return mColOffsets[column] + row;
+  }
 }

@@ -22,15 +22,17 @@ import org.jebtk.math.matrix.CellFunction;
  * The Class LogFunction.
  */
 public class LnFunction implements CellFunction {
-	/** The ln function. */
-	public static CellFunction LN_FUNCTION = new LnFunction();
+  /** The ln function. */
+  public static CellFunction LN_FUNCTION = new LnFunction();
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.functions.Function#apply(double)
-	 */
-	@Override
-	public double f(int r, int c, double x, double... y) {
-		return Math.log(x);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.functions.Function#apply(double)
+   */
+  @Override
+  public double f(int r, int c, double x, double... y) {
+    return Math.log(x);
+  }
 
 }

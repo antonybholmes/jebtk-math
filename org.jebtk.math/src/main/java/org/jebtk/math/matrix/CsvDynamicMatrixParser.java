@@ -35,28 +35,30 @@ package org.jebtk.math.matrix;
  */
 public class CsvDynamicMatrixParser extends CsvMatrixParser {
 
-	/**
-	 * Instantiates a new text matrix parser.
-	 */
-	public CsvDynamicMatrixParser() {
-		this(0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvDynamicMatrixParser(int rowAnnotations) {
-		super(false, rowAnnotations);
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   */
+  public CsvDynamicMatrixParser() {
+    this(0);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.CsvMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createDynamicMatrix(); 
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param rowAnnotations the row annotations
+   */
+  public CsvDynamicMatrixParser(int rowAnnotations) {
+    super(false, rowAnnotations);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.CsvMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createDynamicMatrix();
+  }
 }

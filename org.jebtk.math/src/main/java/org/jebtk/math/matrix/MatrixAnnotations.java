@@ -34,66 +34,66 @@ import java.util.List;
  * The interface MatrixAnnotations.
  */
 public interface MatrixAnnotations {
-	
-	/**
-	 * Gets the column annotation names.
-	 *
-	 * @return the column annotation names
-	 */
-	public List<String> getColumnAnnotationNames();
-	
-	/**
-	 * Gets the column annotation values.
-	 *
-	 * @param column the column
-	 * @return the column annotation values
-	 */
-	public List<Double> getColumnAnnotationValues(int column);
-	
-	/**
-	 * Gets the column annotation text.
-	 *
-	 * @param column the column
-	 * @return the column annotation text
-	 */
-	public List<String> getColumnAnnotationText(int column);
-	
-	/**
-	 * Gets the column name.
-	 *
-	 * @param column the column
-	 * @return the column name
-	 */
-	public String getColumnName(int column);
-	
-	/**
-	 * Gets the row annotation names.
-	 *
-	 * @return the row annotation names
-	 */
-	public List<String> getRowAnnotationNames();
-	
-	/**
-	 * Gets the row annotation values.
-	 *
-	 * @param row the row
-	 * @return the row annotation values
-	 */
-	public List<Double> getRowAnnotationValues(int row);
-	
-	/**
-	 * Gets the row annotation text.
-	 *
-	 * @param row the row
-	 * @return the row annotation text
-	 */
-	public List<String> getRowAnnotationText(int row);
-	
-	/**
-	 * Gets the row name.
-	 *
-	 * @param row the row.
-	 * @return the row name
-	 */
-	public String getRowName(int row);
+
+  /**
+   * Gets the column annotation names.
+   *
+   * @return the column annotation names
+   */
+  public List<String> getColumnAnnotationNames();
+
+  /**
+   * Gets the column annotation values.
+   *
+   * @param column the column
+   * @return the column annotation values
+   */
+  public List<Double> getColumnAnnotationValues(int column);
+
+  /**
+   * Gets the column annotation text.
+   *
+   * @param column the column
+   * @return the column annotation text
+   */
+  public List<String> getColumnAnnotationText(int column);
+
+  /**
+   * Gets the column name.
+   *
+   * @param column the column
+   * @return the column name
+   */
+  public String getColumnName(int column);
+
+  /**
+   * Gets the row annotation names.
+   *
+   * @return the row annotation names
+   */
+  public List<String> getRowAnnotationNames();
+
+  /**
+   * Gets the row annotation values.
+   *
+   * @param row the row
+   * @return the row annotation values
+   */
+  public List<Double> getRowAnnotationValues(int row);
+
+  /**
+   * Gets the row annotation text.
+   *
+   * @param row the row
+   * @return the row annotation text
+   */
+  public List<String> getRowAnnotationText(int row);
+
+  /**
+   * Gets the row name.
+   *
+   * @param row the row.
+   * @return the row name
+   */
+  public String getRowName(int row);
 }

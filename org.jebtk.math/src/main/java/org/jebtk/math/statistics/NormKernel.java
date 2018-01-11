@@ -32,23 +32,24 @@ import org.jebtk.core.Mathematics;
 // TODO: Auto-generated Javadoc
 /**
  * A Guassian normal kernel with mean=0 and variance=1. This is a specialized
- * version of the Guassian kernel reducing the number of operation and 
- * therefore increasing the speed.
+ * version of the Guassian kernel reducing the number of operation and therefore
+ * increasing the speed.
  */
 public class NormKernel implements Kernel {
-	
-	/**
-	 * The factor.
-	 */
-	private static double FACTOR = 1.0 / Math.sqrt(Mathematics.TWO_PI);
 
+  /**
+   * The factor.
+   */
+  private static double FACTOR = 1.0 / Math.sqrt(Mathematics.TWO_PI);
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.statistics.Kernel#evaluate(double)
-	 */
-	@Override
-	public double evaluate(double x) {
-		return FACTOR * Math.exp(-0.5 * x * x);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.statistics.Kernel#evaluate(double)
+   */
+  @Override
+  public double evaluate(double x) {
+    return FACTOR * Math.exp(-0.5 * x * x);
+  }
 
 }

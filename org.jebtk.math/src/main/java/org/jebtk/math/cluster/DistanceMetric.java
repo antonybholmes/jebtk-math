@@ -39,66 +39,66 @@ import org.jebtk.math.matrix.Matrix;
  *
  */
 public abstract class DistanceMetric {
-	
-	/**
-	 * Column distance.
-	 *
-	 * @param m the m
-	 * @param c1 the c1
-	 * @param c2 the c2
-	 * @return the double
-	 */
-	public double columnDistance(final Matrix m, int c1, int c2) {
-		double[] d1 = new double[m.getRows()];
-		double[] d2 = new double[m.getRows()];
-		
-		for (int i = 0; i < m.getRows(); ++i) {
-			d1[i] = m.getValue(i, c1);
-			d2[i] = m.getValue(i, c2);
-		}
-		
-		return distance(d1, d2);
-	}
-	
-	/**
-	 * Row distance.
-	 *
-	 * @param m the m
-	 * @param r1 the r1
-	 * @param r2 the r2
-	 * @return the double
-	 */
-	public double rowDistance(final Matrix m, int r1, int r2) {
-		int c = m.getCols();
-		
-		double[] d1 = new double[c];
-		double[] d2 = new double[c];
-		
-		for (int i = 0; i < c; ++i) {
-			d1[i] = m.getValue(r1, i);
-			d2[i] = m.getValue(r2, i);
-		}
-		
-		return distance(d1, d2);
-	}
 
-	/**
-	 * Measures the distance between two rows/columns.
-	 * The arrays must be the same length.
-	 * 
-	 * @param d1	Array 1
-	 * @param d2	Array 2
-	 * 
-	 * @return		The distance between the two arrays.
-	 */
-	public abstract double distance(final double[] d1, final double[] d2);
+  /**
+   * Column distance.
+   *
+   * @param m the m
+   * @param c1 the c1
+   * @param c2 the c2
+   * @return the double
+   */
+  public double columnDistance(final Matrix m, int c1, int c2) {
+    double[] d1 = new double[m.getRows()];
+    double[] d2 = new double[m.getRows()];
 
-	/**
-	 * Distance.
-	 *
-	 * @param d1 the d 1
-	 * @param d2 the d 2
-	 * @return the double
-	 */
-	public abstract double distance(final List<Double> d1, final List<Double> d2);
+    for (int i = 0; i < m.getRows(); ++i) {
+      d1[i] = m.getValue(i, c1);
+      d2[i] = m.getValue(i, c2);
+    }
+
+    return distance(d1, d2);
+  }
+
+  /**
+   * Row distance.
+   *
+   * @param m the m
+   * @param r1 the r1
+   * @param r2 the r2
+   * @return the double
+   */
+  public double rowDistance(final Matrix m, int r1, int r2) {
+    int c = m.getCols();
+
+    double[] d1 = new double[c];
+    double[] d2 = new double[c];
+
+    for (int i = 0; i < c; ++i) {
+      d1[i] = m.getValue(r1, i);
+      d2[i] = m.getValue(r2, i);
+    }
+
+    return distance(d1, d2);
+  }
+
+  /**
+   * Measures the distance between two rows/columns. The arrays must be the same
+   * length.
+   * 
+   * @param d1 Array 1
+   * @param d2 Array 2
+   * 
+   * @return The distance between the two arrays.
+   */
+  public abstract double distance(final double[] d1, final double[] d2);
+
+  /**
+   * Distance.
+   *
+   * @param d1 the d 1
+   * @param d2 the d 2
+   * @return the double
+   */
+  public abstract double distance(final List<Double> d1, final List<Double> d2);
 }

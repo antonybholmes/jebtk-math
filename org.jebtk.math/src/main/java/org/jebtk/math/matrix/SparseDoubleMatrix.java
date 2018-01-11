@@ -35,158 +35,170 @@ package org.jebtk.math.matrix;
  */
 public class SparseDoubleMatrix extends SparseMatrix<Double> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create a new matrix defaulting to being entirely numeric.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public SparseDoubleMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  /**
+   * Create a new matrix defaulting to being entirely numeric.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public SparseDoubleMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseDoubleMatrix(int rows, int columns, double v) {
-		this(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseDoubleMatrix(int rows, int columns, double v) {
+    this(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public SparseDoubleMatrix(int rows, int columns, String v) {
-		this(rows, columns);
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public SparseDoubleMatrix(int rows, int columns, String v) {
+    this(rows, columns);
 
-		// Set the default value
-		set(v);
-	}
+    // Set the default value
+    set(v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public SparseDoubleMatrix(Matrix m) {
-		super(m);
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public SparseDoubleMatrix(Matrix m) {
+    super(m);
+  }
 
-	/**
-	 * Instantiates a new mixed matrix.
-	 *
-	 * @param m the m
-	 */
-	public SparseDoubleMatrix(IndexRowMatrix m) {
-		super(m);
-	}
+  /**
+   * Instantiates a new mixed matrix.
+   *
+   * @param m the m
+   */
+  public SparseDoubleMatrix(IndexRowMatrix m) {
+    super(m);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new SparseDoubleMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new SparseDoubleMatrix(rows, cols);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new SparseDoubleMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.Matrix#getNumCells()
-	 */
-	@Override
-	public int size() {
-		return mSize;
-	}
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new SparseDoubleMatrix(rows, cols);
+  }
 
-	@Override
-	public void update(int index, int v) {
-		update(index, (double)v);
-	}
-	
-	@Override
-	public void update(int index, long v) {
-		update(index, (double)v);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
-	 */
-	@Override
-	public void update(int index, double v) {
-		mData.put(index, v);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.Matrix#getNumCells()
+   */
+  @Override
+  public int size() {
+    return mSize;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
-	 */
-	@Override
-	public Object get(int index) {
-		return getValue(index);
-	}
+  @Override
+  public void update(int index, int v) {
+    update(index, (double) v);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
-	 */
-	@Override
-	public double getValue(int index) {
-		if (mData.containsKey(index)) {
-			return mData.get(index);
-		} else {
-			return 0;
-		}
-	}
+  @Override
+  public void update(int index, long v) {
+    update(index, (double) v);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-	 */
-	@Override
-	public String getText(int index) {
-		return Double.toString(getValue(index));
-	}
-	
-	@Override
-	public Matrix transpose() { 
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(final SparseDoubleMatrix m) { 
-		SparseDoubleMatrix ret = new SparseDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#updateValue(int, double)
+   */
+  @Override
+  public void update(int index, double v) {
+    mData.put(index, v);
+  }
 
-		int i2 = 0;
-		int c = 0;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#get(int)
+   */
+  @Override
+  public Object get(int index) {
+    return getValue(index);
+  }
 
-		for (int i : m.mData.keySet()) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
+   */
+  @Override
+  public double getValue(int index) {
+    if (mData.containsKey(index)) {
+      return mData.get(index);
+    } else {
+      return 0;
+    }
+  }
 
-			ret.mData.put(i2, m.mData.get(i));
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
+   */
+  @Override
+  public String getText(int index) {
+    return Double.toString(getValue(index));
+  }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
 
-		return ret;
-	}
+  public static Matrix transpose(final SparseDoubleMatrix m) {
+    SparseDoubleMatrix ret = new SparseDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
+
+    int i2 = 0;
+    int c = 0;
+
+    for (int i : m.mData.keySet()) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
+
+      ret.mData.put(i2, m.mData.get(i));
+
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
+
+    return ret;
+  }
 }

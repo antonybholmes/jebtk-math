@@ -20,12 +20,12 @@ package org.jebtk.math.test;
  * The interface Condition.
  */
 public interface Condition {
-	
-	/**
-	 * Test.
-	 *
-	 * @param x the x
-	 * @return true, if successful
-	 */
-	boolean test(double x);
+
+  /**
+   * Test.
+   *
+   * @param x the x
+   * @return true, if successful
+   */
+  boolean test(double x);
 }

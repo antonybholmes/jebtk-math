@@ -31,48 +31,47 @@ import org.jebtk.math.matrix.UpperTriangularDoubleMatrix;
 
 // TODO: Auto-generated Javadoc
 /**
- * Representation of an upper triangular square matrix.
- * This stores only the upper half of the matrix so
- * scales better with size and reduces redundancy
- * in a symmetrical matrix. There is a small time penalty
- * since lookups are not conventional.
+ * Representation of an upper triangular square matrix. This stores only the
+ * upper half of the matrix so scales better with size and reduces redundancy in
+ * a symmetrical matrix. There is a small time penalty since lookups are not
+ * conventional.
  * 
  * @author Antony Holmes Holmes
  *
  */
 public class DistanceMatrix extends UpperTriangularDoubleMatrix {
-	
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Instantiates a new distance matrix.
-	 *
-	 * @param size the size
-	 */
-	public DistanceMatrix(int size) {
-		super(size);
-	}
-	
-	/**
-	 * Instantiates a new distance matrix.
-	 *
-	 * @param m the m
-	 */
-	public DistanceMatrix(DistanceMatrix m) {
-		super(m);
-	}
-	
-	/**
-	 * Gets the.
-	 *
-	 * @param c1 the c1
-	 * @param c2 the c2
-	 * @return the double
-	 */
-	public double get(Cluster c1, Cluster c2) {
-		return getValue(c1.getId(), c2.getId());
-	}
+
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Instantiates a new distance matrix.
+   *
+   * @param size the size
+   */
+  public DistanceMatrix(int size) {
+    super(size);
+  }
+
+  /**
+   * Instantiates a new distance matrix.
+   *
+   * @param m the m
+   */
+  public DistanceMatrix(DistanceMatrix m) {
+    super(m);
+  }
+
+  /**
+   * Gets the.
+   *
+   * @param c1 the c1
+   * @param c2 the c2
+   * @return the double
+   */
+  public double get(Cluster c1, Cluster c2) {
+    return getValue(c1.getId(), c2.getId());
+  }
 }

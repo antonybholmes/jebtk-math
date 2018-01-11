@@ -45,158 +45,163 @@ import org.jebtk.core.text.TextUtils;
  */
 public class CsvMatrixParser implements MatrixParser {
 
-	/**
-	 * The member row annotations.
-	 */
-	protected int mRowAnnotations = -1;
-	
-	/**
-	 * The member has header.
-	 */
-	protected boolean mHasHeader = false;
+  /**
+   * The member row annotations.
+   */
+  protected int mRowAnnotations = -1;
 
-	/**
-	 * Instantiates a new text matrix parser.
-	 */
-	public CsvMatrixParser() {
-		this(true, 0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvMatrixParser(int rowAnnotations) {
-		this(true, rowAnnotations);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 */
-	public CsvMatrixParser(boolean hasHeader) {
-		this(hasHeader, 0);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param rowAnnotations the row annotations
-	 */
-	public CsvMatrixParser(boolean hasHeader, 
-			int rowAnnotations) {
-		// If row annotations >0, you must have a header otherwise the file
-		// is garbage
-		mHasHeader = hasHeader || rowAnnotations > 0;
-		mRowAnnotations = rowAnnotations;
-	}
+  /**
+   * The member has header.
+   */
+  protected boolean mHasHeader = false;
 
-	/**
-	 * Sets the.
-	 *
-	 * @param matrix the matrix
-	 * @param row the row
-	 * @param column the column
-	 * @param value the value
-	 */
-	protected void set(Matrix matrix, int row, int column, String value) {
-		if (TextUtils.isNumber(value)) {
-			matrix.set(row, column, Double.parseDouble(value));
-		} else {
-			matrix.set(row, column, value);
-		}
-	}
+  /**
+   * Instantiates a new text matrix parser.
+   */
+  public CsvMatrixParser() {
+    this(true, 0);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
-	 */
-	@Override
-	public DataFrame parse(Path file) throws IOException {
-		DataFrame matrix = null;
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param rowAnnotations the row annotations
+   */
+  public CsvMatrixParser(int rowAnnotations) {
+    this(true, rowAnnotations);
+  }
 
-		BufferedReader reader = FileUtils.newBufferedReader(file);
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   */
+  public CsvMatrixParser(boolean hasHeader) {
+    this(hasHeader, 0);
+  }
 
-		String line;
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param rowAnnotations the row annotations
+   */
+  public CsvMatrixParser(boolean hasHeader, int rowAnnotations) {
+    // If row annotations >0, you must have a header otherwise the file
+    // is garbage
+    mHasHeader = hasHeader || rowAnnotations > 0;
+    mRowAnnotations = rowAnnotations;
+  }
 
-		List<String> tokens;
+  /**
+   * Sets the.
+   *
+   * @param matrix the matrix
+   * @param row the row
+   * @param column the column
+   * @param value the value
+   */
+  protected void set(Matrix matrix, int row, int column, String value) {
+    if (TextUtils.isNumber(value)) {
+      matrix.set(row, column, Double.parseDouble(value));
+    } else {
+      matrix.set(row, column, value);
+    }
+  }
 
-		int rows = mHasHeader ? 0 : 1;
-		int columns = -1;
-		
-		try {
-			line = reader.readLine();
-			tokens = TextUtils.parseCSVLine(line); //ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line)); //TextUtils.tabSplit(line);
-	
-			columns = tokens.size() - mRowAnnotations;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.MatrixParser#parse(java.io.Path)
+   */
+  @Override
+  public DataFrame parse(Path file) throws IOException {
+    DataFrame matrix = null;
 
-			while ((line = reader.readLine()) != null) {
-				if (Io.isEmptyLine(line)) {
-					continue;
-				}
+    BufferedReader reader = FileUtils.newBufferedReader(file);
 
-				++rows;
-			}
-		} finally {
-			reader.close();
-		}
+    String line;
 
-		matrix = createMatrix(rows, columns);
+    List<String> tokens;
 
-		reader = FileUtils.newBufferedReader(file);
+    int rows = mHasHeader ? 0 : 1;
+    int columns = -1;
 
-		List<String> rowAnnotationNames = null;
-		
-		try {
-			if (mHasHeader) {
-				// add column names
-				line = reader.readLine();
-				tokens = TextUtils.parseCSVLine(line);
-				
-				matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
+    try {
+      line = reader.readLine();
+      tokens = TextUtils.parseCSVLine(line); // ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line));
+                                             // //TextUtils.tabSplit(line);
 
-				rowAnnotationNames = CollectionUtils.subList(tokens, 0, mRowAnnotations);
-			}
+      columns = tokens.size() - mRowAnnotations;
 
-			int row = 0;
+      while ((line = reader.readLine()) != null) {
+        if (Io.isEmptyLine(line)) {
+          continue;
+        }
 
-			while ((line = reader.readLine()) != null) {
-				if (Io.isEmptyLine(line)) {
-					continue;
-				}
+        ++rows;
+      }
+    } finally {
+      reader.close();
+    }
 
-				tokens = TextUtils.parseCSVLine(line);
+    matrix = createMatrix(rows, columns);
 
-				if (mHasHeader) {
-					for (int i = 0; i < mRowAnnotations; ++i) {
-						matrix.setRowAnnotation(rowAnnotationNames.get(i), row, tokens.get(i));
-					}
-				}
+    reader = FileUtils.newBufferedReader(file);
 
-				// the first token is the column name so ignore it
-				for (int i = mRowAnnotations; i < tokens.size(); ++i) {
-					set(matrix, row, i - mRowAnnotations, tokens.get(i));
-				}
+    List<String> rowAnnotationNames = null;
 
-				++row;
-			}
-		} finally {
-			reader.close();
-		}
+    try {
+      if (mHasHeader) {
+        // add column names
+        line = reader.readLine();
+        tokens = TextUtils.parseCSVLine(line);
 
-		return matrix;
-	}
+        matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
 
-	/**
-	 * Creates the matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @return the annotation matrix
-	 */
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createDataFrame(rows, columns); 
-	}
+        rowAnnotationNames = CollectionUtils
+            .subList(tokens, 0, mRowAnnotations);
+      }
+
+      int row = 0;
+
+      while ((line = reader.readLine()) != null) {
+        if (Io.isEmptyLine(line)) {
+          continue;
+        }
+
+        tokens = TextUtils.parseCSVLine(line);
+
+        if (mHasHeader) {
+          for (int i = 0; i < mRowAnnotations; ++i) {
+            matrix.setRowAnnotation(rowAnnotationNames.get(i),
+                row,
+                tokens.get(i));
+          }
+        }
+
+        // the first token is the column name so ignore it
+        for (int i = mRowAnnotations; i < tokens.size(); ++i) {
+          set(matrix, row, i - mRowAnnotations, tokens.get(i));
+        }
+
+        ++row;
+      }
+    } finally {
+      reader.close();
+    }
+
+    return matrix;
+  }
+
+  /**
+   * Creates the matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @return the annotation matrix
+   */
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createDataFrame(rows, columns);
+  }
 }

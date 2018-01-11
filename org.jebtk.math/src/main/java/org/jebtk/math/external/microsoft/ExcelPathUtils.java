@@ -23,37 +23,37 @@ import org.jebtk.core.io.PathUtils.Ext;
  * The Class ExcelPathUtils.
  */
 public class ExcelPathUtils {
-	
-	/**
-	 * The Class ExcelExt.
-	 */
-	public static class ExcelExt extends Ext {
-		
-		/**
-		 * Xlsx.
-		 *
-		 * @return the ext test
-		 */
-		public ExtTest xlsx() {
-			return type("xlsx");
-		}
-		
-		/**
-		 * Xls.
-		 *
-		 * @return the ext test
-		 */
-		public ExtTest xls() {
-			return type("xls");
-		}
-	}
 
-	/**
-	 * Ext.
-	 *
-	 * @return the excel ext
-	 */
-	public static ExcelExt ext() {
-		return new ExcelExt();
-	}
+  /**
+   * The Class ExcelExt.
+   */
+  public static class ExcelExt extends Ext {
+
+    /**
+     * Xlsx.
+     *
+     * @return the ext test
+     */
+    public ExtTest xlsx() {
+      return type("xlsx");
+    }
+
+    /**
+     * Xls.
+     *
+     * @return the ext test
+     */
+    public ExtTest xls() {
+      return type("xls");
+    }
+  }
+
+  /**
+   * Ext.
+   *
+   * @return the excel ext
+   */
+  public static ExcelExt ext() {
+    return new ExcelExt();
+  }
 }

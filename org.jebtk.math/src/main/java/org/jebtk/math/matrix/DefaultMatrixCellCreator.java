@@ -22,12 +22,14 @@ import org.jebtk.core.collections.EntryCreator;
  * The Class DefaultMatrixCellCreator.
  */
 public class DefaultMatrixCellCreator implements EntryCreator<MatrixCell> {
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.collections.EntryCreator#newEntry()
-	 */
-	@Override
-	public MatrixCell newEntry() {
-		return new MatrixCell();
-	}
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.collections.EntryCreator#newEntry()
+   */
+  @Override
+  public MatrixCell newEntry() {
+    return new MatrixCell();
+  }
 }

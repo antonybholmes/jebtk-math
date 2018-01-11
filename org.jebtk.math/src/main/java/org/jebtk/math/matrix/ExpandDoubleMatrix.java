@@ -35,127 +35,133 @@ package org.jebtk.math.matrix;
  */
 public class ExpandDoubleMatrix extends ExpandMatrix<Double> {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new dynamic double matrix.
-	 */
-	public ExpandDoubleMatrix() {
-		this(0, 0);
-	}
+  /**
+   * Instantiates a new dynamic double matrix.
+   */
+  public ExpandDoubleMatrix() {
+    this(0, 0);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public ExpandDoubleMatrix(int rows, int columns) {
-		super(rows, columns, 0d);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public ExpandDoubleMatrix(int rows, int columns) {
+    super(rows, columns, 0d);
+  }
 
-	/**
-	 * Instantiates a new mixed sparse matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @param v the v
-	 */
-	public ExpandDoubleMatrix(int rows, int columns, double v) {
-		super(rows, columns, v);
-	}
+  /**
+   * Instantiates a new mixed sparse matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @param v the v
+   */
+  public ExpandDoubleMatrix(int rows, int columns, double v) {
+    super(rows, columns, v);
+  }
 
-	/**
-	 * Clone a matrix optionally copying the core matrix values and the
-	 * annotation.
-	 *
-	 * @param m the m
-	 */
-	public ExpandDoubleMatrix(Matrix m) {
-		super(m, 0d);
-	}
+  /**
+   * Clone a matrix optionally copying the core matrix values and the
+   * annotation.
+   *
+   * @param m the m
+   */
+  public ExpandDoubleMatrix(Matrix m) {
+    super(m, 0d);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.Matrix#copy()
-	 */
-	@Override
-	public Matrix copy() {
-		return new ExpandDoubleMatrix(this);
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new ExpandDoubleMatrix(rows, cols);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
-	 */
-	@Override
-	public void update(double v) {
-		for (int i = 0; i < mDim.mRows; ++i) {
-			for (int j = 0; j < mDim.mCols; ++j) {
-				mData.get(i).set(j, v);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.Matrix#copy()
+   */
+  @Override
+  public Matrix copy() {
+    return new ExpandDoubleMatrix(this);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-	 */
-	@Override
-	public void update(int row, int column, double v) {
-		mData.get(row).set(column, v);
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new ExpandDoubleMatrix(rows, cols);
+  }
 
-		super.update(row, column, v);
-	}
-	
-	@Override
-	public Matrix transpose() {
-		return transpose(this);
-	}
-	
-	public static Matrix transpose(ExpandDoubleMatrix m) {
-		ExpandDoubleMatrix ret = 
-				createExpandDoubleMatrix(m.getCols(), m.getRows());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.get(i).set(j, v);
+      }
+    }
+  }
 
-		// Swap row and column indices. We use index lookup to reduce
-		// the number of number of times indices must be looked up to
-		// set cell elements.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
+  @Override
+  public void update(int row, int column, double v) {
+    mData.get(row).set(column, v);
 
-		for (int i = 0; i < m.getRows(); ++i) {
-			for (int j = 0; j < m.getCols(); ++j) {
-				ret.set(j, i, m.get(i, j));
-			}
-		}
+    super.update(row, column, v);
+  }
 
-		return ret;
-	}
+  @Override
+  public Matrix transpose() {
+    return transpose(this);
+  }
 
-	//
-	// Static methods
-	//
-	
-	/**
-	 * Creates the.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 * @return the dynamic double matrix
-	 */
-	public static ExpandDoubleMatrix createExpandDoubleMatrix(int rows, int columns) {
-		return new ExpandDoubleMatrix(rows, columns);
-	}
-	
-	/**
-	 * Creates the matrix.
-	 *
-	 * @return the matrix
-	 */
-	public static Matrix createExpandDoubleMatrix() {
-		return new ExpandDoubleMatrix();
-	}
+  public static Matrix transpose(ExpandDoubleMatrix m) {
+    ExpandDoubleMatrix ret = createExpandDoubleMatrix(m.getCols(), m.getRows());
+
+    // Swap row and column indices. We use index lookup to reduce
+    // the number of number of times indices must be looked up to
+    // set cell elements.
+
+    for (int i = 0; i < m.getRows(); ++i) {
+      for (int j = 0; j < m.getCols(); ++j) {
+        ret.set(j, i, m.get(i, j));
+      }
+    }
+
+    return ret;
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Creates the.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   * @return the dynamic double matrix
+   */
+  public static ExpandDoubleMatrix createExpandDoubleMatrix(int rows,
+      int columns) {
+    return new ExpandDoubleMatrix(rows, columns);
+  }
+
+  /**
+   * Creates the matrix.
+   *
+   * @return the matrix
+   */
+  public static Matrix createExpandDoubleMatrix() {
+    return new ExpandDoubleMatrix();
+  }
 }

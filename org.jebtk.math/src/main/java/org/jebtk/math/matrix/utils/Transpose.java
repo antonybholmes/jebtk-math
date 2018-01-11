@@ -30,173 +30,174 @@ import org.jebtk.math.matrix.MixedMatrix;
  */
 public class Transpose {
 
-	/**
-	 * Instantiates a new matrix utils.
-	 */
-	private Transpose() {
+  /**
+   * Instantiates a new matrix utils.
+   */
+  private Transpose() {
 
-	}
+  }
 
-	/**
-	 * Transpose.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix transpose(final DataFrame m) {
-		// Transpose the main matrix
-		Matrix innerM = transpose(m.getMatrix());
+  /**
+   * Transpose.
+   *
+   * @param m the m
+   * @return the matrix
+   */
+  public Matrix transpose(final DataFrame m) {
+    // Transpose the main matrix
+    Matrix innerM = transpose(m.getMatrix());
 
-		DataFrame ret = new DataFrame(innerM);
+    DataFrame ret = new DataFrame(innerM);
 
-		// The first name is the row-name, which must be swapped for the
-		// column name so we only copy the annotation for names(1, end) 
-		// verbatim. The same is true for the columns
-		//ret.setColumnNames(getRowNames());
-		//ret.setRowNames(getColumnNames());
+    // The first name is the row-name, which must be swapped for the
+    // column name so we only copy the annotation for names(1, end)
+    // verbatim. The same is true for the columns
+    // ret.setColumnNames(getRowNames());
+    // ret.setRowNames(getColumnNames());
 
-		for (String name : m.getRowAnnotationNames()) { //CollectionUtils.tail(getRowAnnotationNames())) {
-			ret.setColumnAnnotations(name, m.getRowAnnotations(name));
-		}
+    for (String name : m.getRowAnnotationNames()) { // CollectionUtils.tail(getRowAnnotationNames()))
+                                                    // {
+      ret.setColumnAnnotations(name, m.getRowAnnotations(name));
+    }
 
-		for (String name : m.getColumnAnnotationNames()) { //CollectionUtils.tail(getColumnAnnotationNames())) {
-			ret.setRowAnnotations(name, m.getColumnAnnotations(name));
-		}
+    for (String name : m.getColumnAnnotationNames()) { // CollectionUtils.tail(getColumnAnnotationNames()))
+                                                       // {
+      ret.setRowAnnotations(name, m.getColumnAnnotations(name));
+    }
 
-		return ret;
-	}
+    return ret;
+  }
 
+  /**
+   * Transpose.
+   *
+   * @param m the m
+   * @return the matrix
+   */
+  public Matrix transpose(final Matrix m) {
+    if (m instanceof DoubleMatrix) {
+      return transpose((DoubleMatrix) m);
+    } else if (m instanceof IntMatrix) {
+      return transpose((IntMatrix) m);
+    } else if (m instanceof IndexMatrix) {
+      return transpose((IndexMatrix) m);
+    } else {
+      MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
 
-	/**
-	 * Transpose.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public Matrix transpose(final Matrix m) {
-		if (m instanceof DoubleMatrix) {
-			return transpose((DoubleMatrix)m);
-		} else if (m instanceof IntMatrix) {
-			return transpose((IntMatrix)m);
-		} else if (m instanceof IndexMatrix) {
-			return transpose((IndexMatrix)m);
-		} else {
-			MixedMatrix ret = 
-					MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
+      // Swap row and column indices. We use index lookup to reduce
+      // the number of number of times indices must be looked up to
+      // set cell elements.
 
-			// Swap row and column indices. We use index lookup to reduce
-			// the number of number of times indices must be looked up to
-			// set cell elements.
+      for (int i = 0; i < m.getRows(); ++i) {
+        for (int j = 0; j < m.getCols(); ++j) {
+          ret.set(j, i, m.get(i, j));
+        }
+      }
 
-			for (int i = 0; i < m.getRows(); ++i) {
-				for (int j = 0; j < m.getCols(); ++j) {
-					ret.set(j, i, m.get(i, j));
-				}
-			}
+      return ret;
+    }
+  }
 
-			return ret;
-		}
-	}
+  /**
+   * Transpose.
+   *
+   * @param m the m
+   * @return the matrix
+   */
+  public static Matrix transpose(final IndexMatrix m) {
+    MixedMatrix ret = MixedMatrix.createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
 
-	/**
-	 * Transpose.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public static Matrix transpose(final IndexMatrix m) { 
-		MixedMatrix ret = MixedMatrix.createMixedMatrix(m.mDim.mCols, m.mDim.mRows);
+    int i2 = 0;
+    int c = 0;
 
-		int i2 = 0;
-		int c = 0;
+    for (int i = 0; i < m.size(); ++i) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
 
-		for (int i = 0; i < m.size(); ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+      ret.set(i2, m.get(i));
 
-			ret.set(i2, m.get(i));
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+    return ret;
+  }
 
-		return ret;
-	}
+  /**
+   * Transpose.
+   *
+   * @param m the m
+   * @return the matrix
+   */
+  public static Matrix transpose(final DoubleMatrix m) {
+    DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mDim.mCols,
+        m.mDim.mRows);
 
-	/**
-	 * Transpose.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public static Matrix transpose(final DoubleMatrix m) { 
-		DoubleMatrix ret = DoubleMatrix.createDoubleMatrix(m.mDim.mCols, m.mDim.mRows);
+    int i2 = 0;
+    int c = 0;
 
-		int i2 = 0;
-		int c = 0;
+    for (int i = 0; i < m.mData.length; ++i) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
 
-		for (int i = 0; i < m.mData.length; ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+      ret.mData[i2] = m.mData[i];
 
-			ret.mData[i2] = m.mData[i];
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+    return ret;
+  }
 
-		return ret;
-	}
-	
-	/**
-	 * Transpose.
-	 *
-	 * @param m the m
-	 * @return the matrix
-	 */
-	public static Matrix transpose(final IntMatrix m) { 
-		IntMatrix ret = IntMatrix.createIntMatrix(m.mDim.mCols, m.mDim.mRows);
+  /**
+   * Transpose.
+   *
+   * @param m the m
+   * @return the matrix
+   */
+  public static Matrix transpose(final IntMatrix m) {
+    IntMatrix ret = IntMatrix.createIntMatrix(m.mDim.mCols, m.mDim.mRows);
 
-		int i2 = 0;
-		int c = 0;
+    int i2 = 0;
+    int c = 0;
 
-		for (int i = 0; i < m.mData.length; ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+    for (int i = 0; i < m.mData.length; ++i) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
 
-			ret.mData[i2] = m.mData[i];
+      ret.mData[i2] = m.mData[i];
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
 
-		return ret;
-	}
-	
-	public static Matrix transpose(final LongMatrix m) { 
-		LongMatrix ret = LongMatrix.createLongMatrix(m.mDim.mCols, m.mDim.mRows);
+    return ret;
+  }
 
-		int i2 = 0;
-		int c = 0;
+  public static Matrix transpose(final LongMatrix m) {
+    LongMatrix ret = LongMatrix.createLongMatrix(m.mDim.mCols, m.mDim.mRows);
 
-		for (int i = 0; i < m.mData.length; ++i) {
-			// Each time we end a row, reset i2 back to the next column
-			if (i % m.mDim.mCols == 0) {
-				i2 = c++;
-			}
+    int i2 = 0;
+    int c = 0;
 
-			ret.mData[i2] = m.mData[i];
+    for (int i = 0; i < m.mData.length; ++i) {
+      // Each time we end a row, reset i2 back to the next column
+      if (i % m.mDim.mCols == 0) {
+        i2 = c++;
+      }
 
-			// Skip blocks
-			i2 += m.mDim.mRows;
-		}
+      ret.mData[i2] = m.mData[i];
 
-		return ret;
-	}
+      // Skip blocks
+      i2 += m.mDim.mRows;
+    }
+
+    return ret;
+  }
 }

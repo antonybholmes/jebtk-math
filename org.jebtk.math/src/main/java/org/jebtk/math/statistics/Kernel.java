@@ -35,12 +35,12 @@ package org.jebtk.math.statistics;
  *
  */
 public interface Kernel {
-	
-	/**
-	 * Evaluate the kernel at x.
-	 *
-	 * @param x the x
-	 * @return 		The estimate of the pdf at x.
-	 */
-	public double evaluate(double x);
+
+  /**
+   * Evaluate the kernel at x.
+   *
+   * @param x the x
+   * @return The estimate of the pdf at x.
+   */
+  public double evaluate(double x);
 }

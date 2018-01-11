@@ -38,33 +38,32 @@ import org.jebtk.core.text.TextUtils;
  * @author Antony Holmes Holmes
  */
 public class DoubleMatrixParser extends MixedMatrixParser {
-	
-	public DoubleMatrixParser(boolean hasHeader,
-			int rowAnnotations, 
-			String delimiter) {
-		super(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
-	}
-	
-	/**
-	 * Instantiates a new text matrix parser.
-	 *
-	 * @param hasHeader the has header
-	 * @param skipMatches the skip matches
-	 * @param rowAnnotations the row annotations
-	 * @param delimiter the delimiter
-	 */
-	public DoubleMatrixParser(boolean hasHeader,
-			Collection<String> skipMatches,
-			int rowAnnotations, 
-			String delimiter) {
-		super(hasHeader, skipMatches, rowAnnotations, delimiter);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
-	 */
-	@Override
-	public DataFrame createMatrix(int rows, int columns) {
-		return DataFrame.createNumericalMatrix(rows, columns); 
-	}
+  public DoubleMatrixParser(boolean hasHeader, int rowAnnotations,
+      String delimiter) {
+    super(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+  }
+
+  /**
+   * Instantiates a new text matrix parser.
+   *
+   * @param hasHeader the has header
+   * @param skipMatches the skip matches
+   * @param rowAnnotations the row annotations
+   * @param delimiter the delimiter
+   */
+  public DoubleMatrixParser(boolean hasHeader, Collection<String> skipMatches,
+      int rowAnnotations, String delimiter) {
+    super(hasHeader, skipMatches, rowAnnotations, delimiter);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.MixedMatrixParser#createMatrix(int, int)
+   */
+  @Override
+  public DataFrame createMatrix(int rows, int columns) {
+    return DataFrame.createNumericalMatrix(rows, columns);
+  }
 }

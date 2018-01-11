@@ -23,16 +23,16 @@ import org.junit.Test;
  * The Class MathTest.
  */
 public class MathTest {
-	
-	/**
-	 * Norm cubic bezier.
-	 */
-	@Test
-	public void normCubicBezier() {
-		CubicBezier c = CubicBezier.normCubicBezier(0.4, 0.0, 0.2, 1);
-		
-		for (double i = 0; i <= 1; i += 0.1) {
-			System.err.println("bezier " + c.eval(i));
-		}
-	}
+
+  /**
+   * Norm cubic bezier.
+   */
+  @Test
+  public void normCubicBezier() {
+    CubicBezier c = CubicBezier.normCubicBezier(0.4, 0.0, 0.2, 1);
+
+    for (double i = 0; i <= 1; i += 0.1) {
+      System.err.println("bezier " + c.eval(i));
+    }
+  }
 }

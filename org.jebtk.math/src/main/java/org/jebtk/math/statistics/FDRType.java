@@ -32,19 +32,19 @@ package org.jebtk.math.statistics;
  * The enum FDRType.
  */
 public enum FDRType {
-	
-	/**
-	 * The none.
-	 */
-	NONE,
-	
-	/**
-	 * The bonferroni.
-	 */
-	BONFERRONI,
-	
-	/**
-	 * The benjamini hochberg.
-	 */
-	BENJAMINI_HOCHBERG
+
+  /**
+   * The none.
+   */
+  NONE,
+
+  /**
+   * The bonferroni.
+   */
+  BONFERRONI,
+
+  /**
+   * The benjamini hochberg.
+   */
+  BENJAMINI_HOCHBERG
 }

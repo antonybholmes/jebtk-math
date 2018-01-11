@@ -29,36 +29,35 @@ package org.jebtk.math.matrix;
 
 // TODO: Auto-generated Javadoc
 /**
- * A special matrix that hold no data. It can be used as a placeholder
- * where a matrix is required, but the data in it is immaterial.
+ * A special matrix that hold no data. It can be used as a placeholder where a
+ * matrix is required, but the data in it is immaterial.
  * 
  * @author Antony Holmes Holmes
  */
 public class EmptyMatrix extends RegularMatrix {
 
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
+  /**
+   * Create a new empty matrix.
+   *
+   * @param rows the rows
+   * @param columns the columns
+   */
+  public EmptyMatrix(int rows, int columns) {
+    super(rows, columns);
+  }
 
-	/**
-	 * Create a new empty matrix.
-	 *
-	 * @param rows the rows
-	 * @param columns the columns
-	 */
-	public EmptyMatrix(int rows, int columns) {
-		super(rows, columns);
-	}
+  @Override
+  public Matrix transpose() {
+    return this;
+  }
 
-	@Override
-	public Matrix transpose() {
-		return this;
-	}
-	
-	@Override
-	public Matrix ofSameType(int rows, int cols) {
-		return new EmptyMatrix(rows, cols);
-	}
+  @Override
+  public Matrix ofSameType(int rows, int cols) {
+    return new EmptyMatrix(rows, cols);
+  }
 }

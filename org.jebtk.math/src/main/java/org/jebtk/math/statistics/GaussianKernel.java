@@ -32,59 +32,61 @@ package org.jebtk.math.statistics;
  * The class GaussianKernel.
  */
 public class GaussianKernel implements Kernel {
-	
-	/**
-	 * The factor.
-	 */
-	private double mFactor = -1;
-	
-	/** The m mean. */
-	private double mMean;
-	
-	/** The m var. */
-	private double mVar;
-	
-	/**
-	 * Instantiates a new gaussian kernel.
-	 */
-	public GaussianKernel() {
-		this(0, 1);
-	}
-	
-	/**
-	 * Instantiates a new gaussian kernel.
-	 *
-	 * @param sd the sd
-	 */
-	public GaussianKernel(double sd) {
-		this(0, sd);
-	}
-	
-	/**
-	 * Instantiates a new gaussian kernel.
-	 *
-	 * @param mean the mean
-	 * @param sd the sd
-	 */
-	public GaussianKernel(double mean, double sd) {
-		mMean = mean;
-		mVar = sd * sd;
-		
-		mFactor = 1.0 / (sd * Math.sqrt(2.0 * Math.PI));
-	}
 
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.statistics.Kernel#evaluate(double)
-	 */
-	@Override
-	public double evaluate(double x) {
-		double num = x - mMean;
-		
-		num *= num;
-		
-		double denom = 2 * mVar;
+  /**
+   * The factor.
+   */
+  private double mFactor = -1;
 
-		return mFactor * Math.exp(-num / denom);
-	}
+  /** The m mean. */
+  private double mMean;
+
+  /** The m var. */
+  private double mVar;
+
+  /**
+   * Instantiates a new gaussian kernel.
+   */
+  public GaussianKernel() {
+    this(0, 1);
+  }
+
+  /**
+   * Instantiates a new gaussian kernel.
+   *
+   * @param sd the sd
+   */
+  public GaussianKernel(double sd) {
+    this(0, sd);
+  }
+
+  /**
+   * Instantiates a new gaussian kernel.
+   *
+   * @param mean the mean
+   * @param sd the sd
+   */
+  public GaussianKernel(double mean, double sd) {
+    mMean = mean;
+    mVar = sd * sd;
+
+    mFactor = 1.0 / (sd * Math.sqrt(2.0 * Math.PI));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.statistics.Kernel#evaluate(double)
+   */
+  @Override
+  public double evaluate(double x) {
+    double num = x - mMean;
+
+    num *= num;
+
+    double denom = 2 * mVar;
+
+    return mFactor * Math.exp(-num / denom);
+  }
 
 }

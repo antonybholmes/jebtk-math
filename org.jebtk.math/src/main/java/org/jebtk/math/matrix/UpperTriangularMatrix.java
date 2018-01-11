@@ -31,92 +31,91 @@ import org.jebtk.core.Mathematics;
 
 // TODO: Auto-generated Javadoc
 /**
- * Representation of an upper triangular square matrix.
- * This stores only the upper half of the matrix so
- * scales better with size and reduces redundancy
- * in a symmetrical matrix. There is a small time penalty
- * since lookups are not conventional.
+ * Representation of an upper triangular square matrix. This stores only the
+ * upper half of the matrix so scales better with size and reduces redundancy in
+ * a symmetrical matrix. There is a small time penalty since lookups are not
+ * conventional.
  * 
  * @author Antony Holmes Holmes
  *
  */
 public abstract class UpperTriangularMatrix extends IndexMatrix {
-	
-	/**
-	 * The constant serialVersionUID.
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/** Pre compute the row offset required to find an element. */
-	public final int[] mOffsets;
+  /**
+   * The constant serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * How many elements out of the square matrix are in use (since approx
-	 * one half is empty to save space).
-	 */
-	public final int mOccupied;
+  /** Pre compute the row offset required to find an element. */
+  public final int[] mOffsets;
 
-	/**
-	 * Instantiates a new distance matrix.
-	 *
-	 * @param size the size
-	 */
-	public UpperTriangularMatrix(int size) {
-		super(size, size);
-		
-		mOccupied = Mathematics.sum(size);
-		
-		mOffsets = new int[size];
-		
-		int c = 1;
-		
-		mOffsets[0] = 0;
-		
-		for (int i = 1; i < size; ++i) {
-			//mOffsets[i] = i * size - Mathematics.sum(i);
-			mOffsets[i] = mOffsets[i - 1] + size - c++;
-			
-			//System.err.println("offset " + i + " " + mOffsets[i]);
-		}
-	}
-	
-	/**
-	 * Returns the number of occupied cells in the UT matrix, i.e. how many
-	 * cells are actually in use to create the matrix, rather than 
-	 * rows * columns.
-	 *
-	 * @return the num occupied cells
-	 */
-	public int getNumOccupiedCells() {
-		return mOccupied;
-	}
-	
-	/**
-	 * Returns the index position corresponding to
-	 * the row and column. Since the matrix is
-	 * in upper triangular form. The row is
-	 * always the smaller of the parameters and
-	 * the column the largest.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the index
-	 */
-	@Override
-	public int getIndex(int row, int column) {
-		//int r = Math.min(row, column);
-		//int c = Math.max(row, column);
-		
-		//return mOffsets[r] + c;
-		
-		if (row > column) {
-			// Referencing in the lower triangle, so swap to use the upper
-			// triangle
-			return mOffsets[column] + row;
-		} else {
-			// In the upper triangle
-			return mOffsets[row] + column;
-		}
-	}
-	
+  /**
+   * How many elements out of the square matrix are in use (since approx one
+   * half is empty to save space).
+   */
+  public final int mOccupied;
+
+  /**
+   * Instantiates a new distance matrix.
+   *
+   * @param size the size
+   */
+  public UpperTriangularMatrix(int size) {
+    super(size, size);
+
+    mOccupied = Mathematics.sum(size);
+
+    mOffsets = new int[size];
+
+    // Since the new offset is always starts one more than the previous offset
+    // we start c at one so that we do not need to add one in each for loop
+
+    int c = 1;
+
+    mOffsets[0] = 0;
+
+    for (int i = 1; i < size; ++i) {
+      // mOffsets[i] = i * size - Mathematics.sum(i);
+      mOffsets[i] = mOffsets[i - 1] + size - c++;
+
+      // System.err.println("offset " + i + " " + mOffsets[i]);
+    }
+  }
+
+  /**
+   * Returns the number of occupied cells in the UT matrix, i.e. how many cells
+   * are actually in use to create the matrix, rather than rows * columns.
+   *
+   * @return the num occupied cells
+   */
+  public int getNumOccupiedCells() {
+    return mOccupied;
+  }
+
+  /**
+   * Returns the index position corresponding to the row and column. Since the
+   * matrix is in upper triangular form. The row is always the smaller of the
+   * parameters and the column the largest.
+   *
+   * @param row the row
+   * @param column the column
+   * @return the index
+   */
+  @Override
+  public int getIndex(int row, int column) {
+    // int r = Math.min(row, column);
+    // int c = Math.max(row, column);
+
+    // return mOffsets[r] + c;
+
+    if (row > column) {
+      // Referencing in the lower triangle, so swap to use the upper
+      // triangle
+      return mOffsets[column] + row;
+    } else {
+      // In the upper triangle
+      return mOffsets[row] + column;
+    }
+  }
+
 }

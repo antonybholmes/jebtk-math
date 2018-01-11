@@ -29,98 +29,97 @@ import org.jebtk.math.matrix.MatrixDimFunction;
  *
  */
 public class MatrixArithmetic {
-	
-	private static abstract class ArithDimFunc implements MatrixDimFunction {
 
-		/** The m V. */
-		protected double mV;
+  private static abstract class ArithDimFunc implements MatrixDimFunction {
 
-		/**
-		 * Instantiates a new arith func.
-		 *
-		 * @param v the v
-		 */
-		public ArithDimFunc(double v) {
-			mV = v;
-		}
-	}
-	
-	private static class DivideDimFunc extends ArithDimFunc {
-		
-		/**
-		 * Instantiates a new divide func.
-		 *
-		 * @param v the v
-		 */
-		public DivideDimFunc(double v) {
-			super(v);
-		}
+    /** The m V. */
+    protected double mV;
 
-		@Override
-		public void apply(int index, double[] data, double[] ret) {
-			for (int i = 0; i < data.length; ++i) {
-				ret[i] = data[i] / mV;
-			}
-		}
-	}
-	
-	/**
-	 * Adds x to the matrix.
-	 *
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void add(double x, Matrix m) {
-		m.apply(Matrix.ADD_FUNCTION, x);
-	}
-	
-	/**
-	 * Copy a matrix and add x to each cell.
-	 * 
-	 * @param m
-	 * @param x
-	 * @return
-	 */
-	public static Matrix add(DataFrame m, double x) {
-		return new DataFrame(m, add(m.getMatrix(), x));
-	}
-	
-	public static Matrix add(Matrix m, double x) {
-		return m.add(x);
-	}
-	
-	/**
-	 * Subtract.
-	 *
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void subtract(double x, Matrix m) {
-		add(-x, m);
-	}
-	
-	/**
-	 * Multiply.
-	 *
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void multiply(double x, Matrix m) {
-		m.apply(Matrix.MULT_FUNCTION, x);
-	}
-	
-	/**
-	 * Divide.
-	 *
-	 * @param x the x
-	 * @param m the m
-	 */
-	public static void divide(double x, Matrix m) {
-		m.apply(Matrix.DIV_FUNCTION, m);
-	}
-	
-	
-	public static void divide(int row, double x, Matrix m) {
-		m.rowApply(new DivideDimFunc(x), row);
-	}
+    /**
+     * Instantiates a new arith func.
+     *
+     * @param v the v
+     */
+    public ArithDimFunc(double v) {
+      mV = v;
+    }
+  }
+
+  private static class DivideDimFunc extends ArithDimFunc {
+
+    /**
+     * Instantiates a new divide func.
+     *
+     * @param v the v
+     */
+    public DivideDimFunc(double v) {
+      super(v);
+    }
+
+    @Override
+    public void apply(int index, double[] data, double[] ret) {
+      for (int i = 0; i < data.length; ++i) {
+        ret[i] = data[i] / mV;
+      }
+    }
+  }
+
+  /**
+   * Adds x to the matrix.
+   *
+   * @param x the x
+   * @param m the m
+   */
+  public static void add(double x, Matrix m) {
+    m.apply(Matrix.ADD_FUNCTION, x);
+  }
+
+  /**
+   * Copy a matrix and add x to each cell.
+   * 
+   * @param m
+   * @param x
+   * @return
+   */
+  public static Matrix add(DataFrame m, double x) {
+    return new DataFrame(m, add(m.getMatrix(), x));
+  }
+
+  public static Matrix add(Matrix m, double x) {
+    return m.add(x);
+  }
+
+  /**
+   * Subtract.
+   *
+   * @param x the x
+   * @param m the m
+   */
+  public static void subtract(double x, Matrix m) {
+    add(-x, m);
+  }
+
+  /**
+   * Multiply.
+   *
+   * @param x the x
+   * @param m the m
+   */
+  public static void multiply(double x, Matrix m) {
+    m.apply(Matrix.MULT_FUNCTION, x);
+  }
+
+  /**
+   * Divide.
+   *
+   * @param x the x
+   * @param m the m
+   */
+  public static void divide(double x, Matrix m) {
+    m.apply(Matrix.DIV_FUNCTION, m);
+  }
+
+  public static void divide(int row, double x, Matrix m) {
+    m.rowApply(new DivideDimFunc(x), row);
+  }
 }

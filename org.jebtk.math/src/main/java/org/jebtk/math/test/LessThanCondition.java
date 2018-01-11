@@ -21,26 +21,28 @@ package org.jebtk.math.test;
  */
 public class LessThanCondition implements Condition {
 
-	/**
-	 * The v.
-	 */
-	private double mV;
+  /**
+   * The v.
+   */
+  private double mV;
 
-	/**
-	 * Instantiates a new less than condition.
-	 *
-	 * @param v the v
-	 */
-	public LessThanCondition(double v) {
-		mV = v;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.abh.lib.math.find.Condition#test(double)
-	 */
-	@Override
-	public boolean test(double x) {
-		return x < mV;
-	}
+  /**
+   * Instantiates a new less than condition.
+   *
+   * @param v the v
+   */
+  public LessThanCondition(double v) {
+    mV = v;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.find.Condition#test(double)
+   */
+  @Override
+  public boolean test(double x) {
+    return x < mV;
+  }
 
 }
