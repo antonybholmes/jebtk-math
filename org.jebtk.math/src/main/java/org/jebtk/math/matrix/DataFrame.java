@@ -3061,7 +3061,7 @@ public class DataFrame extends Matrix
    *
    * @param m the m
    * @param terms the terms
-   * @return the int
+   * @return the column index or -1 if a column is not found
    */
   public static int findColumn(DataFrame m, String... terms) {
     return TextUtils.findFirst(m.getColumnNames(), terms);
