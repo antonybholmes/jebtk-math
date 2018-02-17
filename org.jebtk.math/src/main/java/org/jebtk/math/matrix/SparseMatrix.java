@@ -75,8 +75,10 @@ public abstract class SparseMatrix<T> extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.Matrix#createData(int, int, int)
    */
   @Override
-  protected void createData(int rows, int columns) {
-    mData = new IterHashMap<Integer, T>(rows * columns);
+  protected void init(int rows, int columns) {
+    // Assume we will only use 10% of the cells and the rest will be
+    // sparse
+    mData = new IterHashMap<Integer, T>((int)(0.1 * rows * columns));
   }
 
   /**

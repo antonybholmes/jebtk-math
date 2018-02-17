@@ -37,6 +37,13 @@ import java.util.List;
  */
 public class TextMatrixParser extends MixedMatrixParser {
 
+  
+  public TextMatrixParser(boolean hasHeader, 
+      int rowAnnotations,
+      String delimiter) {
+    super(hasHeader, rowAnnotations, delimiter);
+  }
+  
   /**
    * Instantiates a new text matrix parser.
    *

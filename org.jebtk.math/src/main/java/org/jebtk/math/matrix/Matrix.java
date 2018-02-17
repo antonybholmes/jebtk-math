@@ -108,18 +108,17 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param columns the columns
    */
   public Matrix(int rows, int columns) {
-    createData(rows, columns);
+    init(rows, columns);
   }
 
   /**
-   * Guaranteed to be called first so can be used to initialize internal data
-   * structures before trying to set values etc.
+   * Guaranteed to be called during initialization so can be used to 
+   * size internal data structures before trying to set values.
    *
-   * @param rows the rows
-   * @param columns the columns
-   * @param size The number of elements (rows x columns).
+   * @param rows      The number of rows
+   * @param columns   The number of columns
    */
-  protected void createData(int rows, int columns) {
+  protected void init(int rows, int columns) {
     // Do nothing
   }
 
@@ -139,8 +138,8 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   /**
-   * Returns the type of the matrix indicating whether it store numbers, text or
-   * both.
+   * Returns the type of the matrix indicating whether it store numbers, 
+   * text or both.
    *
    * @return the type
    */

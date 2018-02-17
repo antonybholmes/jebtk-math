@@ -66,8 +66,11 @@ public class MixedMatrixParser implements MatrixParser {
   /** The m skip matches. */
   private Collection<String> mSkipMatches;
 
-  // private DataFrameCreator mDataFrameCreator =
-  // new DataFrameCreator();
+  public MixedMatrixParser(boolean hasHeader, 
+      int rowAnnotations,
+      String delimiter) {
+    this(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+  }
 
   /**
    * Instantiates a new text matrix parser.

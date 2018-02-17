@@ -128,7 +128,7 @@ public class IntMatrix extends IndexRowMatrix {
 
     fireMatrixChanged();
   }
-
+  
   @Override
   public void update(Matrix m) {
     if (m instanceof IntMatrix) {

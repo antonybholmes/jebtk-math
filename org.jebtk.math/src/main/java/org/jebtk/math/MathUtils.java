@@ -16,10 +16,13 @@
 package org.jebtk.math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.jebtk.core.Indexed;
+import org.jebtk.core.Mathematics;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.math.test.Condition;
 import org.jebtk.math.test.GreaterThanCondition;
 import org.jebtk.math.test.GreaterThanEqualToCondition;
@@ -361,4 +364,41 @@ public class MathUtils {
     }
   }
 
+  /**
+   * Linearly interpret v on the x scale and map to y scale.
+   * 
+   * @param v
+   * @param x
+   * @param y
+   * @return
+   */
+  public static double linearInterpolation(double v,
+      double[] x,
+      double[] y) {
+
+    SysUtils.err().println("x", Arrays.toString(x), Arrays.toString(y));
+    
+    if (v <= x[0]) {
+      return y[0];
+    }
+    
+    int xn = x.length;
+    int xni = xn - 1;
+    
+    if (v >= x[xni]) {
+      return y[xni];
+    }
+    
+    for (int i = 0; i < xni; ++i) {
+      if (v >= x[i] && v < x[i + 1]) {
+        double vx = (v - x[i]) / (x[i + 1] - x[i]);
+        
+        double yx = y[i] + (y[i + 1] - y[i]) * vx;
+            
+        return Mathematics.bound(yx, y[0], y[xni]);
+      }
+    }
+    
+    return 0;
+  }
 }
