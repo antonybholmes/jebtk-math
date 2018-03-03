@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.sys.SysUtils;
+import org.jebtk.core.text.TextUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -237,6 +238,21 @@ public class TextMatrix extends IndexRowMatrix {
   @Override
   public String getText(int index) {
     return mData[index];
+  }
+  
+  @Override
+  public double getValue(int index) {
+    return TextUtils.parseDouble(getText(index));
+  }
+
+  @Override
+  public int getInt(int index) {
+    return TextUtils.parseInt(getText(index));
+  }
+
+  @Override
+  public long getLong(int index) {
+    return TextUtils.parseLong(getText(index));
   }
 
   /*

@@ -29,7 +29,6 @@ package org.jebtk.math.matrix;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -924,11 +923,7 @@ public class LongMatrix extends IndexRowMatrix {
       return Double.NaN;
     }
 
-    try {
-      return TextUtils.parseDouble(value);
-    } catch (ParseException e) {
-      return Double.NaN;
-    }
+    return TextUtils.parseDouble(value);
   }
 
   /**

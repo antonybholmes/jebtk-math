@@ -204,13 +204,25 @@ public class BooleanMatrix extends IndexMatrix {
 
   @Override
   public int getInt(int index) {
-    return mData[index];
+    return getBit(index);
   }
   
   public boolean getBool(int index) {
-    shift = 7 - (index % 8);
+    return getBit(index) == 1;
+  }
+  
+  /**
+   * Returns the 1 bit value representing a boolean in the matrix.
+   * 
+   * @param index
+   * @return
+   */
+  private int getBit(int index) {
+    int bin = index / 8;
     
-    return mData
+    int shift = 7 - (index % 8);
+    
+    return (mData[bin] >> shift) & 1;
   }
 
   /*

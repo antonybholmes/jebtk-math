@@ -177,10 +177,10 @@ public class MixedMatrix extends IndexRowMatrix {
       } else if (v instanceof Integer) {
         return (int) v;
       } else {
-        return 0;
+        return super.getValue(index);
       }
     } else {
-      return 0;
+      return super.getValue(index);
     }
   }
 
@@ -196,10 +196,10 @@ public class MixedMatrix extends IndexRowMatrix {
       } else if (v instanceof Integer) {
         return ((Integer) v).longValue();
       } else {
-        return 0;
+        return super.getLong(index);
       }
     } else {
-      return 0;
+      return super.getLong(index);
     }
   }
 
@@ -215,10 +215,10 @@ public class MixedMatrix extends IndexRowMatrix {
       } else if (v instanceof Integer) {
         return (int) v;
       } else {
-        return 0;
+       return super.getInt(index);
       }
     } else {
-      return 0;
+      return super.getInt(index);
     }
   }
 
