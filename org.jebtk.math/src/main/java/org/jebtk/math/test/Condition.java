@@ -15,7 +15,6 @@
  */
 package org.jebtk.math.test;
 
-// TODO: Auto-generated Javadoc
 /**
  * The interface Condition.
  */

@@ -63,7 +63,6 @@ import org.jebtk.math.statistics.Stats;
 import org.jebtk.math.statistics.TTest;
 import org.jebtk.math.statistics.TwoSampleTest;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class MatrixOperations.
  */

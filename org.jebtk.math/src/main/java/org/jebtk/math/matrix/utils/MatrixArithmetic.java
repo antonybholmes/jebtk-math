@@ -19,7 +19,6 @@ import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MatrixDimFunction;
 
-// TODO: Auto-generated Javadoc
 /**
  * Inline functions that perform arithmetic on a matrix and modify it in place.
  * Use MatrixOperations to modify a copy of a matrix and leave the original

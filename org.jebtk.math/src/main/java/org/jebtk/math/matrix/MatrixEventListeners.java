@@ -30,7 +30,6 @@ package org.jebtk.math.matrix;
 import org.jebtk.core.event.ChangeEvent;
 import org.jebtk.core.event.EventProducer;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listen for when an underlying matrix changes.
  *

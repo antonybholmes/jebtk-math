@@ -18,7 +18,6 @@ package org.abh.common.math.test;
 import org.jebtk.math.CubicBezier;
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MathTest.
  */

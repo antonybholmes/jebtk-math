@@ -32,7 +32,6 @@ import java.util.List;
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.statistics.Statistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Pearson correlation distance metric.
  *

@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * The enum CellType.
  */

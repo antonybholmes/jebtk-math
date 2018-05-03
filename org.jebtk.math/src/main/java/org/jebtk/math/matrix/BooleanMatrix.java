@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.jebtk.core.sys.SysUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Matrix for storing integers only.
  *

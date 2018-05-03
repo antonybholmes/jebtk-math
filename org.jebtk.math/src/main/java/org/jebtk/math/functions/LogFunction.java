@@ -18,7 +18,6 @@ package org.jebtk.math.functions;
 import org.jebtk.core.Mathematics;
 import org.jebtk.math.matrix.CellFunction;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class LogFunction.
  */

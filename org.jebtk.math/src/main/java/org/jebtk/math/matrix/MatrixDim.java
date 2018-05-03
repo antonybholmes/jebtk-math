@@ -15,7 +15,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * Immutable integer dimension.
  * 

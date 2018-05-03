@@ -39,7 +39,6 @@ import org.jebtk.core.Mathematics;
 import org.jebtk.core.sys.SysUtils;
 import org.jebtk.math.statistics.Statistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Matrix for storing doubles.
  *

@@ -39,7 +39,6 @@ import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeListeners;
 import org.jebtk.math.matrix.utils.MatrixOperations;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides annotation for a matrix.
  * 

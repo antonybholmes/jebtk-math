@@ -30,7 +30,6 @@ package org.jebtk.math.matrix;
 import org.jebtk.core.ForEach2D;
 import org.jebtk.core.IterUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 

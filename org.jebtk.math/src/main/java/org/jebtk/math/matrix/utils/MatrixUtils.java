@@ -28,7 +28,6 @@ import org.jebtk.math.matrix.MatrixGroup;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.TTest;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MatrixUtils.
  */

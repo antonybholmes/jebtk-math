@@ -52,7 +52,6 @@ import org.jebtk.core.text.Join;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Wraps a matrix in annotatable columns and rows to make it more useful in data
  * analysis.
@@ -3064,7 +3063,17 @@ public class DataFrame extends Matrix
    * @return the column index or -1 if a column is not found
    */
   public static int findColumn(DataFrame m, String... terms) {
-    return TextUtils.findFirst(m.getColumnNames(), terms);
+    List<String> names = m.getRowAnnotationNames();
+    
+    int index = TextUtils.findFirst(names, terms);
+    
+    if (index != -1) {
+      // In the extended column names so return as negative index
+      
+      return index - names.size();
+    } else {
+      return TextUtils.findFirst(m.getColumnNames(), terms);
+    }
   }
 
   /**

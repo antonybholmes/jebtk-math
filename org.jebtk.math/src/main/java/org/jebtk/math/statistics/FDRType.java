@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.statistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * The enum FDRType.
  */

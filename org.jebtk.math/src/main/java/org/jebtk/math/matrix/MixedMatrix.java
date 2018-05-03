@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Allows strings and numbers to exist in same matrix.
  * 

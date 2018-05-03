@@ -30,7 +30,6 @@ package org.jebtk.math.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class TDist.
  */

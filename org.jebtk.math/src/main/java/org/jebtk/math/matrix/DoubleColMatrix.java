@@ -31,7 +31,6 @@ import java.util.Arrays;
 
 import org.jebtk.core.sys.SysUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Matrix for storing doubles.
  *

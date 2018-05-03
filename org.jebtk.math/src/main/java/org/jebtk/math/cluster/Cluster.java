@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.jebtk.core.IdObject;
 
-// TODO: Auto-generated Javadoc
 /**
  * Clusters of rows or columns. Clusters with no children are leaves
  * representing actual indexes. Clusters with children are collections of

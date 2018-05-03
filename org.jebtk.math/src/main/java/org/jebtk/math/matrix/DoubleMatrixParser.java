@@ -31,7 +31,6 @@ import java.util.Collection;
 
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parses a text file and creates a matrix from it.
  * 

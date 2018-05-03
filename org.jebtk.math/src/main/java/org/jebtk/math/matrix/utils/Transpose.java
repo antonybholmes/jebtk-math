@@ -24,7 +24,6 @@ import org.jebtk.math.matrix.LongMatrix;
 import org.jebtk.math.matrix.Matrix;
 import org.jebtk.math.matrix.MixedMatrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MatrixUtils.
  */

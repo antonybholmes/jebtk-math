@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * A special matrix that hold no data. It can be used as a placeholder where a
  * matrix is required, but the data in it is immaterial.

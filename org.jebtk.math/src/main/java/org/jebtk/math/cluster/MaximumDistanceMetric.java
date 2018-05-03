@@ -29,7 +29,6 @@ package org.jebtk.math.cluster;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * Maximum distance metric.
  *

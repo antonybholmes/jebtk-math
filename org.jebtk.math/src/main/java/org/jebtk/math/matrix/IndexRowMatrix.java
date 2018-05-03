@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * For matrices that use an index approach to store values in a 1D array with
  * appropriate offset calculations.

@@ -40,7 +40,6 @@ import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.functions.LnFunction;
 import org.jebtk.math.functions.LogFunction;
 
-// TODO: Auto-generated Javadoc
 /**
  * Basis for a numerical matrix. Note that Double.NaN is used to indicate an
  * unset/absent value, so valid matrices should not contain this value (it is

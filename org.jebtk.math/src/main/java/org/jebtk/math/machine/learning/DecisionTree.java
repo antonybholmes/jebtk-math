@@ -17,7 +17,6 @@ package org.jebtk.math.machine.learning;
 
 import org.jebtk.core.tree.TreeNode;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DecisionTree.
  */

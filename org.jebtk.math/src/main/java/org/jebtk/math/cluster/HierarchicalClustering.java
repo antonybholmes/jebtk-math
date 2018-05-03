@@ -37,7 +37,6 @@ import java.util.Map;
 
 import org.jebtk.math.matrix.Matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class HierarchicalClustering.
  */

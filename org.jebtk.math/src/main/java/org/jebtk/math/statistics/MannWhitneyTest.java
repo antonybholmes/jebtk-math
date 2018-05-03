@@ -32,7 +32,6 @@ import java.util.List;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.jebtk.core.collections.CollectionUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Perform MannWhitney test making use of the apache commons lib.
  * 

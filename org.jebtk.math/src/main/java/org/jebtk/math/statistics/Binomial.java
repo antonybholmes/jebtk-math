@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Fast implementation of the hypergeometric function using the sum of logs.
  *

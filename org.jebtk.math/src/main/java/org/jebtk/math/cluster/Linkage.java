@@ -29,7 +29,6 @@ package org.jebtk.math.cluster;
 
 import org.jebtk.math.matrix.Matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * The interface Linkage.
  */

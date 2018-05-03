@@ -40,7 +40,6 @@ import org.jebtk.core.io.ReaderUtils;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parses a text file and creates a matrix from it.
  * 
@@ -180,6 +179,8 @@ public class MixedMatrixParser implements MatrixParser {
           reader.readLine();
         }
       }
+      
+      System.err.println("mixed " + mHasHeader);
 
       if (mHasHeader) {
         // add column names

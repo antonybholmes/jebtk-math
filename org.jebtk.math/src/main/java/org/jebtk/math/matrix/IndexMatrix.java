@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * For matrices that intending to store data in a 1D array format. This class
  * provides some of the required implementation.

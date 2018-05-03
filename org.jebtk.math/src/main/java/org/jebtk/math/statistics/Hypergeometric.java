@@ -32,7 +32,6 @@ import java.util.Map;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 import org.jebtk.core.AgeMap;
 
-// TODO: Auto-generated Javadoc
 /**
  * Fast implementation of the hypergeometric function using the sum of logs.
  *

@@ -15,7 +15,6 @@
  */
 package org.jebtk.math.machine.learning;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Enum DecisionType.
  */

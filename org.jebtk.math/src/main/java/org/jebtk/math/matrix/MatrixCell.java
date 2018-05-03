@@ -35,7 +35,6 @@ import org.jebtk.core.NumConvertable;
 import org.jebtk.core.event.ChangeListeners;
 import org.jebtk.core.text.TextUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a matrix entry which can either be a double or a string.
  */

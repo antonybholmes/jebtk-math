@@ -32,7 +32,6 @@ import java.util.Deque;
 
 import org.jebtk.math.matrix.Matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class CompleteLinkage.
  */

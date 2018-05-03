@@ -27,7 +27,6 @@ import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.CountMap;
 import org.jebtk.core.sys.SysUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * In memory stats calculations on an array. The array is guaranteed to be
  * sorted.

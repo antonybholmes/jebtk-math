@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * A conventional matrix with a fixed number of rows and columns.
  * 

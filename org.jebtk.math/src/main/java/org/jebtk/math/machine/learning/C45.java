@@ -32,7 +32,6 @@ import org.jebtk.core.tree.TreeNode;
 import org.jebtk.math.matrix.DataFrame;
 import org.jebtk.math.matrix.MatrixGroup;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class C45.
  */

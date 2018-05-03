@@ -29,7 +29,6 @@ package org.jebtk.math.matrix;
 
 import org.jebtk.core.Mathematics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Number/String matrix using sparse representation.
  * 

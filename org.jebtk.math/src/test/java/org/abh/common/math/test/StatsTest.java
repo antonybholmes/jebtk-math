@@ -23,7 +23,6 @@ import org.jebtk.math.statistics.TwoSampleTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StatsTest.
  */

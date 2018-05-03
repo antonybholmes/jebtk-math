@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transpose of the identity matrix.
  * 

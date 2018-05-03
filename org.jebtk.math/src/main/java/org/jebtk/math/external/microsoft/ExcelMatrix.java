@@ -34,7 +34,6 @@ import org.jebtk.math.matrix.MatrixType;
 import org.jebtk.math.matrix.MixedMatrix;
 import org.jebtk.math.matrix.RegularMatrix;
 
-// TODO: Auto-generated Javadoc
 /**
  * Ecapsulates an Excel worksheet inside a matrix.
  * 

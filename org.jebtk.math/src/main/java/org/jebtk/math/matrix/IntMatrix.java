@@ -39,7 +39,6 @@ import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.statistics.Statistics;
 import org.jebtk.math.statistics.TTest;
 
-// TODO: Auto-generated Javadoc
 /**
  * Matrix for storing integers only.
  *

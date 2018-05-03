@@ -29,7 +29,6 @@ package org.jebtk.math.matrix.utils;
 
 import org.jebtk.math.matrix.DataFrame;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class MatrixOperation.
  */

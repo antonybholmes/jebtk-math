@@ -15,7 +15,6 @@
  */
 package org.jebtk.math.functions;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MultiplyFunction.
  */

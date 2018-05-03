@@ -19,7 +19,6 @@ import java.awt.geom.Point2D;
 
 import org.jebtk.core.geom.DoublePos2D;
 
-// TODO: Auto-generated Javadoc
 /**
  * Evaluate a point on a cubic bezier curve.
  * 

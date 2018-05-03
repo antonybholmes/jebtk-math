@@ -29,7 +29,6 @@ package org.jebtk.math.matrix;
 
 import org.jebtk.core.sys.SysUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Representation of an upper triangular square matrix. This stores only the
  * upper half of the matrix so scales better with size and reduces redundancy in

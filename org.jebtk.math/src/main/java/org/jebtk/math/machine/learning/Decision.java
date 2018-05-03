@@ -18,7 +18,6 @@ package org.jebtk.math.machine.learning;
 import java.util.Collection;
 import java.util.Iterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Decision.
  */
