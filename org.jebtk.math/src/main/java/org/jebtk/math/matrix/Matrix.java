@@ -1026,6 +1026,12 @@ public abstract class Matrix extends MatrixEventListeners {
    */
   public abstract Matrix ofSameType(int rows, int cols);
 
+  /**
+   * Apply a function to a copy of this matrix.
+   * 
+   * @param f
+   * @return
+   */
   public Matrix f(CellFunction f) {
     // Copy the matrix
     Matrix ret = copy();
@@ -1053,6 +1059,11 @@ public abstract class Matrix extends MatrixEventListeners {
     return ret;
   }
 
+  /**
+   * Apply a function to this matrix.
+   * 
+   * @param f
+   */
   public void apply(CellFunction f) {
     for (int i = 0; i < getRows(); ++i) {
       for (int j = 0; j < getCols(); ++j) {

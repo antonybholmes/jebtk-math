@@ -95,7 +95,7 @@ public class MatrixOperations {
     }
   }
 
-  private static class EMFunction implements CellFunction {
+  public static final CellFunction EM_FUNCTION = new CellFunction() {
     /*
      * (non-Javadoc)
      * 
@@ -105,7 +105,19 @@ public class MatrixOperations {
     public double f(int row, int col, double x, double... y) {
       return Math.exp(x);
     }
-  }
+  };
+  
+  public static final CellFunction ROUND_FUNCTION = new CellFunction() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.abh.common.math.matrix.MatrixOperations.Function#apply(double)
+     */
+    @Override
+    public double f(int row, int col, double x, double... y) {
+      return Math.round(x);
+    }
+  };
 
   private static class MXPowerFunction implements CellFunction {
 
@@ -365,8 +377,6 @@ public class MatrixOperations {
   private static MatrixStatFunction SUM_FUNCTION = new SumFunction();
 
   private static MatrixStatFunction MEAN_FUNCTION = new MeanFunction();
-
-  private static CellFunction EM_FUNCTION = new EMFunction();
 
   private static MatrixReduceFunction ROW_SUM_F = new MatrixRowSumFunction();
   private static MatrixReduceFunction ROW_MEAN_F = new MatrixRowMeanFunction();
@@ -959,11 +969,12 @@ public class MatrixOperations {
    *
    * @param <X> the generic type
    * @param m the m
-   * @param newGroups the new groups
+   * @param groups          a list of groups where each group is a list of the
+   *                        columns in that group.
    * @return the matrix
    */
   public static <X extends MatrixGroup> Matrix groupZScore(Matrix m,
-      List<List<Integer>> newGroups) {
+      List<List<Integer>> groups) {
 
     double[] means = new double[m.getRows()];
     double[] sds = new double[m.getRows()];
@@ -974,7 +985,7 @@ public class MatrixOperations {
 
       double groupCount = 0;
 
-      for (List<Integer> group : newGroups) {
+      for (List<Integer> group : groups) {
         if (group.size() == 0) {
           continue;
         }
@@ -991,6 +1002,7 @@ public class MatrixOperations {
         ++groupCount;
       }
 
+      // Average means and sd
       means[i] = mean / groupCount;
       sds[i] = s / groupCount;
     }
@@ -2139,8 +2151,6 @@ public class MatrixOperations {
       final List<Integer> columns) {
     if (m instanceof DoubleMatrix) {
       return rowToList((DoubleMatrix) m, row, columns);
-    } else if (m instanceof DoubleMatrix) {
-      return rowToList((DoubleMatrix) m, row, columns);
     } else {
       double[] ret = new double[columns.size()];
 
@@ -2267,7 +2277,16 @@ public class MatrixOperations {
   public static Matrix em(final Matrix m) {
     return m.f(EM_FUNCTION);
   }
+  
+  public static DataFrame round(final DataFrame m) {
+    return new DataFrame(m, round(m.getMatrix()));
+  }
 
+  public static Matrix round(final Matrix m) {
+    return m.f(ROUND_FUNCTION);
+  }
+  
+  
   /**
    * To row.
    *
