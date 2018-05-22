@@ -119,21 +119,11 @@ public class CubicBezier {
     double uuu = uu * u;
     double ttt = tt * t;
 
-    return new DoublePos2D(evalX(t, u, tt, uu, uuu, ttt),
-        evalY(t, u, tt, uu, uuu, ttt));
+    return new DoublePos2D(eval(t, u, tt, uu, uuu, ttt, mX),
+        eval(t, u, tt, uu, uuu, ttt, mY));
   }
 
-  /**
-   * Eval X.
-   *
-   * @param t the t
-   * @param u the u
-   * @param tt the tt
-   * @param uu the uu
-   * @param uuu the uuu
-   * @param ttt the ttt
-   * @return the double
-   */
+  /*
   private double evalX(double t,
       double u,
       double tt,
@@ -148,17 +138,6 @@ public class CubicBezier {
     return x;
   }
 
-  /**
-   * Eval Y.
-   *
-   * @param t the t
-   * @param u the u
-   * @param tt the tt
-   * @param uu the uu
-   * @param uuu the uuu
-   * @param ttt the ttt
-   * @return the double
-   */
   private double evalY(double t,
       double u,
       double tt,
@@ -171,6 +150,53 @@ public class CubicBezier {
     y += ttt * mY[3]; // fourth term
 
     return y;
+  }
+  */
+  
+  public double evalX(double t) {
+    return eval(t, mX);
+  }
+  
+  public double evalY(double t) {
+    return eval(t, mY);
+  }
+  
+  private static double eval(double t, double[] p) {
+    double u = 1 - t;
+    double tt = t * t;
+    double uu = u * u;
+    double uuu = uu * u;
+    double ttt = tt * t;
+
+    return eval(t, u, tt, uu, uuu, ttt, p);
+  }
+  
+  /**
+   * Explicit form of cubic, see 
+   * https://en.wikipedia.org/wiki/B%C3%A9zier_curve.
+   * 
+   * @param t
+   * @param u
+   * @param tt
+   * @param uu
+   * @param uuu
+   * @param ttt
+   * @param p
+   * @return
+   */
+  private static double eval(double t,
+      double u,
+      double tt,
+      double uu,
+      double uuu,
+      double ttt,
+      double[] p) {
+    double x = uuu * p[0]; // first term
+    x += 3 * uu * t * p[1]; // second term
+    x += 3 * u * tt * p[2]; // third term
+    x += ttt * p[3]; // fourth term
+
+    return x;
   }
 
   /**
