@@ -443,6 +443,52 @@ public class DoubleMatrix extends IndexRowMatrix {
   public Matrix copy() {
     return new DoubleMatrix(this);
   }
+  
+  @Override
+  public Matrix cols(int col, int... cols) {
+    int fromCols = getShape().mCols;
+    int toCols = 1 + cols.length;
+    int rows = getShape().mRows;
+
+    DoubleMatrix ret = createDoubleMatrix(rows, toCols);
+
+    cols(col,
+        0,
+        fromCols,
+        toCols,
+        rows, 
+        this, 
+        ret);
+
+    for (int i = 0; i < cols.length; ++i) {
+      cols(cols[i],
+          i + 1,
+          fromCols,
+          toCols,
+          rows, 
+          this, 
+          ret);
+    }
+
+    return ret;
+  }
+
+  private static void cols(int fromCol,
+      int toCol,
+      int fromCols,
+      int toCols,
+      int rows, 
+      final DoubleMatrix doubleMatrix, 
+      DoubleMatrix ret) {
+    int fromIdx = fromCol;
+    int toIdx = toCol;
+    for (int i = 0; i < rows; ++i) {
+      ret.mData[toIdx] = doubleMatrix.mData[fromIdx];
+
+      toIdx += toCols;
+      fromIdx += fromCols;
+    }
+  }
 
   /*
    * (non-Javadoc)
@@ -482,6 +528,16 @@ public class DoubleMatrix extends IndexRowMatrix {
   @Override
   public double getValue(int index) {
     return mData[index];
+  }
+  
+  @Override
+  public int getInt(int index) {
+    return (int)getValue(index);
+  }
+  
+  @Override
+  public long getLong(int index) {
+    return (long)getValue(index);
   }
 
   /*

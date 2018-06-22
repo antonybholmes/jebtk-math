@@ -649,6 +649,17 @@ public abstract class Matrix extends MatrixEventListeners {
       set(i, toColumn, from.getValue(i, column));
     }
   }
+  
+  /**
+   * Copy columns out of a matrix
+   * @param col
+   * @param cols
+   * @return
+   */
+  public Matrix cols(int col, int... cols) {
+    return null;
+  }
+
 
   /**
    * Should return the numerical value at a cell location or Double.NaN if the
@@ -847,6 +858,13 @@ public abstract class Matrix extends MatrixEventListeners {
     return ret;
   }
 
+  /**
+   * Extract row data into a double array.
+   * 
+   * @param row     the row of interest.
+   * @param data    an array to copy data into. Array must be able to contain
+   *                all row values.
+   */
   public void rowToDoubleArray(int row, double[] data) {
     int n = getCols();
 
@@ -2095,4 +2113,5 @@ public abstract class Matrix extends MatrixEventListeners {
     return ret;
   }
 
+ 
 }

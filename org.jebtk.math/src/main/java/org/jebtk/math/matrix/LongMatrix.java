@@ -151,6 +151,52 @@ public class LongMatrix extends IndexRowMatrix {
   }
 
   @Override
+  public Matrix cols(int col, int... cols) {
+    int fromCols = getShape().mCols;
+    int toCols = 1 + cols.length;
+    int rows = getShape().mRows;
+
+    LongMatrix ret = createLongMatrix(rows, toCols);
+
+    cols(col,
+        0,
+        fromCols,
+        toCols,
+        rows, 
+        this, 
+        ret);
+
+    for (int i = 0; i < cols.length; ++i) {
+      cols(cols[i],
+          i + 1,
+          fromCols,
+          toCols,
+          rows, 
+          this, 
+          ret);
+    }
+
+    return ret;
+  }
+
+  private static void cols(int fromCol,
+      int toCol,
+      int fromCols,
+      int toCols,
+      int rows, 
+      final LongMatrix longMatrix, 
+      LongMatrix ret) {
+    int fromIdx = fromCol;
+    int toIdx = toCol;
+    for (int i = 0; i < rows; ++i) {
+      ret.mData[toIdx] = longMatrix.mData[fromIdx];
+
+      toIdx += toCols;
+      fromIdx += fromCols;
+    }
+  }
+
+  @Override
   public Matrix ofSameType(int rows, int cols) {
     return createLongMatrix(rows, cols);
   }

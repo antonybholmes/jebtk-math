@@ -180,8 +180,6 @@ public class MixedMatrixParser implements MatrixParser {
         }
       }
       
-      System.err.println("mixed " + mHasHeader);
-
       if (mHasHeader) {
         // add column names
         line = reader.readLine();

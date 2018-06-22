@@ -136,6 +136,52 @@ public class MixedMatrix extends IndexRowMatrix {
   public Matrix ofSameType(int rows, int cols) {
     return createMixedMatrix(rows, cols);
   }
+  
+  @Override
+  public Matrix cols(int col, int... cols) {
+    int fromCols = getShape().mCols;
+    int toCols = 1 + cols.length;
+    int rows = getShape().mRows;
+
+    MixedMatrix ret = createMixedMatrix(rows, toCols);
+
+    cols(col,
+        0,
+        fromCols,
+        toCols,
+        rows, 
+        this, 
+        ret);
+
+    for (int i = 0; i < cols.length; ++i) {
+      cols(cols[i],
+          i + 1,
+          fromCols,
+          toCols,
+          rows, 
+          this, 
+          ret);
+    }
+
+    return ret;
+  }
+
+  private static void cols(int fromCol,
+      int toCol,
+      int fromCols,
+      int toCols,
+      int rows, 
+      final MixedMatrix mixedMatrix, 
+      MixedMatrix ret) {
+    int fromIdx = fromCol;
+    int toIdx = toCol;
+    for (int i = 0; i < rows; ++i) {
+      ret.mData[toIdx] = mixedMatrix.mData[fromIdx];
+
+      toIdx += toCols;
+      fromIdx += fromCols;
+    }
+  }
 
   /*
    * (non-Javadoc)
@@ -209,10 +255,10 @@ public class MixedMatrix extends IndexRowMatrix {
     if (v != null) {
       if (v instanceof Double) {
         return ((Double) v).intValue();
-      } else if (v instanceof Long) {
-        return ((Long) v).intValue();
       } else if (v instanceof Integer) {
         return (int) v;
+      } else if (v instanceof Long) {
+        return ((Long) v).intValue();
       } else {
        return super.getInt(index);
       }

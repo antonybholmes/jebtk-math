@@ -244,6 +244,17 @@ public class DataFrame extends Matrix
 
     refresh();
   }
+  
+  /**
+   * Copy columns out of a data frame.
+   */
+  public DataFrame cols(int col, int... cols) {
+    DataFrame ret = new DataFrame(getMatrix().cols(col, cols));
+    
+    copyRowAnnotations(this, ret);
+    
+    return ret;
+  }
 
   /**
    * Optionally give the matrix a name.
@@ -318,6 +329,26 @@ public class DataFrame extends Matrix
     } else {
       // Do nothing
     }
+  }
+  
+  @Override
+  public void setRow(int row, double[] values) {
+    getMatrix().setRow(row, values);
+  }
+  
+  @Override
+  public void setRow(int row, Object[] values) {
+    getMatrix().setRow(row, values);
+  }
+  
+  @Override
+  public void setColumn(int col, double[] values) {
+    getMatrix().setColumn(col, values);
+  }
+  
+  @Override
+  public void setColumn(int col, Object[] values) {
+    getMatrix().setColumn(col, values);
   }
 
   /*
@@ -951,6 +982,38 @@ public class DataFrame extends Matrix
     } else {
       // col < 0
       return getRowAnnotations(column).getValue(0, row);
+    }
+  }
+  
+  @Override
+  public int getInt(int row, int column) {
+    // return getInnerMatrix().getValue(row, column);
+
+    if (row >= 0 && column >= 0) {
+      return getMatrix().getInt(row, column);
+    } else if (row < 0 && column < 0) {
+      return 0;
+    } else if (row < 0) {
+      return getColumnAnnotations(row).getInt(0, column);
+    } else {
+      // col < 0
+      return getRowAnnotations(column).getInt(0, row);
+    }
+  }
+  
+  @Override
+  public long getLong(int row, int column) {
+    // return getInnerMatrix().getValue(row, column);
+
+    if (row >= 0 && column >= 0) {
+      return getMatrix().getLong(row, column);
+    } else if (row < 0 && column < 0) {
+      return 0;
+    } else if (row < 0) {
+      return getColumnAnnotations(row).getLong(0, column);
+    } else {
+      // col < 0
+      return getRowAnnotations(column).getLong(0, row);
     }
   }
 
@@ -2428,7 +2491,18 @@ public class DataFrame extends Matrix
   public static void copyRowAnnotations(final DataFrame from,
       String name,
       DataFrame to) {
-    to.setRowAnnotations(name, from.getRowAnnotations(name));
+    copyRowAnnotations(from, name, true, to);
+  }
+  
+  public static void copyRowAnnotations(final DataFrame from,
+      String name,      
+      boolean shallow,
+      DataFrame to) {
+    if (shallow) {
+      to.setRowAnnotations(name, from.getRowAnnotations(name));
+    } else {
+      to.setRowAnnotations(name, from.getRowAnnotations(name).copy());
+    }
   }
 
   /**
@@ -3625,4 +3699,6 @@ public class DataFrame extends Matrix
   public static int altIndexModulo(int i, int size) {
     return (size + i) % size;
   }
+
+  
 }

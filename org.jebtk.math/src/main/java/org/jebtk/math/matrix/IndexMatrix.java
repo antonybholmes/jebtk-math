@@ -367,6 +367,12 @@ public abstract class IndexMatrix extends RegularMatrix {
     return getInt(getIndex(row, column));
   }
 
+  /**
+   * Returns the int value of the cell at the given index.
+   * 
+   * @param index   a lookup index into the matrix.
+   * @return
+   */
   public int getInt(int index) {
     return 0;
   }
