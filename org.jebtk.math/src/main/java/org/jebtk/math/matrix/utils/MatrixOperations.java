@@ -338,7 +338,7 @@ public class MatrixOperations {
   /**
    * The Class NormalizeFunction.
    */
-  private static class NormalizeFunction implements CellFunction {
+  private static class MinMaxFunction implements CellFunction {
 
     /** The m min. */
     private double mMin;
@@ -352,7 +352,7 @@ public class MatrixOperations {
      * @param min the min
      * @param max the max
      */
-    public NormalizeFunction(double min, double max) {
+    public MinMaxFunction(double min, double max) {
       mMin = min;
       mRange = max - min;
     }
@@ -1100,11 +1100,11 @@ public class MatrixOperations {
    * @param m the m
    * @return the annotation matrix
    */
-  public static Matrix normalize(final Matrix m) {
+  public static Matrix scale(final Matrix m) {
     double min = min(m);
     double max = max(m);
 
-    return normalize(m, min, max);
+    return scale(m, min, max);
   }
 
   /**
@@ -1113,15 +1113,15 @@ public class MatrixOperations {
    * @param m the m
    * @return the annotation matrix
    */
-  public static DataFrame normalize(final DataFrame m) {
+  public static DataFrame scale(final DataFrame m) {
     double min = min(m);
     double max = max(m);
 
-    return normalize(m, min, max);
+    return scale(m, min, max);
   }
 
-  public static DataFrame normalize(final DataFrame m, MinMax minMax) {
-    return normalize(m, minMax.getMin(), minMax.getMax());
+  public static DataFrame scale(final DataFrame m, MinMax minMax) {
+    return scale(m, minMax.getMin(), minMax.getMax());
   }
 
   /**
@@ -1132,9 +1132,8 @@ public class MatrixOperations {
    * @param max the max
    * @return the annotation matrix
    */
-  public static DataFrame normalize(final DataFrame m, double min, double max) {
-
-    return new DataFrame(m, normalize(m.getMatrix(), min, max));
+  public static DataFrame scale(final DataFrame m, double min, double max) {
+    return new DataFrame(m, scale(m.getMatrix(), min, max));
   }
 
   /**
@@ -1145,8 +1144,8 @@ public class MatrixOperations {
    * @param max the max
    * @return the annotation matrix
    */
-  public static Matrix normalize(final Matrix m, double min, double max) {
-    return m.f(new NormalizeFunction(min, max));
+  public static Matrix scale(final Matrix m, double min, double max) {
+    return m.f(new MinMaxFunction(min, max));
 
   }
 
