@@ -1245,7 +1245,7 @@ public class Statistics {
    * @param max the max
    * @return the list
    */
-  public static List<Indexed<Integer, Double>> outOfRange(List<Double> values,
+  public static List<Indexed<Integer, Double>> outOfRange(double[] values,
       double min,
       double max) {
     List<Indexed<Integer, Double>> indexed = IndexedInt.index(values);

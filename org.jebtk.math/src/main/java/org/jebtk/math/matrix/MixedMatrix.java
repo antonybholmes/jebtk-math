@@ -28,8 +28,8 @@
 package org.jebtk.math.matrix;
 
 import java.util.Arrays;
-import java.util.List;
 
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 
 /**
@@ -481,41 +481,15 @@ public class MixedMatrix extends IndexRowMatrix {
         mRowOffsets[toRow],
         c);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-   */
+  
   @Override
-  public void setValueColumn(int column, List<Double> values) {
-    int r = Math.min(getRows(), values.size());
-
-    int ix = getIndex(0, column);
-
-    for (int i = 0; i < r; ++i) {
-      mData[ix] = values.get(i);
-
-      ix += mDim.mCols;
-    }
+  public void setRow(int row, String[] values) {
+    SysUtils.arraycopy(values, mData, getIndex(row, 0), values.length);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#setTextColumn(int, java.util.List)
-   */
+  
   @Override
-  public void setTextColumn(int column, List<String> values) {
-    int r = Math.min(getRows(), values.size());
-
-    int ix = getIndex(0, column);
-
-    for (int row = 0; row < r; ++row) {
-      mData[ix] = values.get(row);
-
-      ix += mDim.mCols;
-    }
+  public void rowToArray(int row, Object[] ret) {
+    SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 
   /*

@@ -1502,8 +1502,9 @@ public class MatrixOperations {
     List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
     List<Integer> g21 = MatrixGroup.findColumnIndices(m, g2);
 
-    List<Double> tStats = new ArrayList<Double>(m.getRows());
-    List<Double> absTStats = new ArrayList<Double>(m.getRows());
+    double[] tStats = new double[m.getRows()];
+    
+    double[] absTStats = new double[m.getRows()];
 
     for (int i = 0; i < m.getRows(); ++i) {
       List<Double> p1 = new ArrayList<Double>();
@@ -1527,13 +1528,13 @@ public class MatrixOperations {
         p = 1;
       }
 
-      tStats.add(p);
-      absTStats.add(Math.abs(p));
+      tStats[i] = p;
+      absTStats[i] = Math.abs(p);
     }
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setNumRowAnnotations("T-Stat", tStats);
+    ret.setRowAnnotations("T-Stat", tStats);
     // ret.setRowAnnotation("Abs T-Stat", ArrayUtils.toObjects(absTStats));
 
     return ret;
@@ -1551,7 +1552,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_SUM_F, values);
 
-    ret.setNumRowAnnotations("Sum", values);
+    ret.setRowAnnotations("Sum", values);
 
     return ret;
   }
@@ -1568,7 +1569,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MEAN_F, values);
 
-    ret.setNumRowAnnotations("Mean", values);
+    ret.setRowAnnotations("Mean", values);
 
     return ret;
   }
@@ -1585,7 +1586,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MEDIAN_F, values);
 
-    ret.setNumRowAnnotations("Median", values);
+    ret.setRowAnnotations("Median", values);
 
     return ret;
   }
@@ -1596,7 +1597,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MODE_F, values);
 
-    ret.setNumRowAnnotations("Mode", values);
+    ret.setRowAnnotations("Mode", values);
 
     return ret;
   }
@@ -1608,19 +1609,19 @@ public class MatrixOperations {
    * @return the annotation matrix
    */
   public static DataFrame addIQR(DataFrame m) {
-    List<Double> iqrList = new ArrayList<Double>(m.getRows());
+    double[] iqrList = new double[m.getRows()];
 
     for (int i = 0; i < m.getRows(); ++i) {
       double iqr = new Stats(m.rowToDoubleArray(i)).iqr();
 
       // System.err.println("iqr " + iqr);
 
-      iqrList.add(iqr);
+      iqrList[i] = iqr;
     }
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setNumRowAnnotations("IQR", iqrList);
+    ret.setRowAnnotations("IQR", iqrList);
 
     return ret;
   }
@@ -1632,17 +1633,17 @@ public class MatrixOperations {
    * @return the annotation matrix
    */
   public static DataFrame addQuartCoeffDisp(DataFrame m) {
-    List<Double> iqrList = new ArrayList<Double>(m.getRows());
+    double[] iqrList = new double[m.getRows()];
 
     for (int i = 0; i < m.getRows(); ++i) {
       double iqr = new Stats(m.rowToDoubleArray(i)).quartCoeffDisp();
 
-      iqrList.add(iqr);
+      iqrList[i] = iqr;
     }
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setNumRowAnnotations("QuartCoeffDisp", iqrList);
+    ret.setRowAnnotations("QuartCoeffDisp", iqrList);
 
     return ret;
   }
@@ -1655,8 +1656,7 @@ public class MatrixOperations {
    * @return the annotation matrix
    * @throws ParseException the parse exception
    */
-  public static DataFrame collapseMaxTStat(DataFrame m, String rowAnnotation)
-      throws ParseException {
+  public static DataFrame collapseMaxTStat(DataFrame m, String rowAnnotation) {
     return collapse(m, rowAnnotation, "T-Stat");
   }
 
@@ -1668,8 +1668,7 @@ public class MatrixOperations {
    * @return the annotation matrix
    * @throws ParseException the parse exception
    */
-  public static DataFrame collapseMaxIQR(DataFrame m, String rowAnnotation)
-      throws ParseException {
+  public static DataFrame collapseMaxIQR(DataFrame m, String rowAnnotation) {
     return collapse(m, rowAnnotation, "IQR");
   }
 
@@ -1697,7 +1696,7 @@ public class MatrixOperations {
    */
   public static DataFrame collapse(DataFrame m,
       String rowAnnotation,
-      String valuesName) throws ParseException {
+      String valuesName) {
 
     Map<String, Integer> maxRows = new HashMap<String, Integer>();
     Map<String, Double> maxValueMap = new HashMap<String, Double>();
@@ -2034,13 +2033,13 @@ public class MatrixOperations {
    * @param equalVariance the equal variance
    * @return the list
    */
-  public static List<Double> tTest(DataFrame m,
+  public static double[] tTest(DataFrame m,
       MatrixGroup g1,
       MatrixGroup g2,
       boolean equalVariance) {
     Matrix im = m.getMatrix();
 
-    List<Double> pvalues = new ArrayList<Double>(m.getRows());
+    double[] pvalues = new double[m.getRows()];
 
     List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
     List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
@@ -2073,7 +2072,7 @@ public class MatrixOperations {
         p = 1; // Double.NaN;
       }
 
-      pvalues.add(p);
+      pvalues[i] = p;
     }
 
     return pvalues;
@@ -2087,10 +2086,10 @@ public class MatrixOperations {
    * @param g2 the g 2
    * @return the list
    */
-  public static List<Double> mannWhitney(DataFrame m,
+  public static double[] mannWhitney(DataFrame m,
       MatrixGroup g1,
       MatrixGroup g2) {
-    List<Double> pvalues = new ArrayList<Double>(m.getRows());
+    double[] pvalues = new double[m.getRows()];
 
     List<Integer> g11 = MatrixGroup.findColumnIndices(m, g1);
     List<Integer> g22 = MatrixGroup.findColumnIndices(m, g2);
@@ -2117,7 +2116,7 @@ public class MatrixOperations {
         p = 1; // Double.NaN;
       }
 
-      pvalues.add(p);
+      pvalues[i] = p;
     }
 
     return pvalues;

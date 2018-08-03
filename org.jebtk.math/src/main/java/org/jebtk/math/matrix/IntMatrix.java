@@ -292,6 +292,12 @@ public class IntMatrix extends IndexRowMatrix {
     mData[index] = (int) v;
   }
 
+  
+  @Override
+  public void setRow(int row, int[] values) {
+    SysUtils.arraycopy(values, mData, getIndex(row, 0), values.length);
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -315,22 +321,6 @@ public class IntMatrix extends IndexRowMatrix {
   @Override
   public String getText(int index) {
     return Integer.toString(mData[index]);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-   */
-  @Override
-  public void setValueColumn(int column, List<Double> values) {
-    int ix = column;
-
-    for (int i = 0; i < mDim.mRows; ++i) {
-      mData[ix] = values.get(i).intValue();
-
-      ix += mDim.mCols;
-    }
   }
 
   @Override

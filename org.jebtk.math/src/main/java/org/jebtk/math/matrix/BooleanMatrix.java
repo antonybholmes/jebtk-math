@@ -28,7 +28,6 @@
 package org.jebtk.math.matrix;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.jebtk.core.sys.SysUtils;
 
@@ -37,7 +36,7 @@ import org.jebtk.core.sys.SysUtils;
  *
  * @author Antony Holmes Holmes
  */
-public class BooleanMatrix extends IndexMatrix {
+public class BooleanMatrix extends IndexRowMatrix {
 
   /**
    * The constant serialVersionUID.
@@ -47,13 +46,8 @@ public class BooleanMatrix extends IndexMatrix {
   /**
    * The member data.
    */
-  public final int[] mData;
+  public final boolean[] mData;
   
-  /**
-   * The offsets in the array where each new row begins.
-   */
-  public final int[] mRowOffsets;
-
   /**
    * Instantiates a new numerical matrix.
    *
@@ -63,21 +57,8 @@ public class BooleanMatrix extends IndexMatrix {
   public BooleanMatrix(int rows, int columns) {
     super(rows, columns);
 
-    mRowOffsets = new int[mDim.mRows];
-    
     // We use a 1d array to store a 2d matrix for speed.
-    mData = new int[mSize / 8 + 1];
-  }
-  
-  private void createOffsets() {
-    // Cache the offsets to improve lookup times
-
-    mRowOffsets[0] = 0;
-
-    for (int i = 1; i < mDim.mRows; ++i) {
-      // Use only additions
-      mRowOffsets[i] = mRowOffsets[i - 1] + mDim.mCols; // i * columns;
-    }
+    mData = new boolean[mSize];
   }
 
   /**
@@ -203,25 +184,15 @@ public class BooleanMatrix extends IndexMatrix {
 
   @Override
   public int getInt(int index) {
-    return getBit(index);
+    if (getBool(index)) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
   
   public boolean getBool(int index) {
-    return getBit(index) == 1;
-  }
-  
-  /**
-   * Returns the 1 bit value representing a boolean in the matrix.
-   * 
-   * @param index
-   * @return
-   */
-  private int getBit(int index) {
-    int bin = index / 8;
-    
-    int shift = 7 - (index % 8);
-    
-    return (mData[bin] >> shift) & 1;
+    return mData[index];
   }
 
   /*
@@ -243,56 +214,13 @@ public class BooleanMatrix extends IndexMatrix {
   }
 
   @Override
-  public void update(long v) {
-    update((int) v);
-  }
-
-  @Override
-  public void update(int v) {
+  public void update(boolean v) {
     Arrays.fill(mData, v);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.IndexMatrix#update(int, double)
-   */
   @Override
-  public void update(int index, double v) {
-    int i;
-
-    if (isValidMatrixNum(v)) {
-      i = (int) v;
-    } else {
-      i = 0;
-    }
-
-    mData[index] = i;
-  }
-
-  @Override
-  public void update(int index, int v) {
+  public void update(int index, boolean v) {
     mData[index] = v;
-  }
-
-  @Override
-  public void update(int index, long v) {
-    mData[index] = (int) v;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
-   */
-  @Override
-  public void rowToIntArray(int row, int[] ret) {
-    SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
-  }
-
-  @Override
-  public void columnToIntArray(int column, int[] ret) {
-    SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
   }
 
   /*
@@ -302,62 +230,12 @@ public class BooleanMatrix extends IndexMatrix {
    */
   @Override
   public String getText(int index) {
-    return Integer.toString(mData[index]);
+    return Boolean.toString(mData[index]);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-   */
+  
   @Override
-  public void setValueColumn(int column, List<Double> values) {
-    int ix = column;
-
-    for (int i = 0; i < mDim.mRows; ++i) {
-      mData[ix] = values.get(i).intValue();
-
-      ix += mDim.mCols;
-    }
-  }
-
-  @Override
-  public void setColumn(int column, double[] values) {
-    int ix = column;
-
-    for (int i = 0; i < mDim.mRows; ++i) {
-      mData[ix] = (int) values[i];
-
-      ix += mDim.mCols;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.Matrix#copyColumn(org.abh.common.math.matrix.
-   * DoubleMatrix, int, int)
-   */
-  @Override
-  public void copyColumn(final DoubleMatrix from, int column, int toColumn) {
-    // if (from.getRowCount() == 0 || getRowCount() == 0) {
-    // return;
-    // }
-
-    int i1 = from.getIndex(0, column);
-    int i2 = getIndex(0, toColumn);
-
-    int r = Math.min(from.getRows(), getRows());
-
-    for (int i = 0; i < r; ++i) {
-      mData[i2] = (int) from.mData[i1];
-
-      i1 += from.mDim.mCols;
-      i2 += mDim.mCols;
-    }
-
-    fireMatrixChanged();
+  public void setRow(int row, boolean[] values) {
+    SysUtils.arraycopy(values, mData, getIndex(row, 0), values.length);
   }
 
   /**
@@ -412,7 +290,7 @@ public class BooleanMatrix extends IndexMatrix {
     int offset = mRowOffsets[index];
 
     for (int i = 0; i < mDim.mCols; ++i) {
-      mData[offset] = (int) f.f(i, 0, mData[offset]);
+      mData[offset] = f.f(i, 0, getInt(offset)) > 0 ? true : false;
 
       ++offset;
     }
@@ -425,92 +303,12 @@ public class BooleanMatrix extends IndexMatrix {
     int offset = index;
 
     for (int i = 0; i < mDim.mCols; ++i) {
-      mData[offset] = (int) f.f(i, 0, mData[offset]);
+      mData[offset] = f.f(i, 0, getInt(offset)) > 0 ? true : false;
 
       offset += mDim.mCols;
     }
 
     fireMatrixChanged();
-  }
-
-  @Override
-  public double stat(MatrixStatFunction f) {
-    f.init();
-
-    for (int i = 0; i < mData.length; ++i) {
-      f.f(i, 0, mData[i]);
-    }
-
-    return f.getStat();
-  }
-
-  @Override
-  public double rowStat(MatrixStatFunction f, int index) {
-    f.init();
-
-    int offset = mRowOffsets[index];
-
-    for (int i = 0; i < mDim.mCols; ++i) {
-      f.f(i, 0, mData[offset]);
-
-      ++offset;
-    }
-
-    return f.getStat();
-  }
-
-  @Override
-  public double colStat(MatrixStatFunction f, int index) {
-    int offset = index;
-
-    for (int i = 0; i < mDim.mCols; ++i) {
-      f.f(i, 0, mData[offset]);
-
-      offset += mDim.mCols;
-    }
-
-    return f.getStat();
-  }
-
-  @Override
-  public Matrix multiply(final Matrix m) {
-    if (m instanceof BooleanMatrix) {
-      return multiply(this, (BooleanMatrix) m);
-    } else {
-      return super.multiply(m);
-    }
-  }
-
-  public static Matrix multiply(final BooleanMatrix m1, final BooleanMatrix m2) {
-    BooleanMatrix ret = ofSameType(m1);
-
-    int of1 = 0;
-
-    int r = m1.mDim.mRows;
-    int c = m1.mDim.mCols;
-
-    for (int i = 0; i < r; ++i) {
-      int ix = of1;
-
-      for (int j = 0; i < c; ++j) {
-        int ix1 = of1;
-
-        int ix2 = j;
-
-        for (int k = 0; i < c; ++k) {
-          ret.mData[ix] += m1.mData[ix1] * m2.mData[ix2];
-
-          ++ix1;
-          ix2 += c;
-        }
-
-        ++ix;
-      }
-
-      of1 += c;
-    }
-
-    return ret;
   }
 
   /*
@@ -542,11 +340,6 @@ public class BooleanMatrix extends IndexMatrix {
     }
 
     return ret;
-  }
-
-  @Override
-  public void toIntArray(int[] ret) {
-    SysUtils.arraycopy(mData, ret);
   }
 
   //

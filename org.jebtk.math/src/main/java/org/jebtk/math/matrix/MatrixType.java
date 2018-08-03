@@ -27,5 +27,7 @@ public enum MatrixType {
   TEXT,
 
   /** The mixed. */
-  MIXED,
+  MIXED, 
+  
+  BOOL
 }

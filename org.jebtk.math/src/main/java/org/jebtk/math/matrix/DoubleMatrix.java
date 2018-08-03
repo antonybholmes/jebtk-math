@@ -585,26 +585,6 @@ public class DoubleMatrix extends IndexRowMatrix {
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-   */
-  @Override
-  public void setValueColumn(int column, List<Double> values) {
-    int r = Math.min(mDim.mRows, values.size());
-
-    int ix = column;
-
-    for (int i = 0; i < r; ++i) {
-      mData[ix] = values.get(i);
-
-      ix += mDim.mCols;
-    }
-
-    fireMatrixChanged();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.jebtk.math.matrix.Matrix#setColumn(int, double[])
    */
   @Override
@@ -1307,7 +1287,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @param controlGroup the g2
    * @return the list
    */
-  public static List<Double> diffGroupZScores(DataFrame matrix,
+  public static double[] diffGroupZScores(DataFrame matrix,
       MatrixGroup phenGroup,
       MatrixGroup controlGroup) {
     List<Integer> phenIndices = MatrixGroup.findColumnIndices(matrix,
@@ -1318,7 +1298,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 
     Matrix im = matrix.getMatrix();
 
-    List<Double> zscores = new ArrayList<Double>(im.getRows());
+    double[] zscores = new double[im.getRows()];
 
     for (int i = 0; i < im.getRows(); ++i) {
       List<Double> d1 = new ArrayList<Double>();
@@ -1349,7 +1329,7 @@ public class DoubleMatrix extends IndexRowMatrix {
         zscore = 0;
       }
 
-      zscores.add(zscore);
+      zscores[i] = zscore;
     }
 
     return zscores;
@@ -1363,7 +1343,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @param g2 the g2
    * @return the list
    */
-  public static List<Double> logFoldChange(DataFrame matrix,
+  public static double[] logFoldChange(DataFrame matrix,
       MatrixGroup g1,
       MatrixGroup g2) {
     List<Integer> g11 = MatrixGroup.findColumnIndices(matrix, g1);
@@ -1371,7 +1351,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 
     Matrix im = matrix.getMatrix();
 
-    List<Double> foldChanges = new ArrayList<Double>(im.getRows());
+    double[] foldChanges = new double[im.getRows()];
 
     for (int i = 0; i < im.getRows(); ++i) {
       List<Double> d1 = new ArrayList<Double>(g11.size());
@@ -1392,7 +1372,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 
       double foldChange = mean1 - mean2;
 
-      foldChanges.add(foldChange);
+      foldChanges[i] = foldChange;
     }
 
     return foldChanges;
@@ -1406,7 +1386,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @param g2 the g2
    * @return the list
    */
-  public static List<Double> foldChange(DataFrame matrix,
+  public static double[] foldChange(DataFrame matrix,
       MatrixGroup g1,
       MatrixGroup g2) {
     List<Integer> g11 = MatrixGroup.findColumnIndices(matrix, g1);
@@ -1414,7 +1394,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 
     Matrix im = matrix.getMatrix();
 
-    List<Double> foldChanges = new ArrayList<Double>(im.getRows());
+    double[] foldChanges = new double[im.getRows()];
 
     for (int i = 0; i < im.getRows(); ++i) {
       List<Double> d1 = new ArrayList<Double>();
@@ -1448,7 +1428,7 @@ public class DoubleMatrix extends IndexRowMatrix {
         foldChange = 0;
       }
 
-      foldChanges.add(foldChange);
+      foldChanges[i] = foldChange;
     }
 
     return foldChanges;
@@ -1472,12 +1452,12 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @param g the g
    * @return the list
    */
-  public static List<Double> means(DataFrame m, MatrixGroup g) {
+  public static double[] means(DataFrame m, MatrixGroup g) {
     List<Integer> g1 = MatrixGroup.findColumnIndices(m, g);
 
     Matrix im = m.getMatrix();
 
-    List<Double> means = new ArrayList<Double>(im.getRows());
+    double[] means = new double[im.getRows()];
 
     for (int i = 0; i < im.getRows(); ++i) {
       List<Double> values = new ArrayList<Double>(g1.size());
@@ -1488,7 +1468,7 @@ public class DoubleMatrix extends IndexRowMatrix {
 
       double mean = Statistics.mean(values);
 
-      means.add(mean);
+      means[i]= mean;
     }
 
     return means;

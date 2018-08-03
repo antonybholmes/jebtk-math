@@ -108,4 +108,52 @@ public abstract class IndexRowMatrix extends IndexMatrix {
   public int getIndex(int row, int column) {
     return mRowOffsets[row] + column;
   }
+  
+  @Override
+  public void setRow(int row, String[] values) {
+    
+    int index = mRowOffsets[row];
+    
+    for (int i = 0; i < values.length; ++i) {
+      set(index++, values[i]);
+    }
+
+    fireMatrixChanged();
+  }
+  
+  @Override
+  public void setRow(int row, double[] values) {
+    
+    int index = mRowOffsets[row];
+    
+    for (int i = 0; i < values.length; ++i) {
+      set(index++, values[i]);
+    }
+
+    fireMatrixChanged();
+  }
+  
+  @Override
+  public void setRow(int row, int[] values) {
+    
+    int index = mRowOffsets[row];
+    
+    for (int i = 0; i < values.length; ++i) {
+      set(index++, values[i]);
+    }
+
+    fireMatrixChanged();
+  }
+  
+  @Override
+  public void setRow(int row, Object[] values) {
+    
+    int index = mRowOffsets[row];
+    
+    for (int i = 0; i < values.length; ++i) {
+      set(index++, values[i]);
+    }
+
+    fireMatrixChanged();
+  }
 }

@@ -27,7 +27,6 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,7 +36,6 @@ import java.util.Map;
 import org.jebtk.core.collections.CyclicList;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeListeners;
-import org.jebtk.math.matrix.utils.MatrixOperations;
 
 /**
  * Provides annotation for a matrix.
@@ -82,15 +80,15 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
   }
 
   /**
-   * Sets the annotation.
+   * Sets the num annotation.
    *
    * @param name the name
    * @param values the values
    */
-  public void setAnnotation(String name, Collection<? extends Object> values) {
-    autoCreate(name, MatrixType.MIXED);
-
-    MatrixOperations.toRow(values, 0, mAnnotationMap.get(name));
+  public void setAnnotation(String name, double[] values) {
+    autoCreate(name, MatrixType.NUMBER, NumberType.DOUBLE).setRow(0, values);
+    
+    //MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
   }
 
   /**
@@ -99,47 +97,34 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param name the name
    * @param values the values
    */
-  public void setNumAnnotation(String name,
-      Collection<? extends Number> values) {
-    autoCreate(name, MatrixType.NUMBER);
-
-    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  public void setAnnotation(String name, int[] values) {
+    autoCreate(name, MatrixType.NUMBER, NumberType.INT).setRow(0, values);
+    
+    //MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
   }
-
-  /**
-   * Sets the num annotation.
-   *
-   * @param name the name
-   * @param values the values
-   */
-  public void setNumAnnotation(String name, double[] values) {
-    autoCreate(name, MatrixType.NUMBER, NumberType.DOUBLE);
-
-    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  
+  public void setAnnotation(String name, long[] values) {
+    autoCreate(name, MatrixType.NUMBER, NumberType.LONG).setRow(0, values);
+    
+    //MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
   }
-
-  /**
-   * Sets the num annotation.
-   *
-   * @param name the name
-   * @param values the values
-   */
-  public void setNumAnnotation(String name, int[] values) {
-    autoCreate(name, MatrixType.NUMBER, NumberType.INT);
-
-    MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
+  
+  public void setAnnotation(String name, boolean[] values) {
+    autoCreate(name, MatrixType.BOOL).setRow(0, values);
+    
+    //MatrixOperations.numToRow(values, 0, mAnnotationMap.get(name));
   }
-
-  /**
-   * Sets the text annotation.
-   *
-   * @param name the name
-   * @param values the values
-   */
-  public void setTextAnnotation(String name, Collection<String> values) {
-    autoCreate(name, MatrixType.TEXT);
-
-    MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
+  
+  public void setAnnotation(String name, String[] values) {
+    autoCreate(name, MatrixType.TEXT).setRow(0, values);
+    
+    //MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
+  }
+  
+  public void setAnnotation(String name, Object[] values) {
+    autoCreate(name, MatrixType.MIXED).setRow(0, values);
+    
+    //MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
   }
 
   /**
@@ -203,6 +188,9 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
           break;
         }
 
+        break;
+      case BOOL:
+        mAnnotationMap.put(name, new BooleanMatrix(1, mSize));
         break;
       case TEXT:
         mAnnotationMap.put(name, new TextMatrix(1, mSize));

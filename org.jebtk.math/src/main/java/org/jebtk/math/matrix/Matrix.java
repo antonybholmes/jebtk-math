@@ -28,6 +28,7 @@
 package org.jebtk.math.matrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -211,6 +212,30 @@ public abstract class Matrix extends MatrixEventListeners {
 
     fireMatrixChanged();
   }
+  
+  public void set(int row, int column, boolean v) {
+    update(row, column, v);
+
+    fireMatrixChanged();
+  }
+
+  public void update(int row, int column, boolean v) {
+    update(row, column,  v);
+  }
+
+  public void set(boolean v) {
+    update(v);
+
+    fireMatrixChanged();
+  }
+  
+  public void update(boolean value) {
+    for (int i = 0; i < getRows(); ++i) {
+      for (int j = 0; j < getCols(); ++j) {
+        update(i, j, value);
+      }
+    }
+  }
 
   /**
    * Update value.
@@ -294,6 +319,8 @@ public abstract class Matrix extends MatrixEventListeners {
         update(((Long) v).longValue());
       } else if (v instanceof Integer) {
         update(((Integer) v).intValue());
+      } else if (v instanceof Boolean) {
+        update(((Boolean)v).booleanValue());
       } else {
         update(v.toString());
       }
@@ -390,20 +417,6 @@ public abstract class Matrix extends MatrixEventListeners {
     fireMatrixChanged();
   }
 
-  /**
-   * Sets the column.
-   *
-   * @param column the column
-   * @param values the values
-   */
-  public void setColumn(int column, List<? extends Object> values) {
-    for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
-      set(i, column, values.get(i));
-    }
-
-    fireMatrixChanged();
-  }
-
   public void setColumn(int column, Object[] values) {
     for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
       set(i, column, values[i]);
@@ -419,49 +432,29 @@ public abstract class Matrix extends MatrixEventListeners {
 
     fireMatrixChanged();
   }
+  
+  public void setColumn(int column, int[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(i, column, values[i]);
+    }
 
-  /**
-   * Sets the value column.
-   *
-   * @param column the column
-   * @param values the values
-   */
-  public void setValueColumn(int column, List<Double> values) {
-    for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
-      set(i, column, values.get(i));
+    fireMatrixChanged();
+  }
+  
+  public void setColumn(int column, String[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(i, column, values[i]);
     }
 
     fireMatrixChanged();
   }
 
   /**
-   * Sets the text column.
-   *
-   * @param column the column
-   * @param values the values
+   * Set the value of a row.
+   * 
+   * @param row
+   * @param values
    */
-  public void setTextColumn(int column, List<String> values) {
-    for (int i = 0; i < Math.min(getRows(), values.size()); ++i) {
-      set(i, column, values.get(i));
-    }
-
-    fireMatrixChanged();
-  }
-
-  /**
-   * Sets the row.
-   *
-   * @param row the row
-   * @param values the values
-   */
-  public void setRow(int row, List<? extends Object> values) {
-    for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
-      set(row, i, values.get(i));
-    }
-
-    fireMatrixChanged();
-  }
-
   public void setRow(int row, Object[] values) {
     for (int i = 0; i < Math.min(getCols(), values.length); ++i) {
       set(row, i, values[i]);
@@ -477,30 +470,34 @@ public abstract class Matrix extends MatrixEventListeners {
 
     fireMatrixChanged();
   }
-
-  /**
-   * Sets the value row.
-   *
-   * @param row the row
-   * @param values the values
-   */
-  public void setValueRow(int row, List<Double> values) {
-    for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
-      set(row, i, values.get(i));
+  
+  public void setRow(int row, int[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(row, i, values[i]);
     }
 
     fireMatrixChanged();
   }
+  
+  public void setRow(int row, long[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(row, i, values[i]);
+    }
 
-  /**
-   * Sets the text row.
-   *
-   * @param row the row
-   * @param values the values
-   */
-  public void setTextRow(int row, List<String> values) {
-    for (int i = 0; i < Math.min(getCols(), values.size()); ++i) {
-      set(row, i, values.get(i));
+    fireMatrixChanged();
+  }
+  
+  public void setRow(int row, boolean[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(row, i, values[i]);
+    }
+
+    fireMatrixChanged();
+  }
+  
+  public void setRow(int row, String[] values) {
+    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+      set(row, i, values[i]);
     }
 
     fireMatrixChanged();
@@ -737,14 +734,8 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param column the column
    * @return the list
    */
-  public Object[] columnAsList(int column) {
-    Object[] values = new Object[getRows()];
-
-    for (int row = 0; row < getRows(); ++row) {
-      values[row] = get(row, column);
-    }
-
-    return values;
+  public List<Object> columnAsList(int column) {
+    return Arrays.asList(columnToArray(column));
   }
 
   /**
@@ -754,13 +745,7 @@ public abstract class Matrix extends MatrixEventListeners {
    * @return the list
    */
   public List<String> columnAsText(int column) {
-    List<String> values = new ArrayList<String>(getRows());
-
-    for (int row = 0; row < getRows(); ++row) {
-      values.add(getText(row, column));
-    }
-
-    return values;
+    return Arrays.asList(columnToTextArray(column));
   }
 
   /**
@@ -823,6 +808,44 @@ public abstract class Matrix extends MatrixEventListeners {
       ret[row] = v;
     }
   }
+  
+  public String[] columnToTextArray(int column) {
+    String[] ret = new String[getRows()];
+
+    columnToTextArray(column, ret);
+
+    System.err.println("col to text " + ret.length);
+    
+    return ret;
+  }
+  
+  public void columnToTextArray(int column, String[] ret) {
+    int r = getRows();
+
+    for (int row = 0; row < r; ++row) {
+      String v = getText(row, column);
+
+      ret[row] = v;
+    }
+  }
+  
+  public Object[] columnToArray(int column) {
+    Object[] ret = new Object[getRows()];
+
+    columnToArray(column, ret);
+
+    return ret;
+  }
+  
+  public void columnToArray(int column, Object[] ret) {
+    int r = getRows();
+
+    for (int row = 0; row < r; ++row) {
+      Object v = getValue(row, column);
+
+      ret[row] = v;
+    }
+  }
 
   /**
    * Converts a matrix row into a list.
@@ -830,16 +853,8 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param row the row
    * @return the list
    */
-  public Object[] rowAsList(int row) {
-    int n = getCols();
-
-    Object[] ret = new Object[n];
-
-    for (int c = 0; c < n; ++c) {
-      ret[c] = get(row, c);
-    }
-
-    return ret;
+  public List<Object> rowAsList(int row) {
+    return Arrays.asList(rowToArray(row));
   }
 
   /**
@@ -908,6 +923,42 @@ public abstract class Matrix extends MatrixEventListeners {
       data[c] = getLong(row, c);
     }
   }
+  
+  public Object[] rowToArray(int row) {
+    int n = getCols();
+
+    Object[] ret = new Object[n];
+
+    rowToArray(row, ret);
+
+    return ret;
+  }
+  
+  public void rowToArray(int row, Object[] data) {
+    int n = getCols();
+
+    for (int c = 0; c < n; ++c) {
+      data[c] = getValue(row, c);
+    }
+  }
+  
+  public String[] rowToTextArray(int row) {
+    int n = getCols();
+
+    String[] ret = new String[n];
+
+    rowToTextArray(row, ret);
+
+    return ret;
+  }
+  
+  public void rowToTextArray(int row, String[] data) {
+    int n = getCols();
+
+    for (int c = 0; c < n; ++c) {
+      data[c] = getText(row, c);
+    }
+  }
 
   /**
    * Row to string.
@@ -916,13 +967,7 @@ public abstract class Matrix extends MatrixEventListeners {
    * @return the list
    */
   public List<String> rowAsText(int row) {
-    List<String> values = new ArrayList<String>(getCols());
-
-    for (int c = 0; c < getCols(); ++c) {
-      values.add(getText(row, c));
-    }
-
-    return values;
+    return Arrays.asList(rowToTextArray(row));
   }
 
   /**

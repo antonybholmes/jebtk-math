@@ -263,6 +263,16 @@ public class TextMatrix extends IndexRowMatrix {
   public Object get(int index) {
     return getText(index);
   }
+  
+  @Override
+  public void setRow(int row, String[] values) {
+    SysUtils.arraycopy(values, mData, getIndex(row, 0), values.length);
+  }
+  
+  @Override
+  public void rowToTextArray(int row, String[] ret) {
+    SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
+  }
 
   /*
    * (non-Javadoc)
@@ -336,29 +346,10 @@ public class TextMatrix extends IndexRowMatrix {
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.Matrix#setTextColumn(int, java.util.List)
-   */
-  @Override
-  public void setTextColumn(int column, List<String> values) {
-    int r = Math.min(getRows(), values.size());
-
-    int ix = getIndex(0, column);
-
-    for (int i = 0; i < r; ++i) {
-      mData[ix] = values.get(i);
-
-      ix += mDim.mCols;
-    }
-
-    fireMatrixChanged();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.abh.common.math.matrix.IndexMatrix#columnAsText(int)
    */
-  @Override
+  /*
+  Override
   public List<String> columnAsText(int column) {
     int r = getRows();
 
@@ -373,6 +364,20 @@ public class TextMatrix extends IndexRowMatrix {
     }
 
     return values;
+  }
+  */
+  
+  public void columnToTextArray(int column, String[] ret) {
+    int rows = getRows();
+    int cols = getCols();
+    
+    int offset = column;
+    
+    for (int r = 0; r < rows; ++r) {
+      ret[r] = mData[offset];
+      
+      offset += cols;
+    }
   }
 
   /*

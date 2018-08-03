@@ -337,6 +337,16 @@ public class DataFrame extends Matrix
   }
   
   @Override
+  public void setRow(int row, int[] values) {
+    getMatrix().setRow(row, values);
+  }
+  
+  @Override
+  public void setRow(int row, String[] values) {
+    getMatrix().setRow(row, values);
+  }
+  
+  @Override
   public void setRow(int row, Object[] values) {
     getMatrix().setRow(row, values);
   }
@@ -1197,22 +1207,10 @@ public class DataFrame extends Matrix
    * 
    * @see
    * org.abh.common.math.matrix.DataFrame#setNumRowAnnotations(java.lang.String,
-   * java.util.Collection)
-   */
-  public void setNumRowAnnotations(String name,
-      Collection<? extends Number> values) {
-    mRowAnnotation.setNumAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumRowAnnotations(java.lang.String,
    * double[])
    */
-  public void setNumRowAnnotations(String name, double[] values) {
-    mRowAnnotation.setNumAnnotation(name, values);
+  public void setRowAnnotations(String name, double[] values) {
+    mRowAnnotation.setAnnotation(name, values);
   }
 
   /*
@@ -1222,18 +1220,24 @@ public class DataFrame extends Matrix
    * org.abh.common.math.matrix.DataFrame#setNumRowAnnotations(java.lang.String,
    * int[])
    */
-  public void setNumRowAnnotations(String name, int[] values) {
-    mRowAnnotation.setNumAnnotation(name, values);
+  public void setRowAnnotations(String name, int[] values) {
+    mRowAnnotation.setAnnotation(name, values);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#setTextRowAnnotations(java.lang.
-   * String, java.util.Collection)
-   */
-  public void setTextRowAnnotations(String name, Collection<String> values) {
-    mRowAnnotation.setTextAnnotation(name, values);
+  
+  public void setRowAnnotations(String name, boolean[] values) {
+    mRowAnnotation.setAnnotation(name, values);
+  }
+  
+  public void setRowAnnotations(String name, long[] values) {
+    mRowAnnotation.setAnnotation(name, values);
+  }
+  
+  public void setRowAnnotations(String name, String[] values) {
+    mRowAnnotation.setAnnotation(name, values);
+  }
+  
+  public void setRowAnnotations(String name, Object[] values) {
+    mRowAnnotation.setAnnotation(name, values);
   }
 
   /*
@@ -1326,22 +1330,10 @@ public class DataFrame extends Matrix
    * 
    * @see
    * org.abh.common.math.matrix.DataFrame#setNumColumnAnnotations(java.lang.
-   * String, java.util.Collection)
-   */
-  public void setNumColumnAnnotations(String name,
-      Collection<? extends Number> values) {
-    mColumnAnnotation.setNumAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumColumnAnnotations(java.lang.
    * String, double[])
    */
-  public void setNumColumnAnnotations(String name, double[] values) {
-    mColumnAnnotation.setNumAnnotation(name, values);
+  public void setColumnAnnotations(String name, double[] values) {
+    mColumnAnnotation.setAnnotation(name, values);
   }
 
   /*
@@ -1351,19 +1343,16 @@ public class DataFrame extends Matrix
    * org.abh.common.math.matrix.DataFrame#setNumColumnAnnotations(java.lang.
    * String, int[])
    */
-  public void setNumColumnAnnotations(String name, int[] values) {
-    mColumnAnnotation.setNumAnnotation(name, values);
+  public void setColumnAnnotations(String name, int[] values) {
+    mColumnAnnotation.setAnnotation(name, values);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setTextColumnAnnotations(java.lang.
-   * String, java.util.Collection)
-   */
-  public void setTextColumnAnnotations(String name, Collection<String> values) {
-    mColumnAnnotation.setTextAnnotation(name, values);
+  
+  public void setColumnAnnotations(String name, String[] values) {
+    mColumnAnnotation.setAnnotation(name, values);
+  }
+  
+  public void setColumnAnnotations(String name, Object[] values) {
+    mColumnAnnotation.setAnnotation(name, values);
   }
 
   /*
@@ -1402,22 +1391,6 @@ public class DataFrame extends Matrix
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.DataFrame#columnAsList(int)
-   */
-  @Override
-  public Object[] columnAsList(int column) {
-    if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowAsList(0);
-    } else {
-      return getMatrix().columnAsList(column);
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.abh.common.math.matrix.DataFrame#columnAsDouble(int)
    */
   @Override
@@ -1430,36 +1403,15 @@ public class DataFrame extends Matrix
       return getMatrix().columnToDoubleArray(column);
     }
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#columnAsText(int)
-   */
+  
   @Override
-  public List<String> columnAsText(int column) {
+  public String[] columnToTextArray(int column) {
     if (column < 0) {
       return getRowAnnotations(
           getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowAsText(0);
+              .rowToTextArray(0);
     } else {
-      return getMatrix().columnAsText(column);
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#rowAsList(int)
-   */
-  @Override
-  public Object[] rowAsList(int column) {
-    if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowAsList(0);
-    } else {
-      return getMatrix().rowAsList(column);
+      return getMatrix().columnToTextArray(column);
     }
   }
 
@@ -1469,13 +1421,35 @@ public class DataFrame extends Matrix
    * @see org.abh.common.math.matrix.DataFrame#rowAsDouble(int)
    */
   @Override
-  public double[] rowToDoubleArray(int column) {
-    if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowToDoubleArray(0);
+  public void rowToDoubleArray(int row, double[] data) {
+    if (row < 0) {
+      getRowAnnotations(
+          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
+              .rowToDoubleArray(0, data);
     } else {
-      return getMatrix().rowToDoubleArray(column);
+      getMatrix().rowToDoubleArray(row, data);
+    }
+  }
+  
+  @Override
+  public void rowToTextArray(int row, String[] data) {
+    if (row < 0) {
+      getRowAnnotations(
+          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
+              .rowToTextArray(0, data);
+    } else {
+      getMatrix().rowToTextArray(row, data);
+    }
+  }
+  
+  @Override
+  public void rowToArray(int row, Object[] data) {
+    if (row < 0) {
+      getRowAnnotations(
+          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
+              .rowToArray(0, data);
+    } else {
+      getMatrix().rowToArray(row, data);
     }
   }
 
@@ -1494,6 +1468,11 @@ public class DataFrame extends Matrix
       return getMatrix().rowAsText(column);
     }
   }
+  
+  
+   
+  
+  
 
   /*
    * (non-Javadoc)
@@ -2405,10 +2384,10 @@ public class DataFrame extends Matrix
       // co >= 0
       // We are copying the row annotation of the from matrix to a
       // column in the to matrix
-      Object[] values = from.getColumnAnnotations(row).rowAsList(0);
+      //Object[] values = from.getColumnAnnotations(row).rowAsList(0);
 
       // to.setRowAnnotation(from.getColumnAnnotationNames().get(0), row, );
-      getMatrix().setRow(toRow, values);
+      getMatrix().setRow(toRow, from.getColumnAnnotations(row).rowToArray(0));
     }
   }
 
@@ -2420,7 +2399,6 @@ public class DataFrame extends Matrix
    * @param toRow the to row
    */
   public void copyRows(final DataFrame from, int row, int toRow) {
-
     copyRows(from, row, toRow, 0);
   }
 
@@ -2531,21 +2509,29 @@ public class DataFrame extends Matrix
       DataFrame to,
       Collection<Integer> rows) {
     for (String name : from.getRowAnnotationNames()) {
-
+  
       switch (from.getRowAnnotations(name).getType()) {
       case NUMBER:
         double[] annotations = from.getRowAnnotations(name).rowToDoubleArray(0);
 
         double[] subAnnotations = CollectionUtils.subList(annotations, rows);
 
-        to.setNumRowAnnotations(name, subAnnotations);
+        to.setRowAnnotations(name, subAnnotations);
+        break;
+      case TEXT:
+        String[] ta = from.getRowAnnotations(name).rowToTextArray(0);
+
+        String[] ts = CollectionUtils.subList(ta, rows);
+
+        to.setRowAnnotations(name, ts);
         break;
       default:
-        List<String> l = from.getRowAnnotations(name).rowAsText(0);
+        // Mixed
+        Object[] l = from.getRowAnnotations(name).rowToArray(0);
 
-        List<String> ls = CollectionUtils.subList(l, rows);
+        Object[] ls = CollectionUtils.subList(l, rows);
 
-        to.setTextRowAnnotations(name, ls);
+        to.setRowAnnotations(name, ls);
         break;
       }
 
@@ -2572,22 +2558,29 @@ public class DataFrame extends Matrix
       final DataFrame from,
       DataFrame to,
       List<Indexed<Integer, V>> rows) {
+    
     for (String name : from.getRowAnnotationNames()) {
       switch (from.getRowAnnotations(name).getType()) {
       case NUMBER:
-        double[] annotations = from.getRowAnnotations(name).rowToDoubleArray(0);
+        double[] l = from.getRowAnnotations(name).rowToDoubleArray(0);
 
-        double[] subAnnotations = CollectionUtils.subListIndexed(annotations,
-            rows);
+        double[] ls = CollectionUtils.subListIndexed(l,rows);
 
-        to.setNumRowAnnotations(name, subAnnotations);
+        to.setRowAnnotations(name, ls);
+        break;
+      case TEXT:
+        String[] t = from.getRowAnnotations(name).rowToTextArray(0);
+
+        String[] ts = CollectionUtils.subListIndexed(t, rows);
+
+        to.setRowAnnotations(name, ts);
         break;
       default:
-        List<String> l = from.getRowAnnotations(name).rowAsText(0);
+        Object[] o = from.getRowAnnotations(name).rowToArray(0);
 
-        List<String> ls = CollectionUtils.subListIndexed(l, rows);
+        Object[] os = CollectionUtils.subListIndexed(o, rows);
 
-        to.setTextRowAnnotations(name, ls);
+        to.setRowAnnotations(name, os);
         break;
       }
 
@@ -2646,7 +2639,7 @@ public class DataFrame extends Matrix
       // co >= 0
       // We are copying the row annotation of the from matrix to a
       // column in the to matrix
-      Object[] values = from.getRowAnnotations(column).rowAsList(0);
+      Object[] values = from.getRowAnnotations(column).rowToArray(0);
 
       setColumnName(toColumn, from.getRowAnnotationName(column));
       setColumn(toColumn, values);
@@ -2705,19 +2698,26 @@ public class DataFrame extends Matrix
 
       switch (from.getColumnAnnotations(name).getType()) {
       case NUMBER:
-        double[] annotations = from.getColumnAnnotations(name)
+        double[] n = from.getColumnAnnotations(name)
             .rowToDoubleArray(0);
 
-        double[] subAnnotations = CollectionUtils.subList(annotations, columns);
+        double[] ns = CollectionUtils.subList(n, columns);
 
-        to.setNumColumnAnnotations(name, subAnnotations);
+        to.setColumnAnnotations(name, ns);
+        break;
+      case TEXT:
+        String[] t = from.getColumnAnnotations(name).rowToTextArray(0);
+
+        String[] ts = CollectionUtils.subList(t, columns);
+
+        to.setColumnAnnotations(name, ts);
         break;
       default:
-        List<String> l = from.getColumnAnnotations(name).rowAsText(0);
+        Object[] o = from.getColumnAnnotations(name).rowToArray(0);
 
-        List<String> ls = CollectionUtils.subList(l, columns);
+        Object[] os = CollectionUtils.subList(o, columns);
 
-        to.setTextColumnAnnotations(name, ls);
+        to.setColumnAnnotations(name, os);
         break;
       }
 
@@ -2739,7 +2739,7 @@ public class DataFrame extends Matrix
       DataFrame to,
       int toStart) {
     for (String name : from.getColumnAnnotationNames()) {
-      Object[] annotations = from.getColumnAnnotations(name).rowAsList(0);
+      Object[] annotations = from.getColumnAnnotations(name).rowToArray(0);
 
       Object[] subAnnotations = CollectionUtils
           .subList(annotations, fromStart, fromEnd - fromStart + 1);
@@ -2763,7 +2763,7 @@ public class DataFrame extends Matrix
       DataFrame to,
       int toStart) {
     for (String name : from.getColumnAnnotationNames()) {
-      Object[] annotations = from.getColumnAnnotations(name).rowAsList(0);
+      Object[] annotations = from.getColumnAnnotations(name).rowToArray(0);
 
       int s = toStart;
 
@@ -2813,14 +2813,21 @@ public class DataFrame extends Matrix
         double[] subAnnotations = CollectionUtils.subListIndexed(annotations,
             columns);
 
-        to.setNumColumnAnnotations(name, subAnnotations);
+        to.setColumnAnnotations(name, subAnnotations);
+        break;
+      case TEXT:
+        double[] t = from.getColumnAnnotations(name).rowToDoubleArray(0);
+
+        double[] ts = CollectionUtils.subListIndexed(t, columns);
+
+        to.setColumnAnnotations(name, ts);
         break;
       default:
-        List<String> l = from.getColumnAnnotations(name).rowAsText(0);
+        Object[] o = from.getColumnAnnotations(name).rowToArray(0);
 
-        List<String> ls = CollectionUtils.subListIndexed(l, columns);
+        Object[] os = CollectionUtils.subListIndexed(o, columns);
 
-        to.setTextColumnAnnotations(name, ls);
+        to.setColumnAnnotations(name, os);
         break;
       }
     }

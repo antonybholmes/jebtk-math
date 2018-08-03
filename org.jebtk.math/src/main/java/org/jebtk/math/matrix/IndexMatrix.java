@@ -158,6 +158,15 @@ public abstract class IndexMatrix extends RegularMatrix {
   public void update(int row, int column, int v) {
     update(getIndex(row, column), v);
   }
+  
+  public void update(int index, boolean v) {
+    // Do nothing
+  }
+
+  @Override
+  public void update(int row, int column, boolean v) {
+    update(getIndex(row, column), v);
+  }
 
   /**
    * Update.
@@ -494,52 +503,6 @@ public abstract class IndexMatrix extends RegularMatrix {
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.Matrix#setColumn(int, java.util.List)
-   */
-  @Override
-  public void setColumn(int column, List<? extends Object> values) {
-    int r = Math.min(getRows(), values.size());
-
-    int ix = getIndex(0, column);
-
-    int cols = getCols();
-
-    for (int i = 0; i < r; ++i) {
-      set(ix, values.get(i));
-
-      ix += cols;
-    }
-
-    fireMatrixChanged();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#columnAsList(int)
-   */
-  @Override
-  public Object[] columnAsList(int column) {
-    int r = getRows();
-
-    Object[] values = new Object[r];
-
-    int i1 = getIndex(0, column);
-
-    int cols = getCols();
-
-    for (int row = 0; row < r; ++row) {
-      values[row] = get(i1);
-
-      i1 += cols;
-    }
-
-    return values;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.abh.common.math.matrix.Matrix#columnAsDouble(int)
    */
   @Override
@@ -559,10 +522,6 @@ public abstract class IndexMatrix extends RegularMatrix {
   }
 
   /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#columnAsText(int)
-   */
   @Override
   public List<String> columnAsText(int column) {
     int r = getRows();
@@ -581,26 +540,7 @@ public abstract class IndexMatrix extends RegularMatrix {
 
     return values;
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#rowAsList(int)
-   */
-  @Override
-  public Object[] rowAsList(int row) {
-    int r = getCols();
-
-    Object[] values = new Object[r];
-
-    int i1 = getIndex(row, 0);
-
-    for (int col = 0; col < r; ++col) {
-      values[col] = get(i1++);
-    }
-
-    return values;
-  }
+  */
 
   /*
    * (non-Javadoc)

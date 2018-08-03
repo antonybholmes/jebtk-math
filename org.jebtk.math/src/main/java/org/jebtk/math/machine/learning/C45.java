@@ -22,6 +22,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.jebtk.core.DblIdx;
@@ -222,8 +223,8 @@ public class C45 {
 
     double entropy = 0;
 
-    for (String x : countMap) {
-      double px = countMap.get(x) / n;
+    for (Entry<String, Integer> x : countMap) {
+      double px = x.getValue() / n;
 
       entropy -= px * Mathematics.log2(px);
     }

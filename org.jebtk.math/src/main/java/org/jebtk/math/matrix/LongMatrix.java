@@ -300,25 +300,7 @@ public class LongMatrix extends IndexRowMatrix {
   public String getText(int index) {
     return Long.toString(mData[index]);
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#setValueColumn(int, java.util.List)
-   */
-  @Override
-  public void setValueColumn(int column, final List<Double> values) {
-    int r = Math.min(getRows(), values.size());
-
-    int ix = getIndex(0, column);
-
-    for (int i = 0; i < r; ++i) {
-      mData[ix] = values.get(i).intValue();
-
-      ix += mDim.mCols;
-    }
-  }
-
+  
   /*
    * (non-Javadoc)
    * 
