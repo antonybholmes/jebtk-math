@@ -3441,10 +3441,10 @@ public class DataFrame extends Matrix
    * @throws IOException Signals that an I/O exception has occurred.
    */
   public static DataFrame parseTxtMatrix(Path file,
-      boolean hasHeader,
+      int headers,
       int rowAnnotations) throws IOException {
     return parseTxtMatrix(file,
-        hasHeader,
+        headers,
         TextUtils.EMPTY_LIST,
         rowAnnotations,
         TextUtils.TAB_DELIMITER);
@@ -3462,12 +3462,12 @@ public class DataFrame extends Matrix
    * @throws IOException Signals that an I/O exception has occurred.
    */
   public static DataFrame parseTxtMatrix(Path file,
-      boolean hasHeader,
+      int headers,
       List<String> skipMatches,
       int rowAnnotations,
       String delimiter) throws IOException {
-    if (hasHeader) {
-      return new MixedMatrixParser(hasHeader, skipMatches, rowAnnotations,
+    if (headers > 0) {
+      return new MixedMatrixParser(headers, skipMatches, rowAnnotations,
           delimiter).parse(file);
     } else {
       return parseDynamicMatrix(file, skipMatches, rowAnnotations, delimiter);
@@ -3485,11 +3485,11 @@ public class DataFrame extends Matrix
    * @throws IOException Signals that an I/O exception has occurred.
    */
   public static DataFrame parseCsvMatrix(Path file,
-      boolean hasHeader,
+      int headers,
       List<String> skipMatches,
       int rowAnnotations) throws IOException {
-    if (hasHeader) {
-      return new CsvMatrixParser(hasHeader, rowAnnotations).parse(file);
+    if (headers > 0) {
+      return new CsvMatrixParser(true, rowAnnotations).parse(file);
     } else {
       return parseDynamicMatrix(file,
           skipMatches,

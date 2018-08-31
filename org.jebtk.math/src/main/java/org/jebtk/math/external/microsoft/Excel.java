@@ -106,20 +106,20 @@ public class Excel {
    * @throws IOException Signals that an I/O exception has occurred.
    */
   public static DataFrame convertToMatrix(Path file,
-      boolean hasHeader,
+      int headers,
       List<String> skipMatches,
       int rowAnnotations,
       String delimiter) throws InvalidFormatException, IOException {
     if (ExcelPathUtils.ext().xlsx().test(file)) {
-      return convertXlsxToMatrix(file, hasHeader, rowAnnotations);
+      return convertXlsxToMatrix(file, headers > 0, rowAnnotations);
     } else if (ExcelPathUtils.ext().xls().test(file)) {
-      return convertXlsToMatrix(file, hasHeader, rowAnnotations);
+      return convertXlsToMatrix(file, headers > 0, rowAnnotations);
     } else if (PathUtils.ext().csv().test(file)) {
       return DataFrame
-          .parseCsvMatrix(file, hasHeader, skipMatches, rowAnnotations);
+          .parseCsvMatrix(file, headers, skipMatches, rowAnnotations);
     } else {
       return DataFrame.parseTxtMatrix(file,
-          hasHeader,
+          headers,
           skipMatches,
           rowAnnotations,
           delimiter);

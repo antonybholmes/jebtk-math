@@ -38,9 +38,9 @@ import org.jebtk.core.text.TextUtils;
  */
 public class DoubleMatrixParser extends MixedMatrixParser {
 
-  public DoubleMatrixParser(boolean hasHeader, int rowAnnotations,
+  public DoubleMatrixParser(int headers, int rowAnnotations,
       String delimiter) {
-    super(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+    super(headers, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
   }
 
   /**
@@ -51,9 +51,9 @@ public class DoubleMatrixParser extends MixedMatrixParser {
    * @param rowAnnotations the row annotations
    * @param delimiter the delimiter
    */
-  public DoubleMatrixParser(boolean hasHeader, Collection<String> skipMatches,
+  public DoubleMatrixParser(int headers, Collection<String> skipMatches,
       int rowAnnotations, String delimiter) {
-    super(hasHeader, skipMatches, rowAnnotations, delimiter);
+    super(headers, skipMatches, rowAnnotations, delimiter);
   }
 
   /*

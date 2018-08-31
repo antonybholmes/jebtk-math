@@ -6,14 +6,14 @@ import org.jebtk.core.text.TextUtils;
 
 public class DoubleColMatrixParser extends MixedMatrixParser {
 
-  public DoubleColMatrixParser(boolean hasHeader, int rowAnnotations,
+  public DoubleColMatrixParser(int headers, int rowAnnotations,
       String delimiter) {
-    this(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+    this(headers, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
   }
 
-  public DoubleColMatrixParser(boolean hasHeader,
+  public DoubleColMatrixParser(int headers,
       Collection<String> skipMatches, int rowAnnotations, String delimiter) {
-    super(hasHeader, skipMatches, rowAnnotations, delimiter);
+    super(headers, skipMatches, rowAnnotations, delimiter);
   }
 
   @Override

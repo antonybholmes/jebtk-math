@@ -37,10 +37,10 @@ import java.util.List;
 public class TextMatrixParser extends MixedMatrixParser {
 
   
-  public TextMatrixParser(boolean hasHeader, 
+  public TextMatrixParser(int headers, 
       int rowAnnotations,
       String delimiter) {
-    super(hasHeader, rowAnnotations, delimiter);
+    super(headers, rowAnnotations, delimiter);
   }
   
   /**
@@ -52,9 +52,9 @@ public class TextMatrixParser extends MixedMatrixParser {
    * @param rowAnnotations the row annotations
    * @param delimiter the delimiter
    */
-  public TextMatrixParser(boolean hasHeader, List<String> skipMatches,
+  public TextMatrixParser(int headers, List<String> skipMatches,
       int rowAnnotations, String delimiter) {
-    super(hasHeader, skipMatches, rowAnnotations, delimiter);
+    super(headers, skipMatches, rowAnnotations, delimiter);
   }
 
   /*

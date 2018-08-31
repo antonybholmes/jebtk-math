@@ -37,6 +37,7 @@ import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.io.FileUtils;
 import org.jebtk.core.io.Io;
 import org.jebtk.core.io.ReaderUtils;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.core.text.TextUtils;
 
@@ -53,11 +54,6 @@ public class MixedMatrixParser implements MatrixParser {
   protected int mRowAnnotations = -1;
 
   /**
-   * The member has header.
-   */
-  protected boolean mHasHeader = false;
-
-  /**
    * The member delimiter.
    */
   protected String mDelimiter = null;
@@ -65,10 +61,12 @@ public class MixedMatrixParser implements MatrixParser {
   /** The m skip matches. */
   private Collection<String> mSkipMatches;
 
-  public MixedMatrixParser(boolean hasHeader, 
+  protected int mHeaders = -1;
+
+  public MixedMatrixParser(int headers, 
       int rowAnnotations,
       String delimiter) {
-    this(hasHeader, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+    this(headers, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
   }
 
   /**
@@ -79,11 +77,11 @@ public class MixedMatrixParser implements MatrixParser {
    * @param rowAnnotations the row annotations
    * @param delimiter the delimiter
    */
-  public MixedMatrixParser(boolean hasHeader, Collection<String> skipMatches,
+  public MixedMatrixParser(int headers, Collection<String> skipMatches,
       int rowAnnotations, String delimiter) {
     // If row annotations >0, you must have a header otherwise the file
     // is garbage
-    mHasHeader = hasHeader || rowAnnotations > 0;
+    mHeaders = headers; //|| rowAnnotations > 0;
     mSkipMatches = skipMatches;
     mRowAnnotations = rowAnnotations;
     mDelimiter = delimiter;
@@ -128,7 +126,8 @@ public class MixedMatrixParser implements MatrixParser {
     // Count rows
     //
 
-    int rows = mHasHeader ? 0 : 1;
+    // We waste one line determining what the headers are so
+    int rows = 1 - mHeaders;
     int columns = -1;
 
     Splitter split = Splitter.on(mDelimiter);
@@ -141,7 +140,7 @@ public class MixedMatrixParser implements MatrixParser {
       line = reader.readLine();
 
       tokens = split.text(line); // ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line));
-                                 // //TextUtils.tabSplit(line);
+      // //TextUtils.tabSplit(line);
 
       columns = tokens.size(); // - mRowAnnotations;
 
@@ -159,11 +158,9 @@ public class MixedMatrixParser implements MatrixParser {
       reader.close();
     }
 
-    matrix = createMatrix(rows, columns - mRowAnnotations); // new
-                                                            // MixedSparseMatrix(rows,
-                                                            // columns); //new
-                                                            // MixedMatrix(rows,
-                                                            // columns);
+    columns -= mRowAnnotations;
+
+    matrix = createMatrix(rows, columns);
 
     reader = FileUtils.newBufferedReader(file);
 
@@ -171,7 +168,10 @@ public class MixedMatrixParser implements MatrixParser {
     List<String> rowAnnotationNames = null;
 
     int row = 0;
-    int offset = 0;
+
+    // Rows/cols are indexed excluding annotation columns, so if for example 
+    // there is one row names set, column 1 will be column 0
+    int offset = -mRowAnnotations;
 
     try {
       if (skipLines > 0) {
@@ -179,31 +179,46 @@ public class MixedMatrixParser implements MatrixParser {
           reader.readLine();
         }
       }
-      
-      if (mHasHeader) {
+
+      if (mHeaders > 0) {
+        
+        // Skip all but last header. Modify this to include all column headers
+        for (int i = 0; i < mHeaders - 1; ++i) {
+          reader.readLine();
+        }
+        
         // add column names
         line = reader.readLine();
         tokens = split.text(TextUtils.removeExcelQuotes(line));
 
         matrix.setColumnNames(CollectionUtils.subList(tokens, mRowAnnotations));
 
-        // annotations = new ArrayList<List<Object>>();
-        rowAnnotationNames = CollectionUtils
-            .subList(tokens, 0, mRowAnnotations);
 
-        offset = -rowAnnotationNames.size();
+        // annotations = new ArrayList<List<Object>>();
+        rowAnnotationNames = CollectionUtils.subList(tokens, 0, mRowAnnotations);
+
+        //offset = -rowAnnotationNames.size();
 
         for (String name : rowAnnotationNames) {
           // Cause the annotation to be initialized
           matrix.getRowAnnotations(name);
         }
-
-        // for (int i = 0; i < mRowAnnotations; ++i) {
-        // annotations.add(CollectionUtils.replicate(null, rows));
-        // }
-
-        // ++row;
+      } else {
+        // Create default row annotations named 'Row Annotation 1', 
+        // 'Row Annotation 2' etc if there is no header since without a header
+        // the row labels cannot have names.
+        
+        for (int i = 0; i < mRowAnnotations; ++i) {
+          matrix.getRowAnnotations("Row Annotation " + (i + 1));
+        }
       }
+
+      // for (int i = 0; i < mRowAnnotations; ++i) {
+      // annotations.add(CollectionUtils.replicate(null, rows));
+      // }
+
+      // ++row;
+      //}
 
       while ((line = reader.readLine()) != null) {
         if (Io.isEmptyLine(line)) {
@@ -221,7 +236,7 @@ public class MixedMatrixParser implements MatrixParser {
         // the first token is the column name so ignore it
         // for (int i = mRowAnnotations; i < tokens.size(); ++i) {
         for (int i = 0; i < tokens.size(); ++i) {
-          // System.err.println("txt parser " + i + " " + offset);
+          //SysUtils.err().println("txt parser", row, i, offset, rows, columns);
 
           set(matrix, row, i + offset, tokens.get(i));
         }

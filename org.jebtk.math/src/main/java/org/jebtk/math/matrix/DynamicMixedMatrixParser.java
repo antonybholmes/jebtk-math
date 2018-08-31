@@ -46,7 +46,7 @@ public class DynamicMixedMatrixParser extends MixedMatrixParser {
    */
   public DynamicMixedMatrixParser(Collection<String> skipMatches,
       int rowAnnotations, String delimiter) {
-    super(false, skipMatches, rowAnnotations, delimiter);
+    super(0, skipMatches, rowAnnotations, delimiter);
   }
 
   /*
