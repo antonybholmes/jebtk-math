@@ -469,6 +469,16 @@ public class Statistics {
 
     return mean / size;
   }
+  
+  public static final double mean(int[] values, int start, int l) {
+    double mean = 0;
+    
+    for (int i = 0; i < l; ++i) {
+      mean += values[start++];
+    }
+
+    return mean / l;
+  }
 
   /**
    * Returns the mode of a list of numbers.
