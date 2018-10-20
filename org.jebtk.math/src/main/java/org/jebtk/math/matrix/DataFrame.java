@@ -1944,6 +1944,8 @@ public class DataFrame extends Matrix
   public static void writeEstMatrixV1(DataFrame matrix, Path file)
       throws IOException {
     BufferedWriter writer = FileUtils.newBufferedWriter(file);
+    
+    Join join = Join.onTab();
 
     try {
       writer.write(EST_VERSION_1);
@@ -1962,7 +1964,7 @@ public class DataFrame extends Matrix
       List<String> groups = new ArrayList<String>();
 
       // for (Group group : matrix.getColumnGroups()) {
-      // groups.add(group.toString());
+      // groups.add(group);
       // }
 
       writer.write(EST_ANNOTATION_GROUPS);
@@ -1971,7 +1973,7 @@ public class DataFrame extends Matrix
 
       if (groups.size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab(groups));
+        writer.write(join.toString(groups));
       }
 
       writer.newLine();
@@ -1989,7 +1991,7 @@ public class DataFrame extends Matrix
 
       if (rowAnnotationNames.size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab(rowAnnotationNames));
+        writer.write(join.toString(rowAnnotationNames));
       }
 
       writer.newLine();
@@ -2004,7 +2006,7 @@ public class DataFrame extends Matrix
 
       if (columnAnnotationNames.size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab(columnAnnotationNames));
+        writer.write(join.toString(columnAnnotationNames));
       }
 
       writer.newLine();
@@ -2016,11 +2018,11 @@ public class DataFrame extends Matrix
       writer.write(TextUtils.TAB_DELIMITER);
 
       if (rowAnnotationNames.size() > 1) {
-        writer.write(Join.onTab(rowAnnotationNames));
+        writer.write(join.toString(rowAnnotationNames));
         writer.write(TextUtils.TAB_DELIMITER);
       }
 
-      writer.write(Join.onTab(matrix.getColumnNames()));
+      writer.write(join.toString(matrix.getColumnNames()));
       writer.newLine();
 
       for (String name : columnAnnotationNames) {
@@ -2028,7 +2030,7 @@ public class DataFrame extends Matrix
         writer.write(TextUtils.repeat(TextUtils.TAB_DELIMITER,
             rowAnnotationNames.size() + 1));
 
-        writer.write(Join.onTab(matrix.getColumnAnnotationText(name)));
+        writer.write(join.toString(matrix.getColumnAnnotationText(name)));
         writer.newLine();
       }
 
@@ -2063,6 +2065,8 @@ public class DataFrame extends Matrix
       throws IOException {
     BufferedWriter writer = FileUtils.newBufferedWriter(file);
 
+    Join join = Join.onTab();
+    
     try {
       writer.write(EST_VERSION_2);
       writer.newLine();
@@ -2080,7 +2084,7 @@ public class DataFrame extends Matrix
       List<String> groups = new ArrayList<String>();
 
       // for (Group group : matrix.getColumnGroups()) {
-      // groups.add(group.toString());
+      // groups.add(group);
       // }
 
       writer.write(EST_ANNOTATION_GROUPS);
@@ -2089,7 +2093,7 @@ public class DataFrame extends Matrix
 
       if (groups.size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab(groups));
+        writer.write(join.toString(groups));
       }
 
       writer.newLine();
@@ -2105,7 +2109,7 @@ public class DataFrame extends Matrix
 
       if (matrix.getRowAnnotationNames().size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab(matrix.getRowAnnotationNames()));
+        writer.write(join.toString(matrix.getRowAnnotationNames()));
       }
 
       writer.newLine();
@@ -2115,8 +2119,7 @@ public class DataFrame extends Matrix
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(name);
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(
-            Join.onTab().values(matrix.getRowAnnotationText(name)).toString());
+        writer.write(join.toString(matrix.getRowAnnotationText(name)));
         writer.newLine();
       }
 
@@ -2132,7 +2135,7 @@ public class DataFrame extends Matrix
       if (matrix.getColumnAnnotationNames().size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(
-            Join.onTab().values(matrix.getColumnAnnotationNames()).toString());
+            join.toString(matrix.getColumnAnnotationNames()));
       }
 
       writer.newLine();
@@ -2142,8 +2145,7 @@ public class DataFrame extends Matrix
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(name);
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(Join.onTab().values(matrix.getColumnAnnotationText(name))
-            .toString());
+        writer.write(join.toString(matrix.getColumnAnnotationText(name)));
         writer.newLine();
       }
 
@@ -2182,12 +2184,14 @@ public class DataFrame extends Matrix
       throws IOException {
     BufferedWriter writer = FileUtils.newBufferedWriter(file);
 
+    Join join = Join.onTab();
+    
     try {
       boolean hasHeader = false;
 
       if (matrix.getRowAnnotationNames() != null
           && matrix.getRowAnnotationNames().size() > 0) {
-        writer.write(Join.onTab(matrix.getRowAnnotationNames()));
+        writer.write(join.toString(matrix.getRowAnnotationNames()));
 
         writer.write(TextUtils.TAB_DELIMITER);
 
@@ -2196,7 +2200,7 @@ public class DataFrame extends Matrix
 
       if (matrix.getColumnNames() != null
           && matrix.getColumnNames().size() > 0) {
-        writer.write(Join.onTab(matrix.getColumnNames()));
+        writer.write(join.toString(matrix.getColumnNames()));
 
         hasHeader = true;
       } else {
