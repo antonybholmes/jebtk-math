@@ -27,6 +27,8 @@
  */
 package org.jebtk.math.matrix;
 
+import org.jebtk.core.text.TextUtils;
+
 /**
  * Matrix that can be dynamically resized to match maximum row/column. This
  * matrix uses lazy instantiation so cells are only created as they are
@@ -38,104 +40,69 @@ package org.jebtk.math.matrix;
  * @author Antony Holmes Holmes
  * @param <T> the generic type
  */
-public abstract class ResizableMatrix extends ObjectMatrix {
+public abstract class ObjectMatrix extends Matrix {
 
   /**
    * The constant serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
 
-  /**
-   * The member cells.
-   */
-  protected int mSize = 0;
-
-  /** The m rows. */
-  protected MatrixDim mDim = MatrixDim.DIM_ZERO;
-
-  /**
-   * Instantiates a new mixed sparse matrix.
-   *
-   * @param rows the rows
-   * @param columns the columns
-   * @param v the v
-   */
-  public ResizableMatrix(int rows, int columns) {
+  
+  public ObjectMatrix(int rows, int columns) {
     super(rows, columns);
-    
-    updateSize(rows - 1, columns - 1);
   }
 
-  /**
-   * Keep track of the maximum row and column requested so far. This is so the
-   * matrix can dynamically resize if necessary.
-   *
-   * @param row the row
-   * @param column the column
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
    */
-  protected void updateSize(int row, int col) {
-    boolean changed = false;
+  @Override
+  public double getValue(int row, int column) {
+    Object v = get(row, column);
 
-    if (row >= mDim.mRows) {
-      changed = true;
+    if (v != null && v instanceof Number) {
+      return ((Double) v).doubleValue();
+    } else {
+      return 0;
     }
+  }
 
-    if (col >= mDim.mCols) {
-      changed = true;
+  @Override
+  public int getInt(int row, int column) {
+    Object v = get(row, column);
+
+    if (v != null && v instanceof Number) {
+      return ((Number) v).intValue();
+    } else {
+      return 0;
     }
+  }
 
-    if (changed) {
-      mDim = new MatrixDim(Math.max(mDim.mRows, row + 1),
-          Math.max(mDim.mCols, col + 1));
+  @Override
+  public long getLong(int row, int column) {
+    Object v = get(row, column);
 
-      mSize = mDim.mRows * mDim.mCols;
-
-      // fireMatrixChanged();
+    if (v != null && v instanceof Number) {
+      return ((Number) v).longValue();
+    } else {
+      return 0;
     }
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.Matrix#update(int, int, double)
+   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
    */
   @Override
-  public void update(int row, int column, double v) {
-    updateSize(row, column);
-  }
+  public String getText(int row, int column) {
+    Object v = get(row, column);
 
-  @Override
-  public void update(int row, int column, long v) {
-    updateSize(row, column);
-  }
-
-  @Override
-  public void update(int row, int column, int v) {
-    updateSize(row, column);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#update(int, int, java.lang.String)
-   */
-  @Override
-  public void update(int row, int column, String v) {
-    updateSize(row, column);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.Matrix#getNumCells()
-   */
-  @Override
-  public int size() {
-    return mSize;
-  }
-
-  @Override
-  public MatrixDim getShape() {
-    return mDim;
+    if (v != null) {
+      return v.toString();
+    } else {
+      return TextUtils.EMPTY_STRING;
+    }
   }
 }

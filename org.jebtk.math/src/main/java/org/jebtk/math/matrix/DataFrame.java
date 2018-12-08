@@ -148,11 +148,6 @@ public class DataFrame extends Matrix
   /** The m M. */
   private Matrix mM;
 
-  /** The m rows. */
-  public MatrixDim mDim;
-
-  private int mExtSize;
-
   /**
    * Instantiates a new annotable matrix.
    *
@@ -184,14 +179,14 @@ public class DataFrame extends Matrix
     mRowAnnotation.addChangeListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent e) {
-        refresh();
+        fireMatrixChanged();
       }
     });
 
     mColumnAnnotation.addChangeListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent e) {
-        refresh();
+        fireMatrixChanged();
       }
     });
 
@@ -201,7 +196,7 @@ public class DataFrame extends Matrix
      * @Override public void matrixChanged(ChangeEvent e) { changed(); }});
      */
 
-    refresh();
+    fireMatrixChanged();
   }
 
   /**
@@ -225,8 +220,6 @@ public class DataFrame extends Matrix
     this(frame.getMatrix(), copy);
 
     copyAnnotations(frame, this);
-
-    refresh();
   }
 
   /**
@@ -241,8 +234,6 @@ public class DataFrame extends Matrix
     this(m);
 
     copyAnnotations(matrix, this);
-
-    refresh();
   }
   
   /**
@@ -276,19 +267,6 @@ public class DataFrame extends Matrix
   @Override
   public String getName() {
     return mName;
-  }
-
-  /**
-   * Refresh.
-   */
-  private void refresh() {
-    mDim = new MatrixDim(
-        getMatrix().getRows() + getColumnAnnotationNames().size(),
-        getMatrix().getCols() + getRowAnnotationNames().size());
-
-    mExtSize = mDim.mRows * mDim.mCols;
-
-    fireMatrixChanged();
   }
 
   /**
@@ -944,7 +922,13 @@ public class DataFrame extends Matrix
   }
 
   public MatrixDim getExtShape() {
-    return mDim;
+    MatrixDim dim = getShape();
+    
+    dim = new MatrixDim(
+        dim.getRows() + getColumnAnnotationNames().size(),
+        dim.getCols() + getRowAnnotationNames().size());
+
+    return dim;
   }
 
   /**
@@ -953,7 +937,9 @@ public class DataFrame extends Matrix
    * @return
    */
   public int getExtSize() {
-    return mExtSize;
+    MatrixDim dim = getExtShape();
+    
+    return dim.mRows * dim.mCols;
   }
 
   /**
@@ -1862,8 +1848,8 @@ public class DataFrame extends Matrix
    *
    * @return the annotation matrix
    */
-  public static DataFrame createDynamicMatrix() {
-    return createDataFrame(new DynamicMixedMatrix());
+  public static DataFrame createWorksheet(int rows, int columns) {
+    return createDataFrame(new MixedWorksheet(rows, columns));
   }
 
   /**
@@ -1872,8 +1858,8 @@ public class DataFrame extends Matrix
    * @param m the m
    * @return the annotation matrix
    */
-  public static DataFrame createDynamicMatrix(DataFrame m) {
-    DataFrame ret = createDynamicMatrix();
+  public static DataFrame createWorksheet(DataFrame m) {
+    DataFrame ret = createWorksheet(m.getRows(), m.getCols());
 
     copyAnnotations(m, ret);
 
@@ -3474,7 +3460,7 @@ public class DataFrame extends Matrix
       return new MixedMatrixParser(headers, skipMatches, rowAnnotations,
           delimiter).parse(file);
     } else {
-      return parseDynamicMatrix(file, skipMatches, rowAnnotations, delimiter);
+      return parseWorksheet(file, headers, skipMatches, rowAnnotations, delimiter);
     }
   }
 
@@ -3495,7 +3481,8 @@ public class DataFrame extends Matrix
     if (headers > 0) {
       return new CsvMatrixParser(true, rowAnnotations).parse(file);
     } else {
-      return parseDynamicMatrix(file,
+      return parseWorksheet(file,
+          headers,
           skipMatches,
           rowAnnotations,
           TextUtils.COMMA_DELIMITER);
@@ -3513,11 +3500,12 @@ public class DataFrame extends Matrix
    * @return the annotation matrix
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  public static DataFrame parseDynamicMatrix(Path file,
+  public static DataFrame parseWorksheet(Path file,
+      int headers, 
       List<String> skipMatches,
       int rowAnnotations,
       String delimiter) throws IOException {
-    return new DynamicMixedMatrixParser(skipMatches, rowAnnotations, delimiter)
+    return new MixedWorksheetParser(headers, skipMatches, rowAnnotations, delimiter)
         .parse(file);
   }
 

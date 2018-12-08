@@ -297,7 +297,7 @@ public class MatrixOperations {
       if (mC > 0) {
         return mStat / mC;
       } else {
-        return Matrix.NULL_NUMBER;
+        return Double.NaN; //Matrix.NULL_NUMBER;
       }
     }
   }

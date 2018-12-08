@@ -28,8 +28,7 @@
 package org.jebtk.math.matrix;
 
 import org.jebtk.core.collections.DefaultHashMapMap;
-import org.jebtk.core.collections.MapMap;
-import org.jebtk.core.text.TextUtils;
+import org.jebtk.core.collections.IterMap;
 
 /**
  * Matrix that can be dynamically resized to match maximum row/column. This
@@ -42,7 +41,7 @@ import org.jebtk.core.text.TextUtils;
  * @author Antony Holmes Holmes
  * @param <T> the generic type
  */
-public abstract class DynamicMatrix<T> extends ResizableMatrix {
+public abstract class Worksheet<T> extends ResizableMatrix {
 
   /**
    * The constant serialVersionUID.
@@ -52,7 +51,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
   /**
    * Dynamically resizing map of maps to store text for each cell.
    */
-  protected final MapMap<Integer, Integer, T> mData;
+  protected final IterMap<Integer, IterMap<Integer, T>> mData;
 
   /**
    * Instantiates a new dynamic matrix.
@@ -60,28 +59,19 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
    * @param rows the rows
    * @param columns the columns
    */
-  public DynamicMatrix(int rows, int columns) {
+  public Worksheet(int rows, int columns) {
+    this(rows, columns, null);
+  }
+  
+  public Worksheet(int rows, int columns, T v) {
     super(rows, columns);
-
-    mData = DefaultHashMapMap.create(rows, columns);
+    
+    mData = createMap(v);
   }
 
-  /**
-   * Instantiates a new mixed sparse matrix.
-   *
-   * @param rows the rows
-   * @param columns the columns
-   * @param v the v
-   */
-  public DynamicMatrix(int rows, int columns, T v) {
-    super(rows, columns);
+  protected abstract IterMap<Integer, IterMap<Integer, T>> createMap(T v);
 
-    mData = DefaultHashMapMap.create(rows, columns, v);
 
-    // update size uses the zero based row and column to calculate size
-    // so we need to adjust for this
-    // updateSize(rows - 1, columns - 1);
-  }
 
   /**
    * Clone a matrix optionally copying the core matrix values and the
@@ -89,7 +79,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
    *
    * @param m the m
    */
-  public DynamicMatrix(Matrix m) {
+  public Worksheet(Matrix m) {
     this(m.getRows(), m.getCols());
 
     update(m);
@@ -100,7 +90,7 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
    *
    * @param m the m
    */
-  public DynamicMatrix(DynamicMatrix<T> m) {
+  public Worksheet(Worksheet<T> m) {
     super(m.getRows(), m.getCols());
 
     mData = DefaultHashMapMap.create(m.getRows(), m.getCols());
@@ -114,63 +104,14 @@ public abstract class DynamicMatrix<T> extends ResizableMatrix {
    *
    * @param m the m
    */
-  public void update(DynamicMatrix<T> m) {
+  public void update(Worksheet<T> m) {
     for (int row : m.mData.keySet()) {
       mData.put(row, m.mData.get(row));
     }
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.IndexMatrix#getValue(int)
-   */
+  
   @Override
-  public double getValue(int row, int column) {
-    Object v = mData.get(row, column);
-
-    if (v != null && v instanceof Number) {
-      return ((Double) v).doubleValue();
-    } else {
-      return 0;
-    }
-  }
-
-  @Override
-  public int getInt(int row, int column) {
-    Object v = mData.get(row, column);
-
-    if (v != null && v instanceof Number) {
-      return ((Number) v).intValue();
-    } else {
-      return 0;
-    }
-  }
-
-  @Override
-  public long getLong(int row, int column) {
-    Object v = mData.get(row, column);
-
-    if (v != null && v instanceof Number) {
-      return ((Number) v).longValue();
-    } else {
-      return 0;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.IndexMatrix#getText(int)
-   */
-  @Override
-  public String getText(int row, int column) {
-    Object v = mData.get(row, column);
-
-    if (v != null) {
-      return v.toString();
-    } else {
-      return TextUtils.EMPTY_STRING;
-    }
+  public Object get(int row, int column) {
+    return mData.get(row).get(column);
   }
 }

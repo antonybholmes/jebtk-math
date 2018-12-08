@@ -63,10 +63,10 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
   /**
    * The member annotation.
    */
-  private Map<String, IndexRowMatrix> mAnnotationMap;
+  private Map<String, Matrix> mAnnotationMap;
 
-  /** The m size. */
-  private int mSize = 0;
+  private int mSize;
+
 
   /**
    * Instantiates a new annotation.
@@ -74,9 +74,8 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param size the size
    */
   public Annotation(int size) {
+    mAnnotationMap = new HashMap<String, Matrix>(10);
     mSize = size;
-
-    mAnnotationMap = new HashMap<String, IndexRowMatrix>(10);
   }
 
   /**
@@ -178,25 +177,19 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
       case NUMBER:
         switch (numberType) {
         case INT:
-          mAnnotationMap.put(name, new IntMatrix(1, mSize));
-          break;
-        case LONG:
-          mAnnotationMap.put(name, new LongMatrix(1, mSize));
+          mAnnotationMap.put(name, new IntWorksheet(1, mSize)); //1, mSize
           break;
         default:
-          mAnnotationMap.put(name, new DoubleMatrix(1, mSize));
+          mAnnotationMap.put(name, new DoubleWorksheet(1, mSize));
           break;
         }
 
         break;
-      case BOOL:
-        mAnnotationMap.put(name, new BooleanMatrix(1, mSize));
-        break;
       case TEXT:
-        mAnnotationMap.put(name, new TextMatrix(1, mSize));
+        mAnnotationMap.put(name, new TextWorksheet(1, mSize));
         break;
       default:
-        mAnnotationMap.put(name, new MixedMatrix(1, mSize));
+        mAnnotationMap.put(name, new MixedWorksheet(1, mSize));
         break;
       }
 

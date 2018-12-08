@@ -27,27 +27,22 @@ IntMatrix * Copyright (C) 2016, Antony Holmes
  */
 package org.jebtk.math.matrix;
 
-import org.jebtk.core.ForEach2D;
-import org.jebtk.core.IterUtils;
+import org.jebtk.core.collections.DefaultHashMap;
+import org.jebtk.core.collections.DefaultHashMapCreator;
+import org.jebtk.core.collections.IterMap;
 
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicLongMatrix extends DynamicMatrix<Long> {
+public class DoubleWorksheet extends Worksheet<Double> {
 
   /**
    * The constant serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Instantiates a new dynamic double matrix.
-   */
-  public DynamicLongMatrix() {
-    this(0, 0);
-  }
 
   /**
    * Instantiates a new mixed sparse matrix.
@@ -55,8 +50,8 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
    * @param rows the rows
    * @param columns the columns
    */
-  public DynamicLongMatrix(int rows, int columns) {
-    super(rows, columns);
+  public DoubleWorksheet(int rows, int columns) {
+    this(rows, columns, 0);
   }
 
   /**
@@ -66,7 +61,7 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
    * @param columns the columns
    * @param v the v
    */
-  public DynamicLongMatrix(int rows, int columns, long v) {
+  public DoubleWorksheet(int rows, int columns, double v) {
     super(rows, columns, v);
   }
 
@@ -76,8 +71,17 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
    *
    * @param m the m
    */
-  public DynamicLongMatrix(Matrix m) {
+  public DoubleWorksheet(Matrix m) {
     super(m);
+  }
+  
+  @Override
+  protected IterMap<Integer, IterMap<Integer, Double>> createMap(Double v) {
+    if (v != null) {
+      return DefaultHashMap.create(new DefaultHashMapCreator<Integer, Double>(v));
+    } else {
+      return DefaultHashMap.create(new DefaultHashMapCreator<Integer, Double>(0.0));
+    }
   }
 
   /*
@@ -87,27 +91,36 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
    */
   @Override
   public Matrix copy() {
-    return new DynamicLongMatrix(this);
+    return new DoubleWorksheet(this);
   }
 
   @Override
   public Matrix ofSameType(int rows, int cols) {
-    return new DynamicLongMatrix(rows, cols);
+    return new DoubleWorksheet(rows, cols);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.get(i).put(j, v);
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
   @Override
   public void update(int row, int column, double v) {
-    update(row, column, (long) v);
-  }
-
-  @Override
-  public void update(int row, int column, int v) {
-    update(row, column, (long) v);
-  }
-
-  @Override
-  public void update(int row, int column, long v) {
-    mData.put(row, column, v);
+    mData.get(row).put(column, v);
 
     super.update(row, column, v);
   }
@@ -117,20 +130,19 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
     return transpose(this);
   }
 
-  public static Matrix transpose(final DynamicLongMatrix m) {
-    final DynamicLongMatrix ret = createDynamicLongMatrix(m.getCols(),
+  public static Matrix transpose(DoubleWorksheet m) {
+    DoubleWorksheet ret = createDynamicDoubleMatrix(m.getCols(),
         m.getRows());
 
     // Swap row and column indices. We use index lookup to reduce
     // the number of number of times indices must be looked up to
     // set cell elements.
 
-    IterUtils.forEach(m.getRows(), m.getCols(), new ForEach2D() {
-      @Override
-      public void loop(int i, int j) {
+    for (int i = 0; i < m.getRows(); ++i) {
+      for (int j = 0; j < m.getCols(); ++j) {
         ret.set(j, i, m.get(i, j));
       }
-    });
+    }
 
     return ret;
   }
@@ -146,17 +158,8 @@ public class DynamicLongMatrix extends DynamicMatrix<Long> {
    * @param columns the columns
    * @return the dynamic double matrix
    */
-  public static DynamicLongMatrix createDynamicLongMatrix(int rows,
+  public static DoubleWorksheet createDynamicDoubleMatrix(int rows,
       int columns) {
-    return new DynamicLongMatrix(rows, columns);
-  }
-
-  /**
-   * Creates the matrix.
-   *
-   * @return the matrix
-   */
-  public static Matrix createDynamicLongMatrix() {
-    return new DynamicLongMatrix();
+    return new DoubleWorksheet(rows, columns);
   }
 }

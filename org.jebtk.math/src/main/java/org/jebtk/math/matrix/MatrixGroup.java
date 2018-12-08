@@ -408,6 +408,10 @@ public class MatrixGroup extends ChangeListeners
   public Iterator<Pattern> iterator() {
     return mRegexes.iterator();
   }
+  
+  public List<Pattern> getRegexes() {
+    return Collections.unmodifiableList(mRegexes);
+  }
 
   /**
    * Returns the number of columns in the group.
@@ -753,9 +757,11 @@ public class MatrixGroup extends ChangeListeners
   public static <X extends MatrixGroup> List<Integer> findColumnIndices(
       DataFrame m,
       X group) {
-    List<Integer> ret = new ArrayList<Integer>(m.getCols());
+    int n = m.getCols();
+    
+    List<Integer> ret = new ArrayList<Integer>(n);
 
-    for (int i = 0; i < m.getCols(); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (Pattern regex : group) {
         if (TextUtils.find(m.getColumnAnnotationText(i), regex).size() > 0) {
           ret.add(i);
@@ -767,7 +773,7 @@ public class MatrixGroup extends ChangeListeners
     if (ret.size() > 0) {
       Collections.sort(ret);
     }
-
+    
     return ret;
   }
 

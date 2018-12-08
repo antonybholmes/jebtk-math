@@ -331,7 +331,7 @@ public class Excel {
 
     int cols = sheet.getRow(0).getPhysicalNumberOfCells() - rowAnnotations;
 
-    DataFrame matrix = DataFrame.createDynamicMatrix(); // .createMatrix(rows,
+    DataFrame matrix = DataFrame.createWorksheet(rows, cols); // .createMatrix(rows,
                                                         // cols); //new
                                                         // MixedSparseMatrix(r,
                                                         // c);

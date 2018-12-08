@@ -32,12 +32,12 @@ package org.jebtk.math.matrix;
  * 
  * @author Antony Holmes Holmes
  */
-public class CsvDynamicMatrixParser extends CsvMatrixParser {
+public class CSVWorksheetParser extends CsvMatrixParser {
 
   /**
    * Instantiates a new text matrix parser.
    */
-  public CsvDynamicMatrixParser() {
+  public CSVWorksheetParser() {
     this(0);
   }
 
@@ -47,7 +47,7 @@ public class CsvDynamicMatrixParser extends CsvMatrixParser {
    * @param hasHeader the has header
    * @param rowAnnotations the row annotations
    */
-  public CsvDynamicMatrixParser(int rowAnnotations) {
+  public CSVWorksheetParser(int rowAnnotations) {
     super(false, rowAnnotations);
   }
 
@@ -58,6 +58,6 @@ public class CsvDynamicMatrixParser extends CsvMatrixParser {
    */
   @Override
   public DataFrame createMatrix(int rows, int columns) {
-    return DataFrame.createDynamicMatrix();
+    return DataFrame.createWorksheet(rows, columns);
   }
 }

@@ -29,13 +29,16 @@ package org.jebtk.math.matrix;
 
 import org.jebtk.core.ForEach2D;
 import org.jebtk.core.IterUtils;
+import org.jebtk.core.collections.DefaultHashMap;
+import org.jebtk.core.collections.DefaultHashMapCreator;
+import org.jebtk.core.collections.IterMap;
 
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicIntMatrix extends DynamicMatrix<Integer> {
+public class IntWorksheet extends Worksheet<Integer> {
 
   /**
    * The constant serialVersionUID.
@@ -43,20 +46,13 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Instantiates a new dynamic double matrix.
-   */
-  public DynamicIntMatrix() {
-    this(0, 0);
-  }
-
-  /**
    * Instantiates a new mixed sparse matrix.
    *
    * @param rows the rows
    * @param columns the columns
    */
-  public DynamicIntMatrix(int rows, int columns) {
-    super(rows, columns);
+  public IntWorksheet(int rows, int columns) {
+    this(rows, columns, 0);
   }
 
   /**
@@ -66,7 +62,7 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
    * @param columns the columns
    * @param v the v
    */
-  public DynamicIntMatrix(int rows, int columns, int v) {
+  public IntWorksheet(int rows, int columns, int v) {
     super(rows, columns, v);
   }
 
@@ -76,8 +72,17 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
    *
    * @param m the m
    */
-  public DynamicIntMatrix(Matrix m) {
+  public IntWorksheet(Matrix m) {
     super(m);
+  }
+  
+  @Override
+  protected IterMap<Integer, IterMap<Integer, Integer>> createMap(Integer v) {
+    if (v != null) {
+      return DefaultHashMap.create(new DefaultHashMapCreator<Integer, Integer>(v));
+    } else {
+      return DefaultHashMap.create(new DefaultHashMapCreator<Integer, Integer>(0));
+    }
   }
 
   /*
@@ -87,12 +92,12 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
    */
   @Override
   public Matrix copy() {
-    return new DynamicIntMatrix(this);
+    return new IntWorksheet(this);
   }
 
   @Override
   public Matrix ofSameType(int rows, int cols) {
-    return new DynamicIntMatrix(rows, cols);
+    return new IntWorksheet(rows, cols);
   }
 
   @Override
@@ -107,7 +112,7 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
 
   @Override
   public void update(int row, int column, int v) {
-    mData.put(row, column, v);
+    mData.get(row).put(column, v);
 
     super.update(row, column, v);
   }
@@ -117,8 +122,8 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
     return transpose(this);
   }
 
-  public static Matrix transpose(final DynamicIntMatrix m) {
-    final DynamicIntMatrix ret = createDynamicIntMatrix(m.getCols(),
+  public static Matrix transpose(final IntWorksheet m) {
+    final IntWorksheet ret = createDynamicIntMatrix(m.getCols(),
         m.getRows());
 
     // Swap row and column indices. We use index lookup to reduce
@@ -146,16 +151,7 @@ public class DynamicIntMatrix extends DynamicMatrix<Integer> {
    * @param columns the columns
    * @return the dynamic double matrix
    */
-  public static DynamicIntMatrix createDynamicIntMatrix(int rows, int columns) {
-    return new DynamicIntMatrix(rows, columns);
-  }
-
-  /**
-   * Creates the matrix.
-   *
-   * @return the matrix
-   */
-  public static Matrix createDynamicIntMatrix() {
-    return new DynamicIntMatrix();
+  public static IntWorksheet createDynamicIntMatrix(int rows, int columns) {
+    return new IntWorksheet(rows, columns);
   }
 }

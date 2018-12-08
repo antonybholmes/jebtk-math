@@ -27,7 +27,7 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,6 +37,7 @@ import java.util.Set;
 import org.jebtk.core.Indexed;
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
+import org.jebtk.core.text.Parser;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.functions.LnFunction;
 import org.jebtk.math.functions.LogFunction;
@@ -55,7 +56,7 @@ public abstract class Matrix extends MatrixEventListeners {
   private static final long serialVersionUID = 1L;
 
   /** The Constant NULL_NUMBER. */
-  public static final double NULL_NUMBER = Double.NaN;
+  //public static final double NULL_NUMBER = Double.NaN;
 
   /** The Constant NULL_INT_NUMBER. */
   // public static final int NULL_INT_NUMBER = Integer.MIN_VALUE;
@@ -335,7 +336,28 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param column the column
    * @param value the value
    */
-  public void update(int row, int column, Object value) {
+  public void update(int row, int column, Object v) {
+    if (v == null) {
+      return;
+    }
+
+    if (v instanceof Double) {
+      update(row, column, (double) v);
+    } else if (v instanceof Integer) {
+      update(row, column, (int) v);
+    } else if (v instanceof Number) {
+      update(row, column, ((Number) v).doubleValue());
+    } else {
+      String s = v.toString();
+
+      try {
+        update(row, column, Parser.toDouble(s));
+      } catch (ParseException e) {
+        update(row, column, s);
+      }
+    }
+    
+    /*
     if (value != null) {
       if (value instanceof Number) {
         update(row, column, ((Number) value).doubleValue());
@@ -351,6 +373,7 @@ public abstract class Matrix extends MatrixEventListeners {
         }
       }
     }
+    */
   }
 
   /**
@@ -418,7 +441,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public void setColumn(int column, Object[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(i, column, values[i]);
     }
 
@@ -426,7 +449,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public void setColumn(int column, double[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(i, column, values[i]);
     }
 
@@ -434,7 +457,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setColumn(int column, int[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(i, column, values[i]);
     }
 
@@ -442,7 +465,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setColumn(int column, String[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(i, column, values[i]);
     }
 
@@ -456,7 +479,7 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param values
    */
   public void setRow(int row, Object[] values) {
-    for (int i = 0; i < Math.min(getCols(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -464,7 +487,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public void setRow(int row, double[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -472,7 +495,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setRow(int row, int[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -480,7 +503,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setRow(int row, long[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -488,7 +511,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setRow(int row, boolean[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -496,7 +519,7 @@ public abstract class Matrix extends MatrixEventListeners {
   }
   
   public void setRow(int row, String[] values) {
-    for (int i = 0; i < Math.min(getRows(), values.length); ++i) {
+    for (int i = 0; i < values.length; ++i) {
       set(row, i, values[i]);
     }
 
@@ -938,7 +961,7 @@ public abstract class Matrix extends MatrixEventListeners {
     int n = getCols();
 
     for (int c = 0; c < n; ++c) {
-      data[c] = getValue(row, c);
+      data[c] = get(row, c);
     }
   }
   

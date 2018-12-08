@@ -29,13 +29,20 @@ package org.jebtk.math.matrix;
 
 import java.util.Collection;
 
+import org.jebtk.core.text.TextUtils;
+
 /**
  * Parses a text file and creates a matrix from it.
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicMixedMatrixParser extends MixedMatrixParser {
+public class MixedWorksheetParser extends MixedMatrixParser {
 
+  
+  public MixedWorksheetParser(int headers, int rowAnnotations, String delimiter) {
+    this(headers, TextUtils.EMPTY_LIST, rowAnnotations, delimiter);
+  }
+  
   /**
    * Instantiates a new dynamic matrix parser.
    *
@@ -44,10 +51,11 @@ public class DynamicMixedMatrixParser extends MixedMatrixParser {
    * @param rowAnnotations the row annotations
    * @param delimiter the delimiter
    */
-  public DynamicMixedMatrixParser(Collection<String> skipMatches,
+  public MixedWorksheetParser(int headers, Collection<String> skipMatches,
       int rowAnnotations, String delimiter) {
-    super(0, skipMatches, rowAnnotations, delimiter);
+    super(headers, skipMatches, rowAnnotations, delimiter);
   }
+
 
   /*
    * (non-Javadoc)
@@ -56,6 +64,6 @@ public class DynamicMixedMatrixParser extends MixedMatrixParser {
    */
   @Override
   public DataFrame createMatrix(int rows, int columns) {
-    return DataFrame.createDynamicMatrix();
+    return DataFrame.createWorksheet(rows, columns);
   }
 }

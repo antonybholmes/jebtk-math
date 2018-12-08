@@ -27,42 +27,27 @@
  */
 package org.jebtk.math.matrix;
 
+import org.jebtk.core.collections.DefaultHashMap;
+import org.jebtk.core.collections.HashMapCreator;
+import org.jebtk.core.collections.IterMap;
+
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 
  * @author Antony Holmes Holmes
  */
-public class DynamicTextMatrix extends DynamicMatrix<String> {
+public class MixedWorksheet extends Worksheet<Object> {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * Instantiates a new dynamic text matrix.
+   * Instantiates a new dynamic mixed matrix.
    */
-  public DynamicTextMatrix() {
-    this(0, 0);
-  }
-
-  /**
-   * Instantiates a new mixed sparse matrix.
-   *
-   * @param rows the rows
-   * @param columns the columns
-   */
-  public DynamicTextMatrix(int rows, int columns) {
+  public MixedWorksheet(int rows, int columns) {
     super(rows, columns);
-  }
-
-  /**
-   * Instantiates a new mixed sparse matrix.
-   *
-   * @param rows the rows
-   * @param columns the columns
-   * @param v the v
-   */
-  public DynamicTextMatrix(int rows, int columns, String v) {
-    super(rows, columns, v);
   }
 
   /**
@@ -71,8 +56,13 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
    *
    * @param m the m
    */
-  public DynamicTextMatrix(Matrix m) {
+  public MixedWorksheet(Matrix m) {
     super(m);
+  }
+  
+  @Override
+  protected IterMap<Integer, IterMap<Integer, Object>> createMap(Object v) {
+    return DefaultHashMap.create(new HashMapCreator<Integer, Object>());
   }
 
   /*
@@ -82,7 +72,7 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
    */
   @Override
   public MatrixType getType() {
-    return MatrixType.TEXT;
+    return MatrixType.MIXED;
   }
 
   /*
@@ -92,26 +82,12 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
    */
   @Override
   public Matrix copy() {
-    return new DynamicTextMatrix(this);
+    return new MixedWorksheet(this);
   }
 
   @Override
   public Matrix ofSameType(int rows, int cols) {
-    return new DynamicTextMatrix(rows, cols);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
-   */
-  @Override
-  public void update(String v) {
-    for (int i = 0; i < mDim.mRows; ++i) {
-      for (int j = 0; j < mDim.mCols; ++j) {
-        mData.put(i, j, v);
-      }
-    }
+    return newDynamicMixedMatrix(rows, cols);
   }
 
   /*
@@ -126,13 +102,69 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
       return;
     }
 
-    if (v instanceof String) {
-      mData.put(row, column, (String) v);
+    if (v instanceof Double) {
+      mData.get(row).put(column, (Double) v);
+    } else if (v instanceof Number) {
+      mData.get(row).put(column, ((Number) v).doubleValue());
+    } else if (v instanceof String) {
+      mData.get(row).put(column, (String) v);
     } else {
-      mData.put(row, column, v.toString());
+      mData.get(row).put(column, v.toString());
     }
+  }
 
-    updateSize(row, column);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(java.lang.String)
+   */
+  @Override
+  public void update(String v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.get(i).put(j, v);
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(double)
+   */
+  @Override
+  public void update(double v) {
+    for (int i = 0; i < mDim.mRows; ++i) {
+      for (int j = 0; j < mDim.mCols; ++j) {
+        mData.get(i).put(j, v);
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
+   */
+  @Override
+  public void update(int row, int column, double v) {
+    mData.get(row).put(column, v);
+
+    super.update(row, column, v);
+  }
+
+  @Override
+  public void update(int row, int column, int v) {
+    mData.get(row).put(column, v);
+
+    super.update(row, column, v);
+  }
+
+  @Override
+  public void update(int row, int column, long v) {
+    mData.get(row).put(column, v);
+
+    super.update(row, column, v);
   }
 
   /*
@@ -143,39 +175,25 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
    */
   @Override
   public void update(int row, int column, String v) {
-    mData.put(row, column, v);
+    mData.get(row).put(column, v);
 
-    updateSize(row, column);
+    super.update(row, column, v);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.abh.common.math.matrix.DynamicMatrix#update(int, int, double)
-   */
-  @Override
-  public void update(int row, int column, double v) {
-    update(row, column, Double.toString(v));
-  }
-
-  @Override
-  public void update(int row, int column, int v) {
-    update(row, column, Integer.toString(v));
-  }
-
-  @Override
-  public void update(int row, int column, long v) {
-    update(row, column, Long.toString(v));
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.Matrix#getCellType(int, int)
+   * @see org.abh.lib.math.matrix.IndexMatrix#getCellType(int)
    */
   @Override
   public CellType getCellType(int row, int column) {
-    return CellType.TEXT;
+    Object v = get(row, column);
+
+    if (v != null && v instanceof Number) {
+      return CellType.NUMBER;
+    } else {
+      return CellType.TEXT;
+    }
   }
 
   /*
@@ -188,10 +206,10 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
     return transpose(this);
   }
 
-  public static Matrix transpose(DynamicTextMatrix m) {
+  public static Matrix transpose(MixedWorksheet m) {
 
     // Return a fixed sized array where possible
-    TextMatrix ret = TextMatrix.createTextMatrix(m.getCols(), m.getRows());
+    MixedMatrix ret = MixedMatrix.createMixedMatrix(m.getCols(), m.getRows());
 
     // Swap row and column indices. We use index lookup to reduce
     // the number of number of times indices must be looked up to
@@ -199,7 +217,7 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
 
     for (int i = 0; i < m.getRows(); ++i) {
       for (int j = 0; j < m.getCols(); ++j) {
-        ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i, j);
+        ret.mData[ret.mRowOffsets[i] + j] = m.mData.get(i).get(j);
       }
     }
 
@@ -207,11 +225,11 @@ public class DynamicTextMatrix extends DynamicMatrix<String> {
   }
 
   /**
-   * Creates the matrix.
+   * Creates the dynamic mixed matrix.
    *
    * @return the matrix
    */
-  public static Matrix createMatrix() {
-    return new DynamicTextMatrix();
+  public static Matrix newDynamicMixedMatrix(int rows, int cols) {
+    return new MixedWorksheet(rows, cols);
   }
 }
