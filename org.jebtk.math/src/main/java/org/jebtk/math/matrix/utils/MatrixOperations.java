@@ -568,8 +568,6 @@ public class MatrixOperations {
    * @return the matrix
    */
   public static Matrix log(Matrix m, int base) {
-    System.err.println("log " + m.getClass());
-
     return m.f(new LogFunction(base));
   }
 

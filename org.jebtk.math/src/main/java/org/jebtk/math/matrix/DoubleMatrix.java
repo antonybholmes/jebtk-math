@@ -756,7 +756,7 @@ public class DoubleMatrix extends IndexRowMatrix {
       DoubleMatrix m1,
       DoubleMatrix m2,
       int rows) {
-    System.err.println("f concurrent");
+    //System.err.println("f concurrent");
 
     int steps = rows * m1.mDim.mCols;
 
@@ -822,7 +822,7 @@ public class DoubleMatrix extends IndexRowMatrix {
       DoubleMatrix m1,
       double v,
       int rows) {
-    System.err.println("f concurrent");
+    //System.err.println("f concurrent");
 
     int steps = rows * m1.mDim.mCols;
 
@@ -884,7 +884,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @return
    */
   public static void applyconc(CellFunction f, DoubleMatrix m1, int rows) {
-    System.err.println("f concurrent");
+    //System.err.println("f concurrent");
 
     int steps = rows * m1.mDim.mCols;
 

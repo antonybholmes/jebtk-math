@@ -134,8 +134,6 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param m the m
    */
   public void setAnnotation(String name, Matrix m) {
-    SysUtils.err().println(name, m.getType());
-
     switch (m.getType()) {
     case NUMBER:
       autoCreate(name, MatrixType.NUMBER);
@@ -149,11 +147,6 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
     }
 
     mAnnotationMap.get(name).copyRow(m, 0, 0);
-    
-    if (m.getType() == MatrixType.NUMBER) {
-      System.err.println(m.rowAsList(0));
-      System.err.println(mAnnotationMap.get(name).rowAsList(0));
-    }
   }
 
   /**
