@@ -53,6 +53,7 @@ import org.jebtk.core.NameProperty;
 import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultTreeMap;
+import org.jebtk.core.collections.IterMap;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeListeners;
 import org.jebtk.core.io.FileUtils;
@@ -74,8 +75,8 @@ import org.w3c.dom.Element;
  * The class MatrixGroup.
  */
 public class MatrixGroup extends ChangeListeners
-    implements NameProperty, JsonRepresentation, XmlRepresentation,
-    Comparable<MatrixGroup>, Iterable<Pattern> {
+implements NameProperty, JsonRepresentation, XmlRepresentation,
+Comparable<MatrixGroup>, Iterable<Pattern> {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
@@ -286,7 +287,7 @@ public class MatrixGroup extends ChangeListeners
     // before constructing pattern
     return addRegex(Pattern
         .compile(".*" + regex.replaceFirst("^\\.\\*", TextUtils.EMPTY_STRING)
-            .replaceFirst("\\.\\*$", TextUtils.EMPTY_STRING) + ".*"));
+        .replaceFirst("\\.\\*$", TextUtils.EMPTY_STRING) + ".*"));
   }
 
   /**
@@ -408,7 +409,7 @@ public class MatrixGroup extends ChangeListeners
   public Iterator<Pattern> iterator() {
     return mRegexes.iterator();
   }
-  
+
   public List<Pattern> getRegexes() {
     return Collections.unmodifiableList(mRegexes);
   }
@@ -758,7 +759,7 @@ public class MatrixGroup extends ChangeListeners
       DataFrame m,
       X group) {
     int n = m.getCols();
-    
+
     List<Integer> ret = new ArrayList<Integer>(n);
 
     for (int i = 0; i < n; ++i) {
@@ -773,7 +774,42 @@ public class MatrixGroup extends ChangeListeners
     if (ret.size() > 0) {
       Collections.sort(ret);
     }
-    
+
+    return ret;
+  }
+
+  /**
+   * Return a map of the column indices and the groups they belong to.
+   * 
+   * @param m
+   * @param groups
+   * @return
+   */
+  public static <X extends MatrixGroup> IterMap<Integer, List<X>> indexGroupMap(
+      DataFrame m,
+      List<X> groups) {
+    int n = m.getCols();
+
+    IterMap<Integer, List<X>> ret = DefaultTreeMap.create(new ArrayListCreator<X>());
+
+    for (int i = 0; i < n; ++i) {
+      //boolean found = false;
+      
+      for (X group : groups) {
+        for (Pattern regex : group) {
+          if (TextUtils.find(m.getColumnAnnotationText(i), regex).size() > 0) {
+            ret.get(i).add(group);
+            //found = true;
+            break;
+          }
+        }
+        
+        //if (found) {
+        //  break;
+        //}
+      }
+    }
+
     return ret;
   }
 
@@ -1060,7 +1096,7 @@ public class MatrixGroup extends ChangeListeners
    */
   public static void writeXml(Path file,
       Collection<? extends MatrixGroup> groups)
-      throws IOException, TransformerException, ParserConfigurationException {
+          throws IOException, TransformerException, ParserConfigurationException {
     Document doc = XmlUtils.createDoc();
 
     Element ge = doc.createElement("groups");

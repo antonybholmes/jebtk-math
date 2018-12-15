@@ -99,6 +99,11 @@ public class DoubleWorksheet extends Worksheet<Double> {
     return new DoubleWorksheet(rows, cols);
   }
 
+  @Override
+  public double getValue(int row, int column) {
+    return mData.get(row).get(column);
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -113,6 +118,16 @@ public class DoubleWorksheet extends Worksheet<Double> {
     }
   }
 
+  @Override
+  public void update(int row, int column, int v) {
+    update(row, column, (double)v);
+  }
+  
+  @Override
+  public void update(int row, int column, long v) {
+    update(row, column, (double)v);
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -120,6 +135,10 @@ public class DoubleWorksheet extends Worksheet<Double> {
    */
   @Override
   public void update(int row, int column, double v) {
+    if (row < 5 && column < 5) {
+      System.err.println("dw " + row + " " + column + " " + v);
+    }
+    
     mData.get(row).put(column, v);
 
     super.update(row, column, v);

@@ -116,6 +116,16 @@ public class IntWorksheet extends Worksheet<Integer> {
 
     super.update(row, column, v);
   }
+  
+  @Override
+  public double getValue(int row, int column) {
+    return getInt(row, column);
+  }
+  
+  @Override
+  public int getInt(int row, int column) {
+    return mData.get(row).get(column);
+  }
 
   @Override
   public Matrix transpose() {

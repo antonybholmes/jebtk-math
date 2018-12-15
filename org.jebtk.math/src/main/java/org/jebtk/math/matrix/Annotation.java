@@ -36,6 +36,7 @@ import java.util.Map;
 import org.jebtk.core.collections.CyclicList;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeListeners;
+import org.jebtk.core.sys.SysUtils;
 
 /**
  * Provides annotation for a matrix.
@@ -133,7 +134,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param m the m
    */
   public void setAnnotation(String name, Matrix m) {
-    // SysUtils.err().println(name, m.getType());
+    SysUtils.err().println(name, m.getType());
 
     switch (m.getType()) {
     case NUMBER:
@@ -148,6 +149,11 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
     }
 
     mAnnotationMap.get(name).copyRow(m, 0, 0);
+    
+    if (m.getType() == MatrixType.NUMBER) {
+      System.err.println(m.rowAsList(0));
+      System.err.println(mAnnotationMap.get(name).rowAsList(0));
+    }
   }
 
   /**
@@ -177,19 +183,19 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
       case NUMBER:
         switch (numberType) {
         case INT:
-          mAnnotationMap.put(name, new IntWorksheet(1, mSize)); //1, mSize
+          mAnnotationMap.put(name, new IntMatrix(1, mSize)); //new IntWorksheet(1, mSize)); //1, mSize
           break;
         default:
-          mAnnotationMap.put(name, new DoubleWorksheet(1, mSize));
+          mAnnotationMap.put(name, new DoubleMatrix(1, mSize)); //new DoubleWorksheet(1, mSize));
           break;
         }
 
         break;
       case TEXT:
-        mAnnotationMap.put(name, new TextWorksheet(1, mSize));
+        mAnnotationMap.put(name, new TextMatrix(1, mSize)); //new TextWorksheet(1, mSize));
         break;
       default:
-        mAnnotationMap.put(name, new MixedWorksheet(1, mSize));
+        mAnnotationMap.put(name, new MixedMatrix(1, mSize)); //new MixedWorksheet(1, mSize));
         break;
       }
 

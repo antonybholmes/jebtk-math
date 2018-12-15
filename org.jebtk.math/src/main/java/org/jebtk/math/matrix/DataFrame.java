@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 
 import org.jebtk.core.Indexed;
 import org.jebtk.core.NameProperty;
+import org.jebtk.core.collections.ArrayUtils;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeEvent;
@@ -1706,6 +1707,21 @@ public class DataFrame extends Matrix
 
     return ret;
   }
+  
+  public static DataFrame copyRows(DataFrame f, int[] rows) {
+    Matrix m = f.getMatrix();
+
+    Matrix m2 = ofSameType(m, rows.length, f.getCols());
+
+    copyRows(m, m2, rows);
+
+    DataFrame ret = new DataFrame(m2);
+
+    copyRowAnnotations(f, ret, rows);
+    copyColumnAnnotations(f, ret);
+
+    return ret;
+  }
 
   /**
    * Copy inner rows indexed.
@@ -2484,7 +2500,31 @@ public class DataFrame extends Matrix
       DataFrame to,
       int... rows) {
     for (String name : from.getRowAnnotationNames()) {
-      to.setRowAnnotations(name, from.getRowAnnotations(name));
+      
+      switch (from.getRowAnnotations(name).getType()) {
+      case NUMBER:
+        double[] annotations = from.getRowAnnotations(name).rowToDoubleArray(0);
+
+        double[] subAnnotations = ArrayUtils.subList(annotations, rows);
+
+        to.setRowAnnotations(name, subAnnotations);
+        break;
+      case TEXT:
+        String[] ta = from.getRowAnnotations(name).rowToTextArray(0);
+
+        String[] ts = ArrayUtils.subList(ta, rows);
+
+        to.setRowAnnotations(name, ts);
+        break;
+      default:
+        // Mixed
+        Object[] l = from.getRowAnnotations(name).rowToArray(0);
+
+        Object[] ls = ArrayUtils.subList(l, rows);
+
+        to.setRowAnnotations(name, ls);
+        break;
+      }
     }
   }
 
@@ -2524,15 +2564,6 @@ public class DataFrame extends Matrix
         to.setRowAnnotations(name, ls);
         break;
       }
-
-      /*
-       * List<Object> annotations = from.getRowAnnotations(name).rowAsList(0);
-       * 
-       * List<Object> subAnnotations = CollectionUtils.subList(annotations,
-       * rows);
-       * 
-       * to.setRowAnnotations(name, subAnnotations);
-       */
     }
   }
 

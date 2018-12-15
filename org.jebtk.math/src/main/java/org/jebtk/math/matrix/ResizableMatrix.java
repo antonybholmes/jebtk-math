@@ -102,16 +102,22 @@ public abstract class ResizableMatrix extends ObjectMatrix {
   @Override
   public void update(int row, int column, double v) {
     updateSize(row, column);
+    
+    //super.update(row, column, v);
   }
 
   @Override
   public void update(int row, int column, long v) {
     updateSize(row, column);
+    
+    //super.update(row, column, v);
   }
 
   @Override
   public void update(int row, int column, int v) {
     updateSize(row, column);
+    
+    //super.update(row, column, v);
   }
 
   /*

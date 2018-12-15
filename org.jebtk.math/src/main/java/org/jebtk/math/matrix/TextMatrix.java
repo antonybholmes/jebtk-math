@@ -28,9 +28,9 @@
 package org.jebtk.math.matrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
 
@@ -196,7 +196,7 @@ public class TextMatrix extends IndexRowMatrix {
    */
   @Override
   public void update(String v) {
-    CollectionUtils.fill(v, mData);
+    Arrays.fill(mData, v);
   }
 
   /*

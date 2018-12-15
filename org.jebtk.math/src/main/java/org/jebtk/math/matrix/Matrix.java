@@ -340,10 +340,17 @@ public abstract class Matrix extends MatrixEventListeners {
     if (v == null) {
       return;
     }
-
+    
+    if (row < 5 && column < 5) {
+      System.err.println("sdsdf " + row + " " + column + " " + v.getClass() +  " " + v + " " +getClass());
+    }
+    
     if (v instanceof Double) {
       update(row, column, (double) v);
     } else if (v instanceof Integer) {
+      if (row < 5 && column < 5) {
+        System.err.println("sssss " + row + " " + column + " " + v.getClass() +  " " + v + " " +getClass());
+      }
       update(row, column, (int) v);
     } else if (v instanceof Number) {
       update(row, column, ((Number) v).doubleValue());
@@ -536,7 +543,12 @@ public abstract class Matrix extends MatrixEventListeners {
   public void copyRow(final Matrix from, int row, int toRow) {
     int c = Math.min(from.getCols(), getCols());
 
+    System.err.println("c " + c);
+    
     for (int i = 0; i < c; ++i) {
+      if (i < 5) {
+        System.err.println("hhh " + i + " " + from.get(row, i));
+      }
       set(toRow, i, from.get(row, i));
     }
   }
@@ -694,11 +706,11 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public int getInt(int row, int column) {
-    return 0;
+    return (int) getValue(row, column);
   }
 
   public long getLong(int row, int column) {
-    return 0;
+    return (long) getValue(row, column);
   }
 
   /**

@@ -38,6 +38,7 @@ import org.jebtk.core.io.FileUtils;
 import org.jebtk.core.io.Io;
 import org.jebtk.core.io.ReaderUtils;
 import org.jebtk.core.sys.SysUtils;
+import org.jebtk.core.text.Join;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.core.text.TextUtils;
 
@@ -126,31 +127,38 @@ public class MixedMatrixParser implements MatrixParser {
     // Count rows
     //
 
-    // We waste one line determining what the headers are so
-    int rows = 1 - mHeaders;
-    int columns = -1;
+    int rows = -mHeaders;
+    int columns = 0;
 
     Splitter split = Splitter.on(mDelimiter);
 
+    //
+    // Determine maximum rows and columns required
+    //
+    
     BufferedReader reader = FileUtils.newBufferedReader(file);
 
     try {
-      ReaderUtils.skipLines(reader, skipLines);
+      if (skipLines > 0) {
+        ReaderUtils.skipLines(reader, skipLines);
+      }
+      
+      //line = reader.readLine();
 
-      line = reader.readLine();
-
-      tokens = split.text(line); // ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line));
+      //tokens = split.text(line); // ImmutableList.copyOf(Splitter.on(TextUtils.TAB_DELIMITER).split(line));
       // //TextUtils.tabSplit(line);
 
-      columns = tokens.size(); // - mRowAnnotations;
+      //columns = tokens.size(); // - mRowAnnotations;
 
       // The first line is read as a header so there is one less line
       // being read than there are rows
 
       while ((line = reader.readLine()) != null) {
-        if (Io.isEmptyLine(line)) {
+        if (TextUtils.isNullOrEmpty(line)) {
           continue;
         }
+        
+        columns = Math.max(columns, TextUtils.countMatches(line, mDelimiter));
 
         ++rows;
       }
@@ -158,10 +166,15 @@ public class MixedMatrixParser implements MatrixParser {
       reader.close();
     }
 
+    // Since we count delimiters, columns equals one more than delimiters, e.g.
+    // two columns are separated by one delimiter, 3 columns by 2 etc.
+    ++columns;
+    
+    // Subtract number of columns used for annotation at beginning
     columns -= mRowAnnotations;
-
+    
     matrix = createMatrix(rows, columns);
-
+    
     reader = FileUtils.newBufferedReader(file);
 
     // List<List<Object>> annotations = null;
