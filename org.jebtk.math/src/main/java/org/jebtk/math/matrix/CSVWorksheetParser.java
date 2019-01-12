@@ -30,7 +30,7 @@ package org.jebtk.math.matrix;
 /**
  * Parses a text file and creates a matrix from it.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class CSVWorksheetParser extends CsvMatrixParser {
 

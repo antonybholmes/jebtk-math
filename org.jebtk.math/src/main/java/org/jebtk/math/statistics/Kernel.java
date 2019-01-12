@@ -31,7 +31,7 @@ package org.jebtk.math.statistics;
 /**
  * Describes the kernel used for a kernel density estimate.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public interface Kernel {

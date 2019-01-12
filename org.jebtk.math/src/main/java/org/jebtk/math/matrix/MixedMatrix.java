@@ -35,7 +35,7 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Allows strings and numbers to exist in same matrix.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class MixedMatrix extends IndexRowMatrix {
 
@@ -136,7 +136,7 @@ public class MixedMatrix extends IndexRowMatrix {
   public Matrix ofSameType(int rows, int cols) {
     return createMixedMatrix(rows, cols);
   }
-  
+
   @Override
   public Matrix cols(int col, int... cols) {
     int fromCols = getShape().mCols;
@@ -260,7 +260,7 @@ public class MixedMatrix extends IndexRowMatrix {
       } else if (v instanceof Long) {
         return ((Long) v).intValue();
       } else {
-       return super.getInt(index);
+        return super.getInt(index);
       }
     } else {
       return super.getInt(index);
@@ -427,13 +427,25 @@ public class MixedMatrix extends IndexRowMatrix {
     }
   }
 
+  @Override
+  public void copyRow(final Matrix from, int row, int toRow) {
+    if (from instanceof MixedMatrix) {
+      copyRow((MixedMatrix) from, row, toRow);
+    } else if (from instanceof TextMatrix) {
+      copyRow((TextMatrix) from, row, toRow);
+    } else if (from instanceof DoubleMatrix) {
+      copyRow((DoubleMatrix) from, row, toRow);
+    } else {
+      super.copyRow(from, row, toRow);
+    }
+  }
+
   /*
    * (non-Javadoc)
    * 
    * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
    * DoubleMatrix, int, int)
    */
-  @Override
   public void copyRow(final DoubleMatrix from, int row, int toRow) {
     int c = Math.min(from.getCols(), getCols());
 
@@ -450,9 +462,7 @@ public class MixedMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
    * TextMatrix, int, int)
    */
-  @Override
   public void copyRow(final TextMatrix from, int row, int toRow) {
-
     int c = Math.min(from.getCols(), getCols());
 
     System.arraycopy(from.mData,
@@ -468,7 +478,6 @@ public class MixedMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
    * MixedMatrix, int, int)
    */
-  @Override
   public void copyRow(final MixedMatrix from, int row, int toRow) {
     int c = Math.min(from.getCols(), getCols());
 
@@ -481,14 +490,14 @@ public class MixedMatrix extends IndexRowMatrix {
         mRowOffsets[toRow],
         c);
   }
-  
+
   @Override
   public void setRow(int row, String[] values) {
     SysUtils.arraycopy(values, mData, getIndex(row, 0), values.length);
   }
-  
+
   @Override
-  public void rowToArray(int row, Object[] ret) {
+  public void rowToObject(int row, Object[] ret) {
     SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 

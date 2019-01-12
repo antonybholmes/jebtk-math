@@ -35,7 +35,7 @@ import org.jebtk.core.collections.CollectionUtils;
 /**
  * Perform T-tests making use of the apache commons lib.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class TTest {

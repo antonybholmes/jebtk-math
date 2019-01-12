@@ -34,7 +34,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,23 +60,13 @@ import org.jebtk.core.text.TextUtils;
  *
  */
 public class DataFrame extends Matrix
-    implements NameProperty, MatrixAnnotations {
+    implements NameProperty {
 
   /**
    * The constant serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The constant ROW_NAMES.
-   */
-  public static final String ROW_NAMES = "Row Names";
-
-  /**
-   * The constant COLUMN_NAMES.
-   */
-  public static final String COLUMN_NAMES = "Column Names";
-
+  
   /**
    * The constant EST_ANNOTATION_ROWS.
    */
@@ -133,18 +122,20 @@ public class DataFrame extends Matrix
    */
   public static final MatrixCellRef START_CELL = new MatrixCellRef(0, 0);
 
+  private static final String ROW_NAMES = "Row Names";
+
   /** The m name. */
   private String mName = TextUtils.EMPTY_STRING;
 
   /**
    * The member row annotation.
    */
-  protected Annotation mRowAnnotation;
+  protected DataFrameIndex mIndexAnnotation;
 
   /**
    * The member column annotation.
    */
-  protected Annotation mColumnAnnotation;
+  protected DataFrameIndex mColumnAnnotation;
 
   /** The m M. */
   private Matrix mM;
@@ -174,10 +165,10 @@ public class DataFrame extends Matrix
       mM = m;
     }
 
-    mRowAnnotation = new Annotation(m.getRows());
-    mColumnAnnotation = new Annotation(m.getCols());
+    mIndexAnnotation = new DataFrameIndex(m.getRows());
+    mColumnAnnotation = new DataFrameIndex(m.getCols());
 
-    mRowAnnotation.addChangeListener(new ChangeListener() {
+    mIndexAnnotation.addChangeListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent e) {
         fireMatrixChanged();
@@ -237,13 +228,22 @@ public class DataFrame extends Matrix
     copyAnnotations(matrix, this);
   }
   
+  public DataFrameIndex getIndex() {
+    return mIndexAnnotation;
+  }
+  
+  public DataFrameIndex getColumnHeader() {
+    return mColumnAnnotation;
+  }
+  
+  
   /**
    * Copy columns out of a data frame.
    */
   public DataFrame cols(int col, int... cols) {
     DataFrame ret = new DataFrame(getMatrix().cols(col, cols));
     
-    copyRowAnnotations(this, ret);
+    copyIndex(this, ret);
     
     return ret;
   }
@@ -284,9 +284,9 @@ public class DataFrame extends Matrix
     if (row >= 0 && column >= 0) {
       getMatrix().set(row, column, value);
     } else if (row < 0 && column >= 0) {
-      getColumnAnnotations(-row - 1).set(0, column, value);
+      getColumnHeader().getAnnotation(-row - 1).set(0, column, value);
     } else if (row >= 0 && column < 0) {
-      getRowAnnotations(-column - 1).set(0, row, value);
+      getIndex().getAnnotation(-column - 1).set(0, row, value);
     } else {
       // Do nothing
     }
@@ -302,9 +302,9 @@ public class DataFrame extends Matrix
     if (row >= 0 && column >= 0) {
       getMatrix().set(row, column, value);
     } else if (row < 0 && column >= 0) {
-      getColumnAnnotations(row).set(0, column, value);
+      getColumnHeader().getAnnotation(row).set(0, column, value);
     } else if (row >= 0 && column < 0) {
-      getRowAnnotations(column).set(0, row, value);
+      getIndex().getAnnotation(column).set(0, row, value);
     } else {
       // Do nothing
     }
@@ -312,33 +312,76 @@ public class DataFrame extends Matrix
   
   @Override
   public void setRow(int row, double[] values) {
-    getMatrix().setRow(row, values);
+    if (row < 0) {
+      getColumnHeader().getAnnotation(getIndex().size() + row).setRow(0, values);
+    } else {
+      getMatrix().setRow(row, values);
+    }
   }
   
   @Override
   public void setRow(int row, int[] values) {
-    getMatrix().setRow(row, values);
+    if (row < 0) {
+      getColumnHeader().getAnnotation(getIndex().size() + row).setRow(0, values);
+    } else {
+      getMatrix().setRow(row, values);
+    }
   }
   
   @Override
   public void setRow(int row, String[] values) {
-    getMatrix().setRow(row, values);
+    if (row < 0) {
+      getColumnHeader().getAnnotation(getIndex().size() + row).setRow(0, values);
+    } else {
+      getMatrix().setRow(row, values);
+    }
   }
   
   @Override
   public void setRow(int row, Object[] values) {
-    getMatrix().setRow(row, values);
+    if (row < 0) {
+      getColumnHeader().getAnnotation(getIndex().size() + row).setRow(0, values);
+    } else {
+      getMatrix().setRow(row, values);
+    }
   }
   
   @Override
   public void setColumn(int col, double[] values) {
-    getMatrix().setColumn(col, values);
+    if (col < 0) {
+      getIndex().getAnnotation(getIndex().size() + col).setRow(0, values);
+    } else {
+      getMatrix().setColumn(col, values);
+    }
+  }
+  
+  @Override
+  public void setColumn(int col, int[] values) {
+    if (col < 0) {
+      getIndex().getAnnotation(getIndex().size() + col).setRow(0, values);
+    } else {
+      getMatrix().setColumn(col, values);
+    }
   }
   
   @Override
   public void setColumn(int col, Object[] values) {
-    getMatrix().setColumn(col, values);
+    if (col < 0) {
+      getIndex().getAnnotation(getIndex().size() + col).setRow(0, values);
+    } else {
+      getMatrix().setColumn(col, values);
+    }
   }
+  
+  @Override
+  public void setColumn(int col, String[] values) {
+    if (col < 0) {
+      getIndex().getAnnotation(getIndex().size() + col).setRow(0, values);
+    } else {
+      getMatrix().setColumn(col, values);
+    }
+  }
+  
 
   /*
    * (non-Javadoc)
@@ -352,11 +395,11 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       return CellType.TEXT;
     } else if (row < 0) {
-      int s = altIndexModulo(row, getColumnAnnotationNames().size());
-      return getColumnAnnotations(s).getCellType(0, column);
+      int s = altIndexModulo(row, getColumnHeader().getNames().size());
+      return getColumnHeader().getAnnotation(s).getCellType(0, column);
     } else {
-      int s = altIndexModulo(column, getRowAnnotationNames().size());
-      return getRowAnnotations(s).getCellType(0, row);
+      int s = altIndexModulo(column, getIndex().getNames().size());
+      return getIndex().getAnnotation(s).getCellType(0, row);
     }
   }
 
@@ -373,7 +416,7 @@ public class DataFrame extends Matrix
     int r = 0;
 
     for (String name : names) {
-      setRowAnnotation(ROW_NAMES, r++, name);
+      getIndex().setAnnotation(ROW_NAMES, r++, name);
     }
   }
 
@@ -393,7 +436,7 @@ public class DataFrame extends Matrix
    * @param name the name
    */
   public void setRowName(int row, String name) {
-    setRowAnnotation(ROW_NAMES, row, name);
+    getIndex().setAnnotation(ROW_NAMES, row, name);
   }
 
   /**
@@ -401,13 +444,13 @@ public class DataFrame extends Matrix
    *
    * @return the row names
    */
-  public List<String> getRowNames() {
-    List<String> names = getRowAnnotationNames();
+  public String[] getRowNames() {
+    List<String> names = getIndex().getNames();
 
     if (names.size() > 0) {
-      return getRowAnnotationText(names.get(0));
+      return getIndex().getAnnotation(names.get(0)).rowToText(0);
     } else {
-      return Collections.emptyList();
+      return ArrayUtils.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -417,101 +460,7 @@ public class DataFrame extends Matrix
    * @see org.abh.common.math.matrix.MatrixAnnotations#getRowName(int)
    */
   public String getRowName(int i) {
-    return getRowNames().get(i);
-  }
-
-  /**
-   * Get the row annotation of a.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the row annotation
-   */
-  public Object getRowAnnotation(String name, int row) {
-    return getRowAnnotations(name).get(0, row);
-  }
-
-  /**
-   * Gets the row annotation text.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the row annotation text
-   */
-  public String getRowAnnotationText(String name, int row) {
-    String s = getRowAnnotations(name).getText(0, row);
-
-    if (s != null) {
-      return s;
-    } else {
-      return TextUtils.EMPTY_STRING;
-    }
-  }
-
-  /**
-   * Gets the row annotation value.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the row annotation value
-   */
-  public double getRowAnnotationValue(String name, int row) {
-    return getRowAnnotations(name).getValue(0, row);
-  }
-
-  /**
-   * Returns the row annotation at a particular column.
-   *
-   * @param row the row
-   * @return the row annotations
-   */
-  @Override
-  public List<String> getRowAnnotationText(int row) {
-    List<String> ret = new ArrayList<String>();
-
-    for (String name : getRowAnnotationNames()) {
-      ret.add(getRowAnnotationText(name, row));
-    }
-
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.MatrixAnnotations#getRowAnnotationValues(int)
-   */
-  @Override
-  public List<Double> getRowAnnotationValues(int row) {
-    List<Double> ret = new ArrayList<Double>();
-
-    for (String name : getRowAnnotationNames()) {
-      ret.add(getRowAnnotationValue(name, row));
-    }
-
-    return ret;
-  }
-
-  /**
-   * Returns the names of each extra column of annotation for the rows. This is
-   * exclusive of the core matrix.
-   *
-   * @param name the name
-   * @return the row annotations
-   */
-  public double[] getRowAnnotationValues(String name) {
-    return getRowAnnotations(name).rowToDoubleArray(0);
-  }
-
-  /**
-   * Gets the row annotation text.
-   *
-   * @param name the name
-   * @return the row annotation text
-   */
-  public List<String> getRowAnnotationText(String name) {
-    return getRowAnnotations(name).rowAsText(0);
+    return getRowNames()[i];
   }
 
   //
@@ -523,32 +472,14 @@ public class DataFrame extends Matrix
    * 
    * @see org.abh.lib.math.matrix.MatrixAnnotations#getColumnName(int)
    */
-  @Override
   public String getColumnName(int i) {
     if (i >= 0) {
-      return getColumnNames().get(i % getCols());
+      return getColumnNames()[i % getCols()];
     } else {
       // If there is a negative number, choose the row annotation name
       // going right to left
-      int s = altIndexModulo(i, getRowAnnotationNames().size());
-      return getRowAnnotationName(s);
-    }
-  }
-
-  /**
-   * Sets the column names.
-   *
-   * @param names the new column names
-   */
-  public void setColumnNames(List<String> names) {
-    if (CollectionUtils.isNullOrEmpty(names)) {
-      return;
-    }
-
-    int c = 0;
-
-    for (String name : names) {
-      setColumnAnnotation(COLUMN_NAMES, c++, name);
+      int s = altIndexModulo(i, getIndex().getNames().size());
+      return getIndex().getName(s);
     }
   }
 
@@ -558,7 +489,11 @@ public class DataFrame extends Matrix
    * @param names the new column names
    */
   public void setColumnNames(String... names) {
-    setColumnNames(Arrays.asList(names));
+    getColumnHeader().setHeadings(names);
+  }
+  
+  public void setColumnNames(Collection<String> names) {
+    getColumnHeader().setHeadings(names);
   }
 
   /**
@@ -568,7 +503,7 @@ public class DataFrame extends Matrix
    * @param name the name
    */
   public void setColumnName(int column, String name) {
-    setColumnAnnotation(COLUMN_NAMES, column, name);
+    getColumnHeader().setHeading(column, name);
   }
 
   /**
@@ -577,13 +512,13 @@ public class DataFrame extends Matrix
    *
    * @return the column names
    */
-  public List<String> getColumnNames() {
-    List<String> names = getColumnAnnotationNames();
+  public String[] getColumnNames() {
+    List<String> names = getColumnHeader().getNames();
 
     if (names.size() > 0) {
-      return getColumnAnnotationText(names.get(0));
+      return getColumnHeader().getAnnotation(names.get(0)).rowToText(0);
     } else {
-      return Collections.emptyList();
+      return ArrayUtils.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -593,131 +528,24 @@ public class DataFrame extends Matrix
    * @return the checks for header
    */
   public boolean getHasHeader() {
-    return getColumnNames().size() > 0;
+    return getColumnHeader().size() > 0;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.MatrixAnnotations#getColumnAnnotationText(int)
-   */
-  @Override
-  public List<String> getColumnAnnotationText(int row) {
-    List<String> ret = new ArrayList<String>();
-
-    for (String name : getColumnAnnotationNames()) {
-      ret.add(getColumnAnnotationText(name, row));
-    }
-
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.MatrixAnnotations#getColumnAnnotationValues(int)
-   */
-  @Override
-  public List<Double> getColumnAnnotationValues(int row) {
-    List<Double> ret = new ArrayList<Double>();
-
-    for (String name : getColumnAnnotationNames()) {
-      ret.add(getColumnAnnotationValue(name, row));
-    }
-
-    return ret;
-  }
-
-  /**
-   * Gets the column annotation values.
-   *
-   * @param name the name
-   * @return the column annotation values
-   */
-  public double[] getColumnAnnotationValues(String name) {
-    return getColumnAnnotations(name).rowToDoubleArray(0);
-  }
-
-  /**
-   * Gets the column annotation text.
-   *
-   * @param name the name
-   * @return the column annotation text
-   */
-  public List<String> getColumnAnnotationText(String name) {
-    return getColumnAnnotations(name).rowAsText(0);
-  }
-
-  /**
-   * Gets the column annotations.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the column annotations
-   */
-  public Object getColumnAnnotations(String name, int row) {
-    if (row < 0 || row >= getRows()) {
-      return null;
-    }
-
-    return getColumnAnnotations(name).get(0, row);
-  }
-
-  /**
-   * Gets the column annotation.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the column annotation
-   */
-  public Object getColumnAnnotation(String name, int row) {
-    return getColumnAnnotations(name).get(0, row);
-  }
-
-  /**
-   * Gets the column annotation text.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the column annotation text
-   */
-  public String getColumnAnnotationText(String name, int row) {
-    String s = getColumnAnnotations(name).getText(0, row);
-
-    if (s != null) {
-      return s;
-    } else {
-      return TextUtils.EMPTY_STRING;
-    }
-  }
-
-  /**
-   * Gets the column annotation value.
-   *
-   * @param name the name
-   * @param row the row
-   * @return the column annotation value
-   */
-  public double getColumnAnnotationValue(String name, int row) {
-    return getColumnAnnotations(name).getValue(0, row);
-  }
 
   /*
    * @Override public List<Object> columnAsList(int column) { if (column >= 0) {
    * return getInnerMatrix().columnAsList(column); } else { return
-   * getRowAnnotations(column).rowAsList(0); } }
+   * getIndex().getAnnotation(column).rowAsList(0); } }
    * 
    * @Override public List<Double> columnAsDouble(int column) { if (column >= 0)
    * { return getInnerMatrix().columnAsDouble(column); } else { return
-   * getRowAnnotations(column).rowAsDouble(0); } }
+   * getIndex().getAnnotation(column).rowAsDouble(0); } }
    * 
    * @Override public List<String> columnAsText(int column) {
    * System.err.println("col as text " + column);
    * 
    * if (column >= 0) { return getInnerMatrix().columnAsText(column); } else {
-   * return getRowAnnotations(column).rowAsText(0); } }
+   * return getIndex().getAnnotation(column).rowAsText(0); } }
    */
 
   @Override
@@ -860,14 +688,14 @@ public class DataFrame extends Matrix
     // ret.setColumnNames(getRowNames());
     // ret.setRowNames(getColumnNames());
 
-    for (String name : getRowAnnotationNames()) { // CollectionUtils.tail(getRowAnnotationNames()))
+    for (String name : getIndex().getNames()) { // CollectionUtils.tail(getIndex().getNames()))
                                                   // {
-      ret.setColumnAnnotations(name, getRowAnnotations(name));
+      ret.getColumnHeader().setAnnotation(name, getIndex().getAnnotation(name));
     }
 
-    for (String name : getColumnAnnotationNames()) { // CollectionUtils.tail(getColumnAnnotationNames()))
+    for (String name : getColumnHeader().getNames()) { // CollectionUtils.tail(getColumns().getNames()))
                                                      // {
-      ret.setRowAnnotations(name, getColumnAnnotations(name));
+      ret.getIndex().setAnnotation(name, getColumnHeader().getAnnotation(name));
     }
 
     return ret;
@@ -926,8 +754,8 @@ public class DataFrame extends Matrix
     MatrixDim dim = getShape();
     
     dim = new MatrixDim(
-        dim.getRows() + getColumnAnnotationNames().size(),
-        dim.getCols() + getRowAnnotationNames().size());
+        dim.getRows() + getColumnHeader().getNames().size(),
+        dim.getCols() + getIndex().getNames().size());
 
     return dim;
   }
@@ -975,10 +803,10 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       return 0;
     } else if (row < 0) {
-      return getColumnAnnotations(row).getValue(0, column);
+      return getColumnHeader().getAnnotation(row).getValue(0, column);
     } else {
       // col < 0
-      return getRowAnnotations(column).getValue(0, row);
+      return getIndex().getAnnotation(column).getValue(0, row);
     }
   }
   
@@ -991,10 +819,10 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       return 0;
     } else if (row < 0) {
-      return getColumnAnnotations(row).getInt(0, column);
+      return getColumnHeader().getAnnotation(row).getInt(0, column);
     } else {
       // col < 0
-      return getRowAnnotations(column).getInt(0, row);
+      return getIndex().getAnnotation(column).getInt(0, row);
     }
   }
   
@@ -1007,10 +835,10 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       return 0;
     } else if (row < 0) {
-      return getColumnAnnotations(row).getLong(0, column);
+      return getColumnHeader().getAnnotation(row).getLong(0, column);
     } else {
       // col < 0
-      return getRowAnnotations(column).getLong(0, row);
+      return getIndex().getAnnotation(column).getLong(0, row);
     }
   }
 
@@ -1026,12 +854,12 @@ public class DataFrame extends Matrix
     if (row >= 0 && column >= 0) {
       return getMatrix().getText(row, column);
     } else if (row < 0 && column < 0) {
-      return getRowAnnotationName(column);
+      return getIndex().getName(column);
     } else if (row < 0) {
-      return getColumnAnnotations(row).getText(0, column);
+      return getColumnHeader().getAnnotation(row).getText(0, column);
     } else {
       // col < 0
-      return getRowAnnotations(column).getText(0, row);
+      return getIndex().getAnnotation(column).getText(0, row);
     }
   }
 
@@ -1045,21 +873,21 @@ public class DataFrame extends Matrix
     if (row >= 0 && column >= 0) {
       return getMatrix().get(row, column);
     } else if (row < 0 && column < 0) {
-      return getRowAnnotationName(column);
+      return getIndex().getName(column);
     } else if (row < 0) {
-      return getColumnAnnotations(row).get(0, column);
+      return getColumnHeader().getAnnotation(row).get(0, column);
     } else {
       // col < 0
-      return getRowAnnotations(column).get(0, row);
+      return getIndex().getAnnotation(column).get(0, row);
     }
 
     /*
      * MatrixCellRef c = translate(row, column);
      * 
      * if (c.row < 0 && c.column < 0) { return
-     * getRowAnnotationNames().get(column); } else if (c.row < 0) { return
-     * getColumnAnnotations(row).get(0, c.column); } else if (c.column < 0) {
-     * return getRowAnnotations(column).get(0, c.row); } else { return
+     * getIndex().getNames().get(column); } else if (c.row < 0) { return
+     * getColumns().getAnnotation(row).get(0, c.column); } else if (c.column < 0) {
+     * return getIndex().getAnnotation(column).get(0, c.row); } else { return
      * getInnerMatrix().get(c.row, c.column); }
      */
   }
@@ -1078,18 +906,18 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       // Do nothing
     } else if (row < 0) {
-      getColumnAnnotations(row).update(0, column, v);
+      getColumnHeader().getAnnotation(row).update(0, column, v);
     } else {
       // col < 0
-      getRowAnnotations(column).update(0, row, v);
+      getIndex().getAnnotation(column).update(0, row, v);
     }
 
     /*
      * MatrixCellRef c = translate(row, column);
      * 
      * if (c.row < 0 && c.column < 0) { // Do nothing } else if (c.row < 0) {
-     * getColumnAnnotations(row).updateValue(0, c.column, v); } else if
-     * (c.column < 0) { getRowAnnotations(column).updateValue(0, c.row, v); }
+     * getColumns().getAnnotation(row).updateValue(0, c.column, v); } else if
+     * (c.column < 0) { getIndex().getAnnotation(column).updateValue(0, c.row, v); }
      * else { getInnerMatrix().updateValue(c.row, c.column, v); }
      */
   }
@@ -1108,10 +936,10 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       // Do nothing
     } else if (row < 0) {
-      getColumnAnnotations(row).update(0, column, v);
+      getColumnHeader().getAnnotation(row).update(0, column, v);
     } else {
       // col < 0
-      getRowAnnotations(column).update(0, row, v);
+      getIndex().getAnnotation(column).update(0, row, v);
     }
   }
 
@@ -1129,314 +957,82 @@ public class DataFrame extends Matrix
     } else if (row < 0 && column < 0) {
       // Do nothing
     } else if (row < 0) {
-      getColumnAnnotations(row).update(0, column, v);
+      getColumnHeader().getAnnotation(row).update(0, column, v);
     } else {
       // col < 0
-      getRowAnnotations(column).update(0, row, v);
+      getIndex().getAnnotation(column).update(0, row, v);
     }
   }
-
-  public Annotation getRowAnnotation() {
-    return mRowAnnotation;
-  }
-
-  public String getRowAnnotationName(int index) {
-    return mRowAnnotation.getName(index);
-  }
-
-  /**
-   * Returns the names of each extra column of annotation for the rows. This is
-   * exclusive of the core matrix.
-   *
-   * @return the row annotation names
-   */
-  public List<String> getRowAnnotationNames() {
-    return mRowAnnotation.getNames();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.lib.math.matrix.DataFrame#getRowAnnotationText(java.lang.String)
-   */
-  public Matrix getRowAnnotations(String name) {
-    return mRowAnnotation.getAnnotation(name);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#getRowAnnotations(int)
-   */
-  public Matrix getRowAnnotations(int i) {
-    return mRowAnnotation.getAnnotation(i);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.DataFrame#setRowAnnotation(java.lang.String,
-   * java.util.List)
-   */
-  // @Override
-  // public void setRowAnnotations(String name, Collection<? extends Object>
-  // values) {
-  // mRowAnnotation.setAnnotation(name, values);
-  // }
-
-  public void setRowAnnotations(String name, Matrix values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumRowAnnotations(java.lang.String,
-   * double[])
-   */
-  public void setRowAnnotations(String name, double[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumRowAnnotations(java.lang.String,
-   * int[])
-   */
-  public void setRowAnnotations(String name, int[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
   
-  public void setRowAnnotations(String name, boolean[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
-  
-  public void setRowAnnotations(String name, long[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
-  
-  public void setRowAnnotations(String name, String[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
-  
-  public void setRowAnnotations(String name, Object[] values) {
-    mRowAnnotation.setAnnotation(name, values);
-  }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.DataFrame#setRowAnnotation(java.lang.String,
-   * int, java.lang.Object)
-   */
-  public void setRowAnnotation(String name, int row, double value) {
-    mRowAnnotation.setAnnotation(name, row, value);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setRowAnnotation(java.lang.String,
-   * int, java.lang.String)
-   */
-  public void setRowAnnotation(String name, int row, String value) {
-    mRowAnnotation.setAnnotation(name, row, value);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setRowAnnotation(java.lang.String,
-   * int, java.lang.Object)
-   */
-  public void setRowAnnotation(String name, int row, Object value) {
-    mRowAnnotation.setAnnotation(name, row, value);
-  }
-
-  public String getColumnAnnotationName(int index) {
-    return mColumnAnnotation.getName(index);
-  }
-
-  public Annotation getColumnAnnotation() {
-    return mColumnAnnotation;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.lib.math.matrix.MatrixAnnotations#getColumnAnnotationNames()
-   */
-  public List<String> getColumnAnnotationNames() {
-    return mColumnAnnotation.getNames();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.lib.math.matrix.DataFrame#getColumnAnnotations(java.lang.String)
-   */
-  public Matrix getColumnAnnotations(String name) {
-    return mColumnAnnotation.getAnnotation(name);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#getColumnAnnotations(int)
-   */
-  public Matrix getColumnAnnotations(int i) {
-    return mColumnAnnotation.getAnnotation(i);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.lib.math.matrix.DataFrame#setColumnAnnotation(java.lang.String,
-   * java.util.List)
-   */
-  // @Override
-  // public void setColumnAnnotations(String name, Collection<? extends Object>
-  // values) {
-  // mColumnAnnotation.setAnnotation(name, values);
-  // }
-
-  public void setColumnAnnotations(String name, Matrix m) {
-    mColumnAnnotation.setAnnotation(name, m);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumColumnAnnotations(java.lang.
-   * String, double[])
-   */
-  public void setColumnAnnotations(String name, double[] values) {
-    mColumnAnnotation.setAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setNumColumnAnnotations(java.lang.
-   * String, int[])
-   */
-  public void setColumnAnnotations(String name, int[] values) {
-    mColumnAnnotation.setAnnotation(name, values);
-  }
-  
-  public void setColumnAnnotations(String name, String[] values) {
-    mColumnAnnotation.setAnnotation(name, values);
-  }
-  
-  public void setColumnAnnotations(String name, Object[] values) {
-    mColumnAnnotation.setAnnotation(name, values);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.lib.math.matrix.DataFrame#setColumnAnnotation(java.lang.String,
-   * int, java.lang.Object)
-   */
-  public void setColumnAnnotation(String name, int column, double value) {
-    mColumnAnnotation.setAnnotation(name, column, value);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setColumnAnnotation(java.lang.String,
-   * int, java.lang.String)
-   */
-  public void setColumnAnnotation(String name, int column, String value) {
-    mColumnAnnotation.setAnnotation(name, column, value);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.abh.common.math.matrix.DataFrame#setColumnAnnotation(java.lang.String,
-   * int, java.lang.Object)
-   */
-  public void setColumnAnnotation(String name, int column, Object value) {
-    mColumnAnnotation.setAnnotation(name, column, value);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.abh.common.math.matrix.DataFrame#columnAsDouble(int)
-   */
   @Override
-  public double[] columnToDoubleArray(int column) {
+  public void columnToDouble(int column, double[] data) {
     if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowToDoubleArray(0);
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + column))
+              .columnToDouble(0, data);
     } else {
-      return getMatrix().columnToDoubleArray(column);
+      getMatrix().columnToDouble(column, data);
     }
   }
   
   @Override
-  public String[] columnToTextArray(int column) {
+  public void columnToInt(int column, int[] data) {
     if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowToTextArray(0);
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + column))
+              .columnToInt(0, data);
     } else {
-      return getMatrix().columnToTextArray(column);
+      getMatrix().columnToInt(column, data);
     }
   }
-
+  
+  @Override
+  public void columnToText(int column, String[] data) {
+    if (column < 0) {
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + column))
+              .rowToText(0, data);
+    } else {
+      getMatrix().columnToText(column, data);
+    }
+  }
+  
   /*
    * (non-Javadoc)
    * 
    * @see org.abh.common.math.matrix.DataFrame#rowAsDouble(int)
    */
   @Override
-  public void rowToDoubleArray(int row, double[] data) {
+  public void rowToDouble(int row, double[] data) {
     if (row < 0) {
-      getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
-              .rowToDoubleArray(0, data);
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + row))
+              .rowToDouble(0, data);
     } else {
-      getMatrix().rowToDoubleArray(row, data);
+      getMatrix().rowToDouble(row, data);
     }
   }
   
   @Override
-  public void rowToTextArray(int row, String[] data) {
+  public void rowToText(int row, String[] data) {
     if (row < 0) {
-      getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
-              .rowToTextArray(0, data);
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + row))
+              .rowToText(0, data);
     } else {
-      getMatrix().rowToTextArray(row, data);
+      getMatrix().rowToText(row, data);
     }
   }
   
   @Override
-  public void rowToArray(int row, Object[] data) {
+  public void rowToObject(int row, Object[] data) {
     if (row < 0) {
-      getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + row))
-              .rowToArray(0, data);
+      getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + row))
+              .rowToObject(0, data);
     } else {
-      getMatrix().rowToArray(row, data);
+      getMatrix().rowToObject(row, data);
     }
   }
 
@@ -1446,13 +1042,13 @@ public class DataFrame extends Matrix
    * @see org.abh.common.math.matrix.DataFrame#rowAsText(int)
    */
   @Override
-  public List<String> rowAsText(int column) {
+  public String[] rowToText(int column) {
     if (column < 0) {
-      return getRowAnnotations(
-          getRowAnnotationNames().get(getRowAnnotationNames().size() + column))
-              .rowAsText(0);
+      return getIndex().getAnnotation(
+          getIndex().getNames().get(getIndex().getNames().size() + column))
+              .rowToText(0);
     } else {
-      return getMatrix().rowAsText(column);
+      return getMatrix().rowToText(column);
     }
   }
   
@@ -1597,8 +1193,8 @@ public class DataFrame extends Matrix
 
     DataFrame ret = new DataFrame(newInnerM);
 
-    copyRowAnnotations(m, ret);
-    copyColumnAnnotations(m, ret, columns);
+    copyIndex(m, ret);
+    copyColumnHeaders(m, ret, columns);
 
     return ret;
   }
@@ -1634,8 +1230,8 @@ public class DataFrame extends Matrix
 
     DataFrame ret = new DataFrame(newInnerM);
 
-    copyRowAnnotations(m, ret);
-    copyColumnAnnotationsIndexed(m, ret, columns);
+    copyIndex(m, ret);
+    copyColumnHeadersIndexed(m, ret, columns);
 
     return ret;
   }
@@ -1702,10 +1298,21 @@ public class DataFrame extends Matrix
 
     DataFrame ret = new DataFrame(m2);
 
-    copyRowAnnotations(f, ret, rows);
-    copyColumnAnnotations(f, ret);
+    copyIndex(f, ret, rows);
+    copyColumnHeaders(f, ret);
 
     return ret;
+  }
+  
+  /**
+   * Return a subset of the matrix by rows. The subset rows are returned in
+   * the order specified.
+   * 
+   * @param rows
+   * @return
+   */
+  public DataFrame copyRows(int[] rows) {
+    return copyRows(this, rows);
   }
   
   public static DataFrame copyRows(DataFrame f, int[] rows) {
@@ -1717,8 +1324,8 @@ public class DataFrame extends Matrix
 
     DataFrame ret = new DataFrame(m2);
 
-    copyRowAnnotations(f, ret, rows);
-    copyColumnAnnotations(f, ret);
+    copyIndex(f, ret, rows);
+    copyColumnHeaders(f, ret);
 
     return ret;
   }
@@ -1742,8 +1349,8 @@ public class DataFrame extends Matrix
 
     DataFrame ret = new DataFrame(newInnerM);
 
-    copyRowAnnotationsIndexed(m, ret, rows);
-    copyColumnAnnotations(m, ret);
+    copyIndexFromIndexed(m, ret, rows);
+    copyColumnHeaders(m, ret);
 
     return ret;
   }
@@ -1903,7 +1510,7 @@ public class DataFrame extends Matrix
       List<Integer> columns) {
     DataFrame ret = createDataFrame(m.getRows(), columns.size());
 
-    DataFrame.copyRowAnnotations(m, ret);
+    DataFrame.copyIndex(m, ret);
 
     for (int i = 0; i < columns.size(); ++i) {
       ret.copyColumn(m, columns.get(i), i);
@@ -1923,7 +1530,7 @@ public class DataFrame extends Matrix
       List<Integer> rows) {
     DataFrame ret = createDataFrame(rows.size(), m.getCols());
 
-    DataFrame.copyColumnAnnotations(m, ret);
+    DataFrame.copyColumnHeaders(m, ret);
 
     for (int i = 0; i < rows.size(); ++i) {
       ret.copyRow(m, rows.get(i), i);
@@ -1981,7 +1588,7 @@ public class DataFrame extends Matrix
       writer.newLine();
 
       List<String> rowAnnotationNames = CollectionUtils
-          .head(matrix.getRowAnnotationNames(), 1);
+          .head(matrix.getIndex().getNames(), 1);
 
       writer.write(EST_ANNOTATION_ROWS);
 
@@ -1999,7 +1606,7 @@ public class DataFrame extends Matrix
       writer.newLine();
 
       List<String> columnAnnotationNames = CollectionUtils
-          .head(matrix.getColumnAnnotationNames(), 1);
+          .head(matrix.getColumnHeader().getNames(), 1);
 
       writer.write(EST_ANNOTATION_COLUMNS);
 
@@ -2032,7 +1639,7 @@ public class DataFrame extends Matrix
         writer.write(TextUtils.repeat(TextUtils.TAB_DELIMITER,
             rowAnnotationNames.size() + 1));
 
-        writer.write(join.toString(matrix.getColumnAnnotationText(name)));
+        writer.write(join.toString(matrix.getColumnHeader().getAnnotation(name)));
         writer.newLine();
       }
 
@@ -2041,7 +1648,7 @@ public class DataFrame extends Matrix
 
         for (String name : rowAnnotationNames) {
           writer.write(TextUtils.TAB_DELIMITER);
-          writer.write(matrix.getRowAnnotation(name, i).toString());
+          writer.write(matrix.getIndex().getAnnotation(name, i).toString());
         }
 
         for (int j = 0; j < matrix.getCols(); ++j) {
@@ -2107,21 +1714,21 @@ public class DataFrame extends Matrix
       writer.write(EST_ANNOTATION_ROWS);
 
       writer.write(TextUtils.TAB_DELIMITER);
-      writer.write(Integer.toString(matrix.getRowAnnotationNames().size()));
+      writer.write(Integer.toString(matrix.getIndex().getNames().size()));
 
-      if (matrix.getRowAnnotationNames().size() > 0) {
+      if (matrix.getIndex().getNames().size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(join.toString(matrix.getRowAnnotationNames()));
+        writer.write(join.toString(matrix.getIndex().getNames()));
       }
 
       writer.newLine();
 
-      for (String name : matrix.getRowAnnotationNames()) {
+      for (String name : matrix.getIndex().getNames()) {
         writer.write(EST_ANNOTATION_ROW);
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(name);
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(join.toString(matrix.getRowAnnotationText(name)));
+        writer.write(join.toString(matrix.getIndex().getText(name)));
         writer.newLine();
       }
 
@@ -2132,22 +1739,22 @@ public class DataFrame extends Matrix
       writer.write(EST_ANNOTATION_COLUMNS);
 
       writer.write(TextUtils.TAB_DELIMITER);
-      writer.write(Integer.toString(matrix.getColumnAnnotationNames().size()));
+      writer.write(Integer.toString(matrix.getColumnHeader().getNames().size()));
 
-      if (matrix.getColumnAnnotationNames().size() > 0) {
+      if (matrix.getColumnHeader().getNames().size() > 0) {
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(
-            join.toString(matrix.getColumnAnnotationNames()));
+            join.toString(matrix.getColumnHeader().getNames()));
       }
 
       writer.newLine();
 
-      for (String name : matrix.getColumnAnnotationNames()) {
+      for (String name : matrix.getColumnHeader().getNames()) {
         writer.write(EST_ANNOTATION_COLUMN);
         writer.write(TextUtils.TAB_DELIMITER);
         writer.write(name);
         writer.write(TextUtils.TAB_DELIMITER);
-        writer.write(join.toString(matrix.getColumnAnnotationText(name)));
+        writer.write(join.toString(matrix.getColumnHeader().getAnnotation(name)));
         writer.newLine();
       }
 
@@ -2191,9 +1798,9 @@ public class DataFrame extends Matrix
     try {
       boolean hasHeader = false;
 
-      if (matrix.getRowAnnotationNames() != null
-          && matrix.getRowAnnotationNames().size() > 0) {
-        writer.write(join.toString(matrix.getRowAnnotationNames()));
+      if (matrix.getIndex().getNames() != null
+          && matrix.getIndex().getNames().size() > 0) {
+        writer.write(join.toString(matrix.getIndex().getNames()));
 
         writer.write(TextUtils.TAB_DELIMITER);
 
@@ -2201,7 +1808,7 @@ public class DataFrame extends Matrix
       }
 
       if (matrix.getColumnNames() != null
-          && matrix.getColumnNames().size() > 0) {
+          && matrix.getColumnHeader().size() > 0) {
         writer.write(join.toString(matrix.getColumnNames()));
 
         hasHeader = true;
@@ -2221,10 +1828,10 @@ public class DataFrame extends Matrix
       }
 
       for (int i = 0; i < matrix.getRows(); ++i) {
-        for (String name : matrix.getRowAnnotationNames()) {
+        for (String name : matrix.getIndex().getNames()) {
           // System.err.println("aha " + name + " " + i);
 
-          writer.write(matrix.getRowAnnotationText(name, i));
+          writer.write(matrix.getIndex().getText(name, i));
           writer.write(TextUtils.TAB_DELIMITER);
         }
 
@@ -2273,8 +1880,8 @@ public class DataFrame extends Matrix
     String ls = text.toLowerCase();
 
     for (int i = 0; i < matrix.getRows(); ++i) {
-      for (String name : matrix.getRowAnnotationNames()) {
-        if (matrix.getRowAnnotationText(name, i).toLowerCase().contains(ls)) {
+      for (String name : matrix.getIndex().getNames()) {
+        if (matrix.getIndex().getText(name, i).toLowerCase().contains(ls)) {
           ret.add(i);
           break;
         }
@@ -2343,17 +1950,17 @@ public class DataFrame extends Matrix
       boolean keep) {
     List<Integer> ret = new ArrayList<Integer>();
 
-    List<String> annotations = m.getRowAnnotationText(rowAnnotation);
+    String[] annotations = m.getIndex().getText(rowAnnotation);
 
     if (keep) {
       for (int i = 0; i < m.getRows(); ++i) {
-        if (regex.matcher(annotations.get(i)).matches()) {
+        if (regex.matcher(annotations[i]).matches()) {
           ret.add(i);
         }
       }
     } else {
       for (int i = 0; i < m.getRows(); ++i) {
-        if (!regex.matcher(annotations.get(i)).matches()) {
+        if (!regex.matcher(annotations[i]).matches()) {
           ret.add(i);
         }
       }
@@ -2385,15 +1992,16 @@ public class DataFrame extends Matrix
 
     if (row >= 0) {
       getMatrix().copyRow(from.getMatrix(), row, toRow);
-      copyRowAnnotation(from, row, this, toRow);
+      copyIndex(from, row, this, toRow);
     } else {
       // co >= 0
       // We are copying the row annotation of the from matrix to a
       // column in the to matrix
-      //Object[] values = from.getColumnAnnotations(row).rowAsList(0);
+      //Object[] values = from.getColumns().getAnnotation(row).rowAsList(0);
 
-      // to.setRowAnnotation(from.getColumnAnnotationNames().get(0), row, );
-      getMatrix().setRow(toRow, from.getColumnAnnotations(row).rowToArray(0));
+      Object[] values = new Object[from.getCols()];
+      from.getColumnHeader().getAnnotation(row).rowToObject(0, values);
+      getMatrix().setRow(toRow, values);
     }
   }
 
@@ -2430,10 +2038,10 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param row the row
    */
-  public static void copyRowAnnotation(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       DataFrame to,
       int row) {
-    copyRowAnnotation(from, row, to, row);
+    copyIndex(from, row, to, row);
   }
 
   /**
@@ -2444,12 +2052,12 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param toRow the to row
    */
-  public static void copyRowAnnotation(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       int fromRow,
       DataFrame to,
       int toRow) {
-    for (String name : from.getRowAnnotationNames()) {
-      to.setRowAnnotation(name, toRow, from.getRowAnnotation(name, fromRow));
+    for (String name : from.getIndex().getNames()) {
+      to.getIndex().setAnnotation(name, toRow, from.getIndex().getAnnotation(name, fromRow));
     }
   }
 
@@ -2459,9 +2067,9 @@ public class DataFrame extends Matrix
    * @param from the from
    * @param to the to
    */
-  public static void copyRowAnnotations(final DataFrame from, DataFrame to) {
-    for (String name : from.getRowAnnotationNames()) {
-      copyRowAnnotations(from, name, to);
+  public static void copyIndex(final DataFrame from, DataFrame to) {
+    for (String name : from.getIndex().getNames()) {
+      copyIndex(from, name, to);
     }
   }
 
@@ -2472,20 +2080,20 @@ public class DataFrame extends Matrix
    * @param name the name
    * @param to the to
    */
-  public static void copyRowAnnotations(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       String name,
       DataFrame to) {
-    copyRowAnnotations(from, name, true, to);
+    copyIndex(from, name, true, to);
   }
   
-  public static void copyRowAnnotations(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       String name,      
       boolean shallow,
       DataFrame to) {
     if (shallow) {
-      to.setRowAnnotations(name, from.getRowAnnotations(name));
+      to.getIndex().setAnnotation(name, from.getIndex().getAnnotation(name));
     } else {
-      to.setRowAnnotations(name, from.getRowAnnotations(name).copy());
+      to.getIndex().setAnnotation(name, from.getIndex().getAnnotation(name).copy());
     }
   }
 
@@ -2496,33 +2104,34 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param rows the rows
    */
-  public static void copyRowAnnotations(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       DataFrame to,
       int... rows) {
-    for (String name : from.getRowAnnotationNames()) {
+    
+    for (String name : from.getIndex().getNames()) {
       
-      switch (from.getRowAnnotations(name).getType()) {
+      switch (from.getIndex().getAnnotation(name).getType()) {
       case NUMBER:
-        double[] annotations = from.getRowAnnotations(name).rowToDoubleArray(0);
+        double[] v = from.getIndex().getAnnotation(name).rowToDouble(0);
 
-        double[] subAnnotations = ArrayUtils.subList(annotations, rows);
+        double[] subAnnotations = ArrayUtils.subList(v, rows);
 
-        to.setRowAnnotations(name, subAnnotations);
+        to.getIndex().setAnnotation(name, subAnnotations);
         break;
       case TEXT:
-        String[] ta = from.getRowAnnotations(name).rowToTextArray(0);
+        String[] ta = from.getIndex().getAnnotation(name).rowToText(0);
 
         String[] ts = ArrayUtils.subList(ta, rows);
 
-        to.setRowAnnotations(name, ts);
+        to.getIndex().setAnnotation(name, ts);
         break;
       default:
-        // Mixed
-        Object[] l = from.getRowAnnotations(name).rowToArray(0);
+        Object[] oa = from.getIndex().getAnnotation(name).rowToObject(0);
 
-        Object[] ls = ArrayUtils.subList(l, rows);
+        Object[] ls = ArrayUtils.subList(oa, rows);
 
-        to.setRowAnnotations(name, ls);
+        to.getIndex().setAnnotation(name, ls);
+
         break;
       }
     }
@@ -2535,83 +2144,76 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param rows the rows
    */
-  public static void copyRowAnnotations(final DataFrame from,
+  public static void copyIndex(final DataFrame from,
       DataFrame to,
       Collection<Integer> rows) {
-    for (String name : from.getRowAnnotationNames()) {
+    
+    for (String name : from.getIndex().getNames()) {
   
-      switch (from.getRowAnnotations(name).getType()) {
+      switch (from.getIndex().getAnnotation(name).getType()) {
       case NUMBER:
-        double[] annotations = from.getRowAnnotations(name).rowToDoubleArray(0);
-
-        double[] subAnnotations = CollectionUtils.subList(annotations, rows);
-
-        to.setRowAnnotations(name, subAnnotations);
+        double[] va = from.getIndex().getAnnotation(name).rowToDouble(0);
+        double[] subAnnotations = CollectionUtils.subList(va, rows);
+        to.getIndex().setAnnotation(name, subAnnotations);
         break;
       case TEXT:
-        String[] ta = from.getRowAnnotations(name).rowToTextArray(0);
-
+        String[] ta = from.getIndex().getAnnotation(name).rowToText(0);
         String[] ts = CollectionUtils.subList(ta, rows);
-
-        to.setRowAnnotations(name, ts);
+        to.getIndex().setAnnotation(name, ts);
         break;
       default:
         // Mixed
-        Object[] l = from.getRowAnnotations(name).rowToArray(0);
-
-        Object[] ls = CollectionUtils.subList(l, rows);
-
-        to.setRowAnnotations(name, ls);
+        Object[] o = from.getIndex().getAnnotation(name).rowToObject(0);
+        Object[] ls = CollectionUtils.subList(o, rows);
+        to.getIndex().setAnnotation(name, ls);
         break;
       }
     }
   }
 
   /**
-   * Copy row annotations indexed.
+   * Copy row annotations using an indexed list.
    *
    * @param <V> the value type
    * @param from the from
    * @param to the to
    * @param rows the rows
    */
-  public static <V extends Comparable<? super V>> void copyRowAnnotationsIndexed(
+  public static <V extends Comparable<? super V>> void copyIndexFromIndexed(
       final DataFrame from,
       DataFrame to,
       List<Indexed<Integer, V>> rows) {
-    
-    for (String name : from.getRowAnnotationNames()) {
-      switch (from.getRowAnnotations(name).getType()) {
+    for (String name : from.getIndex().getNames()) {
+      switch (from.getIndex().getAnnotation(name).getType()) {
       case NUMBER:
-        double[] l = from.getRowAnnotations(name).rowToDoubleArray(0);
+        double[] va = from.getIndex().getAnnotation(name).rowToDouble(0);
 
-        double[] ls = CollectionUtils.subListIndexed(l,rows);
+        double[] ls = CollectionUtils.subListIndexed(va, rows);
 
-        to.setRowAnnotations(name, ls);
+        to.getIndex().setAnnotation(name, ls);
         break;
       case TEXT:
-        String[] t = from.getRowAnnotations(name).rowToTextArray(0);
+        String[] ta = from.getIndex().getAnnotation(name).rowToText(0);
+        String[] ts = CollectionUtils.subListIndexed(ta, rows);
 
-        String[] ts = CollectionUtils.subListIndexed(t, rows);
-
-        to.setRowAnnotations(name, ts);
+        to.getIndex().setAnnotation(name, ts);
         break;
       default:
-        Object[] o = from.getRowAnnotations(name).rowToArray(0);
+        Object[] oa = from.getIndex().getAnnotation(name).rowToObject(0);
 
-        Object[] os = CollectionUtils.subListIndexed(o, rows);
+        Object[] os = CollectionUtils.subListIndexed(oa, rows);
 
-        to.setRowAnnotations(name, os);
+        to.getIndex().setAnnotation(name, os);
         break;
       }
 
       /*
-       * List<Object> annotations = from.getRowAnnotations(name).rowAsList(0);
+       * List<Object> annotations = from.getIndex().getAnnotation(name).rowAsList(0);
        * 
        * List<Object> subAnnotations =
        * CollectionUtils.subListIndexed(annotations, rows);
        * 
-       * to.setRowAnnotations(name, subAnnotations);
+       * to.getIndex().setAnnotation(name, subAnnotations);
        */
     }
   }
@@ -2626,7 +2228,7 @@ public class DataFrame extends Matrix
   @Override
   public void copyColumn(final Matrix from, int column, int toColumn) {
     if (from instanceof DataFrame) {
-      copyColumnAnnotation((DataFrame) from, column, this, toColumn);
+      CopyColumnHeader((DataFrame) from, column, this, toColumn);
     }
 
     super.copyColumn(from, column, toColumn); // getInnerMatrix().copyColumn(from,
@@ -2653,16 +2255,18 @@ public class DataFrame extends Matrix
   public void copyColumn(final DataFrame from, int column, int toColumn) {
 
     if (column >= 0) {
-      copyColumnAnnotation(from, column, this, toColumn);
+      CopyColumnHeader(from, column, this, toColumn);
 
       super.copyColumn(from, column, toColumn);
     } else {
       // co >= 0
       // We are copying the row annotation of the from matrix to a
       // column in the to matrix
-      Object[] values = from.getRowAnnotations(column).rowToArray(0);
+      
+      Object[] values = new Object[getCols()];
+      from.getIndex().getAnnotation(column).rowToObject(0, values);
 
-      setColumnName(toColumn, from.getRowAnnotationName(column));
+      setColumnName(toColumn, from.getIndex().getName(column));
       setColumn(toColumn, values);
     }
   }
@@ -2675,15 +2279,15 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param offset the offset
    */
-  public static void copyColumnAnnotation(final DataFrame from,
+  public static void CopyColumnHeader(final DataFrame from,
       int column,
       DataFrame to,
       int offset) {
 
-    for (String name : from.getColumnAnnotationNames()) {
-      to.setColumnAnnotation(name,
+    for (String name : from.getColumnHeader().getNames()) {
+      to.getColumnHeader().setAnnotation(name,
           offset,
-          from.getColumnAnnotation(name, column));
+          from.getColumnHeader().getAnnotation(name, column));
     }
   }
 
@@ -2693,9 +2297,9 @@ public class DataFrame extends Matrix
    * @param from the from
    * @param to the to
    */
-  public static void copyColumnAnnotations(final DataFrame from, DataFrame to) {
-    for (String name : from.getColumnAnnotationNames()) {
-      to.setColumnAnnotations(name, from.getColumnAnnotations(name));
+  public static void copyColumnHeaders(final DataFrame from, DataFrame to) {
+    for (String name : from.getColumnHeader().getNames()) {
+      to.getColumnHeader().setAnnotation(name, from.getColumnHeader().getAnnotation(name));
     }
   }
 
@@ -2706,39 +2310,37 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param columns the columns
    */
-  public static void copyColumnAnnotations(final DataFrame from,
+  public static void copyColumnHeaders(final DataFrame from,
       DataFrame to,
       Collection<Integer> columns) {
 
-    for (String name : from.getColumnAnnotationNames()) {
+    int c = from.getCols();
+    
+    for (String name : from.getColumnHeader().getNames()) {
       // List<Object> annotations =
-      // from.getColumnAnnotations(name).rowAsList(0);
+      // from.getColumns().getAnnotation(name).rowAsList(0);
       // List<Object> subAnnotations = CollectionUtils.subList(annotations,
       // columns);
-      // to.setColumnAnnotations(name, subAnnotations);
+      // to.getColumns().setAnnotation(name, subAnnotations);
 
-      switch (from.getColumnAnnotations(name).getType()) {
+      switch (from.getColumnHeader().getAnnotation(name).getType()) {
       case NUMBER:
-        double[] n = from.getColumnAnnotations(name)
-            .rowToDoubleArray(0);
-
-        double[] ns = CollectionUtils.subList(n, columns);
-
-        to.setColumnAnnotations(name, ns);
+        double[] va = new double[c];
+        from.getColumnHeader().getAnnotation(name).rowToDouble(0, va);
+        double[] ns = CollectionUtils.subList(va, columns);
+        to.getColumnHeader().setAnnotation(name, ns);
         break;
       case TEXT:
-        String[] t = from.getColumnAnnotations(name).rowToTextArray(0);
-
-        String[] ts = CollectionUtils.subList(t, columns);
-
-        to.setColumnAnnotations(name, ts);
+        String[] ta = new String[c];
+        from.getColumnHeader().getAnnotation(name).rowToText(0, ta);
+        String[] ts = CollectionUtils.subList(ta, columns);
+        to.getColumnHeader().setAnnotation(name, ts);
         break;
       default:
-        Object[] o = from.getColumnAnnotations(name).rowToArray(0);
-
-        Object[] os = CollectionUtils.subList(o, columns);
-
-        to.setColumnAnnotations(name, os);
+        String[] oa = new String[c];
+        from.getColumnHeader().getAnnotation(name).rowToObject(0, oa);
+        Object[] os = CollectionUtils.subList(oa, columns);
+        to.getColumnHeader().setAnnotation(name, os);
         break;
       }
 
@@ -2754,21 +2356,24 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param toStart the to start
    */
-  public static void copyColumnAnnotations(final DataFrame from,
+  public static void copyColumnHeaders(final DataFrame from,
       int fromStart,
       int fromEnd,
       DataFrame to,
       int toStart) {
-    for (String name : from.getColumnAnnotationNames()) {
-      Object[] annotations = from.getColumnAnnotations(name).rowToArray(0);
+    
+    Object[] values = new Object[from.getCols()];
+    
+    for (String name : from.getColumnHeader().getNames()) {
+      from.getColumnHeader().getAnnotation(name).rowToObject(0, values);
 
       Object[] subAnnotations = CollectionUtils
-          .subList(annotations, fromStart, fromEnd - fromStart + 1);
+          .subList(values, fromStart, fromEnd - fromStart + 1);
 
       int s = toStart;
 
       for (Object m : subAnnotations) {
-        to.setColumnAnnotation(name, s++, m);
+        to.getColumnHeader().setAnnotation(name, s++, m);
       }
     }
   }
@@ -2780,16 +2385,18 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param toStart the to start
    */
-  public static void copyColumnAnnotations(final DataFrame from,
+  public static void copyColumnHeaders(final DataFrame from,
       DataFrame to,
       int toStart) {
-    for (String name : from.getColumnAnnotationNames()) {
-      Object[] annotations = from.getColumnAnnotations(name).rowToArray(0);
+    Object[] values = new Object[from.getCols()];
+    
+    for (String name : from.getColumnHeader().getNames()) {
+      from.getColumnHeader().getAnnotation(name).rowToObject(0, values);
 
       int s = toStart;
 
-      for (Object m : annotations) {
-        to.setColumnAnnotation(name, s++, m);
+      for (Object m : values) {
+        to.getColumnHeader().setAnnotation(name, s++, m);
       }
     }
   }
@@ -2803,8 +2410,8 @@ public class DataFrame extends Matrix
   public static void copyAnnotations(final DataFrame from, DataFrame to) {
     to.setName(from.getName());
 
-    copyRowAnnotations(from, to);
-    copyColumnAnnotations(from, to);
+    copyIndex(from, to);
+    copyColumnHeaders(from, to);
   }
 
   /**
@@ -2815,40 +2422,38 @@ public class DataFrame extends Matrix
    * @param to the to
    * @param columns the columns
    */
-  public static <V extends Comparable<? super V>> void copyColumnAnnotationsIndexed(
+  public static <V extends Comparable<? super V>> void copyColumnHeadersIndexed(
       final DataFrame from,
       DataFrame to,
       List<Indexed<Integer, V>> columns) {
-    for (String name : from.getColumnAnnotationNames()) {
+    for (String name : from.getColumnHeader().getNames()) {
       // List<Object> annotations =
-      // from.getColumnAnnotations(name).rowAsList(0);
+      // from.getColumns().getAnnotation(name).rowAsList(0);
       // List<Object> subAnnotations =
       // CollectionUtils.subListIndexed(annotations, columns);
-      // to.setColumnAnnotations(name, subAnnotations);
+      // to.getColumns().setAnnotation(name, subAnnotations);
 
-      switch (from.getColumnAnnotations(name).getType()) {
+      switch (from.getColumnHeader().getAnnotation(name).getType()) {
       case NUMBER:
-        double[] annotations = from.getColumnAnnotations(name)
-            .rowToDoubleArray(0);
+        double[] v = new double[from.getCols()];
+        from.getColumnHeader().getAnnotation(name).rowToDouble(0, v);
 
-        double[] subAnnotations = CollectionUtils.subListIndexed(annotations,
+        double[] subAnnotations = CollectionUtils.subListIndexed(v,
             columns);
 
-        to.setColumnAnnotations(name, subAnnotations);
+        to.getColumnHeader().setAnnotation(name, subAnnotations);
         break;
       case TEXT:
-        double[] t = from.getColumnAnnotations(name).rowToDoubleArray(0);
-
+        double[] t = new double[from.getCols()];
+        from.getColumnHeader().getAnnotation(name).rowToDouble(0, t);
         double[] ts = CollectionUtils.subListIndexed(t, columns);
-
-        to.setColumnAnnotations(name, ts);
+        to.getColumnHeader().setAnnotation(name, ts);
         break;
       default:
-        Object[] o = from.getColumnAnnotations(name).rowToArray(0);
-
+        Object[] o = new Object[from.getCols()];
+        from.getColumnHeader().getAnnotation(name).rowToObject(0, o);
         Object[] os = CollectionUtils.subListIndexed(o, columns);
-
-        to.setColumnAnnotations(name, os);
+        to.getColumnHeader().setAnnotation(name, os);
         break;
       }
     }
@@ -2867,7 +2472,7 @@ public class DataFrame extends Matrix
       List<Integer> rows,
       double value) {
     for (int i : rows) {
-      m.setRowAnnotation(name, i, value);
+      m.getIndex().setAnnotation(name, i, value);
     }
   }
 
@@ -2884,7 +2489,7 @@ public class DataFrame extends Matrix
       List<Integer> rows,
       String value) {
     for (int i : rows) {
-      m.setRowAnnotation(name, i, value);
+      m.getIndex().setAnnotation(name, i, value);
     }
   }
 
@@ -2901,7 +2506,7 @@ public class DataFrame extends Matrix
       List<Integer> rows,
       MatrixCell value) {
     for (int i : rows) {
-      m.setRowAnnotation(name, i, value);
+      m.getIndex().setAnnotation(name, i, value);
     }
   }
 
@@ -3096,14 +2701,14 @@ public class DataFrame extends Matrix
       to.setColumnName(cTo, from.getColumnName(cFrom));
     }
 
-    List<String> names = from.getRowAnnotationNames();
+    List<String> names = from.getIndex().getNames();
 
     for (int i = 0; i < rows; ++i) {
       int rFrom = i + fromRowOffset;
       int rTo = i + toRowOffset;
 
       for (String name : names) {
-        to.setRowAnnotation(name, rTo, from.getRowAnnotation(name, rFrom));
+        to.getIndex().setAnnotation(name, rTo, from.getIndex().getAnnotation(name, rFrom));
       }
     }
 
@@ -3129,8 +2734,8 @@ public class DataFrame extends Matrix
    */
   public static void writeHeader(DataFrame m, BufferedWriter writer)
       throws IOException {
-    if (m.getRowAnnotationNames().size() > 0) {
-      writer.write(TextUtils.tabJoin(m.getRowAnnotationNames()));
+    if (m.getIndex().getNames().size() > 0) {
+      writer.write(TextUtils.tabJoin(m.getIndex().getNames()));
       writer.write(TextUtils.TAB_DELIMITER);
     }
 
@@ -3148,12 +2753,12 @@ public class DataFrame extends Matrix
    */
   public static void writeRow(DataFrame m, int row, BufferedWriter writer)
       throws IOException {
-    if (m.getRowAnnotationNames().size() > 0) {
-      writer.write(TextUtils.tabJoin(m.getRowAnnotationText(row)));
+    if (m.getIndex().getNames().size() > 0) {
+      writer.write(TextUtils.tabJoin(m.getIndex().getText(row)));
       writer.write(TextUtils.TAB_DELIMITER);
     }
 
-    writer.write(TextUtils.tabJoin(m.rowAsText(row)));
+    writer.write(Join.onTab().values(m.rowToText(row)).toString());
     writer.newLine();
   }
 
@@ -3165,7 +2770,7 @@ public class DataFrame extends Matrix
    * @return the column index or -1 if a column is not found
    */
   public static int findColumn(DataFrame m, String... terms) {
-    List<String> names = m.getRowAnnotationNames();
+    List<String> names = m.getIndex().getNames();
     
     int index = TextUtils.findFirst(names, terms);
     
@@ -3202,7 +2807,7 @@ public class DataFrame extends Matrix
   public static List<Integer> findAllColumns(DataFrame m, String... terms) {
     List<Integer> ret = new ArrayList<Integer>(terms.length);
 
-    List<String> names = m.getColumnNames();
+    String[] names = m.getColumnNames();
 
     for (String term : terms) {
       List<String> alts = Splitter.on('|').text(term);
@@ -3221,7 +2826,7 @@ public class DataFrame extends Matrix
       Collection<String> terms) {
     List<Integer> ret = new ArrayList<Integer>(terms.size());
 
-    List<String> names = m.getColumnNames();
+    String[] names = m.getColumnNames();
 
     for (String term : terms) {
       List<String> alts = Splitter.on('|').text(term);
@@ -3292,11 +2897,11 @@ public class DataFrame extends Matrix
 
     int r = -1;
 
-    for (String name : m.getRowAnnotationNames()) {
+    for (String name : m.getIndex().getNames()) {
       for (int i = 0; i < m.getRows(); ++i) {
         index = (i + startCell.row) % m.getRows();
 
-        t = m.getRowAnnotationText(name, index);
+        t = m.getIndex().getText(name, index);
 
         if (t != null) {
           matcher.reset(t);
@@ -3312,11 +2917,11 @@ public class DataFrame extends Matrix
 
     r = -1;
 
-    for (String name : m.getColumnAnnotationNames()) {
+    for (String name : m.getColumnHeader().getNames()) {
       for (int i = 0; i < m.getCols(); ++i) {
         index = (i + startCell.column) % m.getCols();
 
-        t = m.getColumnAnnotationText(name, index);
+        t = m.getColumnHeader().getText(name, index);
 
         if (t != null) {
           matcher.reset(t);
@@ -3393,11 +2998,11 @@ public class DataFrame extends Matrix
 
     int r = -1;
 
-    for (String name : m.getRowAnnotationNames()) {
+    for (String name : m.getIndex().getNames()) {
       for (int i = 0; i < m.getRows(); ++i) {
         index = (i + startCell.row) % m.getRows();
 
-        t = m.getRowAnnotationText(name, index);
+        t = m.getIndex().getText(name, index);
 
         if (t != null) {
           matcher.reset(t);
@@ -3413,11 +3018,11 @@ public class DataFrame extends Matrix
 
     r = -1;
 
-    for (String name : m.getColumnAnnotationNames()) {
+    for (String name : m.getColumnHeader().getNames()) {
       for (int i = 0; i < m.getCols(); ++i) {
         index = (i + startCell.column) % m.getCols();
 
-        t = m.getColumnAnnotationText(name, index);
+        t = m.getColumnHeader().getText(name, index);
 
         if (t != null) {
           matcher.reset(t);
@@ -3711,11 +3316,11 @@ public class DataFrame extends Matrix
       DataFrame ret) {
 
     for (int i = 0; i < columns.size(); ++i) {
-      copyColumnAnnotation(m, columns.get(i), ret, i);
+      CopyColumnHeader(m, columns.get(i), ret, i);
     }
 
     for (int i = 0; i < rows.size(); ++i) {
-      copyRowAnnotation(m, rows.get(i), ret, i);
+      copyIndex(m, rows.get(i), ret, i);
     }
   }
 

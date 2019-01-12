@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Pearson correlation distance metric.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class EuclideanDistanceMetric extends DistanceMetric {
 

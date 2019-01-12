@@ -32,7 +32,7 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Matrix that can be dynamically resized to match maximum row/column.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class ExpandTextMatrix extends ExpandMatrix<String> {
 

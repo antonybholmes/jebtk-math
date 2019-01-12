@@ -26,7 +26,7 @@ import org.jebtk.core.collections.CollectionUtils;
  * In memory stats calculations on an array. The array is guaranteed to be
  * sorted.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class TwoSampleTest {

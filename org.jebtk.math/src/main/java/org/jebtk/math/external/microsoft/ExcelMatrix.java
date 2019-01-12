@@ -37,7 +37,7 @@ import org.jebtk.math.matrix.RegularMatrix;
 /**
  * Ecapsulates an Excel worksheet inside a matrix.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class ExcelMatrix extends RegularMatrix {
@@ -302,11 +302,11 @@ public class ExcelMatrix extends RegularMatrix {
           if (cell != null) {
             if (evaluator.evaluateInCell(cell)
                 .getCellType() == Cell.CELL_TYPE_NUMERIC) {
-              m.setRowAnnotation(rowHeadings.get(j),
+              m.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   Double.toString(cell.getNumericCellValue()));
             } else {
-              m.setRowAnnotation(rowHeadings.get(j),
+              m.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   cell.getStringCellValue());
             }

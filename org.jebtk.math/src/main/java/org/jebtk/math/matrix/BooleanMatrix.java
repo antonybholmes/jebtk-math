@@ -34,7 +34,7 @@ import org.jebtk.core.sys.SysUtils;
 /**
  * Matrix for storing integers only.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class BooleanMatrix extends IndexRowMatrix {
 

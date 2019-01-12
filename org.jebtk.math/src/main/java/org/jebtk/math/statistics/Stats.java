@@ -31,7 +31,7 @@ import org.jebtk.core.sys.SysUtils;
  * In memory stats calculations on an array. The array is guaranteed to be
  * sorted.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Stats {

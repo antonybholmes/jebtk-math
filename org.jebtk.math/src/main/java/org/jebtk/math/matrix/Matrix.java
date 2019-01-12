@@ -48,7 +48,7 @@ import org.jebtk.math.functions.LogFunction;
  * ignored by matrix operations). Matrices support double long, int, and String
  * types only.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public abstract class Matrix extends MatrixEventListeners {
 
@@ -542,46 +542,12 @@ public abstract class Matrix extends MatrixEventListeners {
    */
   public void copyRow(final Matrix from, int row, int toRow) {
     int c = Math.min(from.getCols(), getCols());
-
-    System.err.println("c " + c);
-    
+ 
     for (int i = 0; i < c; ++i) {
-      if (i < 5) {
-        System.err.println("hhh " + i + " " + from.get(row, i));
-      }
       set(toRow, i, from.get(row, i));
     }
   }
 
-  /**
-   * Copy row.
-   *
-   * @param from the from
-   * @param row the row
-   * @param toRow the to row
-   */
-  public void copyRow(final DoubleMatrix from, int row, int toRow) {
-    int c = Math.min(from.getCols(), getCols());
-
-    for (int i = 0; i < c; ++i) {
-      set(toRow, i, from.getValue(row, i));
-    }
-  }
-
-  /**
-   * Copy row.
-   *
-   * @param from the from
-   * @param row the row
-   * @param toRow the to row
-   */
-  public void copyRow(final TextMatrix from, int row, int toRow) {
-    int c = Math.min(from.getCols(), getCols());
-
-    for (int i = 0; i < c; ++i) {
-      set(toRow, i, from.getText(row, i));
-    }
-  }
 
   /**
    * Copy row.
@@ -769,8 +735,12 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param column the column
    * @return the list
    */
-  public List<Object> columnAsList(int column) {
-    return Arrays.asList(columnToArray(column));
+  public Object[] columnToObject(int column) {
+    Object[] ret = new Object[getRows()];
+
+    columnToObject(column, ret);
+
+    return ret;
   }
 
   /**
@@ -779,26 +749,21 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param column the column
    * @return the list
    */
-  public List<String> columnAsText(int column) {
-    return Arrays.asList(columnToTextArray(column));
+  public String[] columnToText(int column) {
+    String[] ret = new String[getRows()];
+    columnToText(column, ret);
+    
+    return ret;
   }
-
-  /**
-   * Converts a matrix column to a list of doubles. If a cell is unset/NaN this
-   * will be included. Recommended for use on columns containing only numbers.
-   *
-   * @param column the column
-   * @return the double[]
-   */
-  public double[] columnToDoubleArray(int column) {
+  
+  public double[] columnToDouble(int column) {
     double[] ret = new double[getRows()];
-
-    columnToDoubleArray(column, ret);
-
+    columnToDouble(column, ret);
+    
     return ret;
   }
 
-  public void columnToDoubleArray(int column, double[] ret) {
+  public void columnToDouble(int column, double[] ret) {
     int r = getRows();
 
     for (int row = 0; row < r; ++row) {
@@ -808,15 +773,7 @@ public abstract class Matrix extends MatrixEventListeners {
     }
   }
 
-  public int[] columnToIntArray(int column) {
-    int[] ret = new int[getRows()];
-
-    columnToIntArray(column, ret);
-
-    return ret;
-  }
-
-  public void columnToIntArray(int column, int[] ret) {
+  public void columnToInt(int column, int[] ret) {
     int r = getRows();
 
     for (int row = 0; row < r; ++row) {
@@ -826,15 +783,7 @@ public abstract class Matrix extends MatrixEventListeners {
     }
   }
 
-  public long[] columnToLongArray(int column) {
-    long[] ret = new long[getRows()];
-
-    columnToLongArray(column, ret);
-
-    return ret;
-  }
-
-  public void columnToLongArray(int column, long[] ret) {
+  public void columnToLong(int column, long[] ret) {
     int r = getRows();
 
     for (int row = 0; row < r; ++row) {
@@ -844,17 +793,7 @@ public abstract class Matrix extends MatrixEventListeners {
     }
   }
   
-  public String[] columnToTextArray(int column) {
-    String[] ret = new String[getRows()];
-
-    columnToTextArray(column, ret);
-
-    System.err.println("col to text " + ret.length);
-    
-    return ret;
-  }
-  
-  public void columnToTextArray(int column, String[] ret) {
+  public void columnToText(int column, String[] ret) {
     int r = getRows();
 
     for (int row = 0; row < r; ++row) {
@@ -864,15 +803,9 @@ public abstract class Matrix extends MatrixEventListeners {
     }
   }
   
-  public Object[] columnToArray(int column) {
-    Object[] ret = new Object[getRows()];
 
-    columnToArray(column, ret);
-
-    return ret;
-  }
   
-  public void columnToArray(int column, Object[] ret) {
+  public void columnToObject(int column, Object[] ret) {
     int r = getRows();
 
     for (int row = 0; row < r; ++row) {
@@ -889,25 +822,19 @@ public abstract class Matrix extends MatrixEventListeners {
    * @return the list
    */
   public List<Object> rowAsList(int row) {
-    return Arrays.asList(rowToArray(row));
+    Object[] ret = new Object[getRows()];
+    rowToObject(row, ret);
+    
+    return Arrays.asList(ret);
   }
 
-  /**
-   * Row as double.
-   *
-   * @param row the row
-   * @return the double[]
-   */
-  public double[] rowToDoubleArray(int row) {
-    int n = getCols();
-
-    double[] ret = new double[n];
-
-    rowToDoubleArray(row, ret);
-
+  public double[] rowToDouble(int row) {
+    double[] ret = new double[getCols()];
+    rowToDouble(row, ret);
+    
     return ret;
   }
-
+  
   /**
    * Extract row data into a double array.
    * 
@@ -915,82 +842,62 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param data    an array to copy data into. Array must be able to contain
    *                all row values.
    */
-  public void rowToDoubleArray(int row, double[] data) {
-    int n = getCols();
-
-    for (int c = 0; c < n; ++c) {
+  public void rowToDouble(int row, double[] data) {
+    for (int c = 0; c < data.length; ++c) {
       data[c] = getValue(row, c);
     }
   }
 
-  public int[] rowToIntArray(int row) {
+  public int[] rowToInt(int row) {
     int n = getCols();
 
     int[] ret = new int[n];
 
-    rowToIntArray(row, ret);
+    rowToInt(row, ret);
 
     return ret;
   }
 
-  public void rowToIntArray(int row, int[] data) {
-    int n = getCols();
-
-    for (int c = 0; c < n; ++c) {
+  public void rowToInt(int row, int[] data) {
+    for (int c = 0; c < data.length; ++c) {
       data[c] = getInt(row, c);
     }
   }
 
-  public long[] rowToLongArray(int row) {
+  public long[] rowToLong(int row) {
     int n = getCols();
 
     long[] ret = new long[n];
 
-    rowToLongArray(row, ret);
+    rowToLong(row, ret);
 
     return ret;
   }
 
-  public void rowToLongArray(int row, long[] data) {
-    int n = getCols();
-
-    for (int c = 0; c < n; ++c) {
+  public void rowToLong(int row, long[] data) {
+    for (int c = 0; c < data.length; ++c) {
       data[c] = getLong(row, c);
     }
   }
   
-  public Object[] rowToArray(int row) {
+  public Object[] rowToObject(int row) {
     int n = getCols();
 
     Object[] ret = new Object[n];
 
-    rowToArray(row, ret);
+    rowToObject(row, ret);
 
     return ret;
   }
   
-  public void rowToArray(int row, Object[] data) {
-    int n = getCols();
-
-    for (int c = 0; c < n; ++c) {
+  public void rowToObject(int row, Object[] data) {
+    for (int c = 0; c < data.length; ++c) {
       data[c] = get(row, c);
     }
   }
   
-  public String[] rowToTextArray(int row) {
-    int n = getCols();
-
-    String[] ret = new String[n];
-
-    rowToTextArray(row, ret);
-
-    return ret;
-  }
-  
-  public void rowToTextArray(int row, String[] data) {
-    int n = getCols();
-
-    for (int c = 0; c < n; ++c) {
+  public void rowToText(int row, String[] data) {
+    for (int c = 0; c < data.length; ++c) {
       data[c] = getText(row, c);
     }
   }
@@ -1001,9 +908,14 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param row the row
    * @return the list
    */
-  public List<String> rowAsText(int row) {
-    return Arrays.asList(rowToTextArray(row));
+  public String[] rowToText(int row) {
+    String[] ret = new String[getCols()];
+    rowToText(row, ret);
+    
+    return ret;
   }
+  
+
 
   /**
    * Returns the transpose of the matrix.
@@ -1235,16 +1147,17 @@ public abstract class Matrix extends MatrixEventListeners {
     double[] ret = new double[c];
 
     for (int i = 0; i < getRows(); ++i) {
-      rowToDoubleArray(i, data);
+      rowToDouble(i, data);
       f.apply(i, data, ret);
       setRow(i, ret);
     }
   }
 
   public void rowApply(MatrixDimFunction f, int row) {
-    double[] data = rowToDoubleArray(row);
+    double[] data = new double[getCols()];
     double[] ret = new double[data.length];
 
+    rowToDouble(row, data);
     f.apply(row, data, ret);
 
     setRow(row, ret);
@@ -1269,7 +1182,7 @@ public abstract class Matrix extends MatrixEventListeners {
     double[] ret = new double[r];
 
     for (int i = 0; i < getCols(); ++i) {
-      columnToDoubleArray(i, data);
+      columnToDouble(i, data);
       f.apply(i, data, ret);
       setColumn(i, ret);
     }
@@ -1278,7 +1191,10 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public void colApply(MatrixDimFunction f, int col) {
-    double[] data = columnToDoubleArray(col);
+    double[] data = new double[getRows()];
+    
+    columnToDouble(col, data);
+    
     double[] ret = new double[data.length];
 
     f.apply(col, data, ret);
@@ -1289,21 +1205,27 @@ public abstract class Matrix extends MatrixEventListeners {
   }
 
   public void rowEval(MatrixReduceFunction f, double[] ret) {
+    double[] data = new double[getCols()];
+    
     for (int i = 0; i < getRows(); ++i) {
-      double[] data = rowToDoubleArray(i);
+      rowToDouble(i, data);
 
       ret[i] = f.apply(i, data);
     }
   }
 
   public void rowEval(MatrixDimFunction f, int row, double[] ret) {
-    double[] data = rowToDoubleArray(row);
+    double[] data = new double[getCols()];
+    
+    rowToDouble(row, data);
 
     f.apply(row, data, ret);
   }
 
   public void colEval(MatrixDimFunction f, int col, double[] ret) {
-    double[] data = rowToDoubleArray(col);
+    double[] data = new double[getRows()];
+    
+    columnToDouble(col, data);
 
     f.apply(col, data, ret);
   }
@@ -1315,8 +1237,10 @@ public abstract class Matrix extends MatrixEventListeners {
    * @param ret
    */
   public void colEval(MatrixDimFunction f, double[] ret) {
+    double[] data = new double[getRows()];
+    
     for (int i = 0; i < getCols(); ++i) {
-      double[] data = columnToDoubleArray(i);
+      columnToDouble(i, data);
 
       f.apply(i, data, ret);
     }

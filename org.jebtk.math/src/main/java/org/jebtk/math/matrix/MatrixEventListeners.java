@@ -33,7 +33,7 @@ import org.jebtk.core.event.EventProducer;
 /**
  * Listen for when an underlying matrix changes.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class MatrixEventListeners extends EventProducer<MatrixEventListener>
     implements MatrixEventProducer {

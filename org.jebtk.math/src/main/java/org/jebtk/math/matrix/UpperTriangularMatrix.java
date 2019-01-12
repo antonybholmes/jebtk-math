@@ -35,7 +35,7 @@ import org.jebtk.core.Mathematics;
  * a symmetrical matrix. There is a small time penalty since lookups are not
  * conventional.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public abstract class UpperTriangularMatrix extends IndexMatrix {

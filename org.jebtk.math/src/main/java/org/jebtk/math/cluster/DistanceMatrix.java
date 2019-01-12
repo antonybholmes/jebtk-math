@@ -35,7 +35,7 @@ import org.jebtk.math.matrix.UpperTriangularDoubleMatrix;
  * a symmetrical matrix. There is a small time penalty since lookups are not
  * conventional.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class DistanceMatrix extends UpperTriangularDoubleMatrix {

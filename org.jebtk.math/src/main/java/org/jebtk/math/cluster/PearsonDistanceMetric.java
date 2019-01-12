@@ -35,7 +35,7 @@ import org.jebtk.math.statistics.Statistics;
 /**
  * Pearson correlation distance metric.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class PearsonDistanceMetric extends DistanceMetric {
 

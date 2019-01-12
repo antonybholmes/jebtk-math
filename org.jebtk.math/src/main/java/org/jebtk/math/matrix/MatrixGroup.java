@@ -764,7 +764,7 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
 
     for (int i = 0; i < n; ++i) {
       for (Pattern regex : group) {
-        if (TextUtils.find(m.getColumnAnnotationText(i), regex).size() > 0) {
+        if (TextUtils.find(m.getColumnHeader().getText(i), regex).size() > 0) {
           ret.add(i);
           break;
         }
@@ -792,12 +792,14 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
 
     IterMap<Integer, List<X>> ret = DefaultTreeMap.create(new ArrayListCreator<X>());
 
+    String[] names = m.getColumnNames();
+    
     for (int i = 0; i < n; ++i) {
       //boolean found = false;
       
       for (X group : groups) {
         for (Pattern regex : group) {
-          if (TextUtils.find(m.getColumnAnnotationText(i), regex).size() > 0) {
+          if (TextUtils.find(names, regex).size() > 0) {
             ret.get(i).add(group);
             //found = true;
             break;
@@ -841,7 +843,7 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
    * @param groups the groups
    * @return the list
    */
-  public static List<List<Integer>> findIndices(List<String> ids,
+  public static List<List<Integer>> findIndices(String[] ids,
       List<? extends MatrixGroup> groups) {
     List<List<Integer>> ret = new ArrayList<List<Integer>>();
 
@@ -859,7 +861,7 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
    * @param groups the groups
    * @return the list
    */
-  public static List<Integer> findAllIndices(List<String> ids,
+  public static List<Integer> findAllIndices(String[] ids,
       List<? extends MatrixGroup> groups) {
     List<Integer> ret = new UniqueArrayList<Integer>();
 
@@ -879,7 +881,7 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
    * @param group the group
    * @return the list
    */
-  public static List<Integer> findIndices(List<String> names,
+  public static List<Integer> findIndices(String[] names,
       MatrixGroup group) {
     Set<Integer> ret = new HashSet<Integer>();
 

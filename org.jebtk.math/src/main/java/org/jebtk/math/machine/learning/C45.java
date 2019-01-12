@@ -64,7 +64,7 @@ public class C45 {
       labels.add(indexMap.get(index).get(0).getName());
     }
 
-    List<String> attributes = m.getRowNames();
+    String[] attributes = m.getRowNames();
 
     Set<Integer> usedAttributes = new HashSet<Integer>();
 
@@ -109,7 +109,7 @@ public class C45 {
       List<Integer> bestSSorted = null;
 
       // Find the best attribute
-      for (int attIdx = 0; attIdx < attributes.size(); ++attIdx) {
+      for (int attIdx = 0; attIdx < attributes.length; ++attIdx) {
         if (usedAttributes.contains(attIdx)) {
           continue;
         }
@@ -172,7 +172,7 @@ public class C45 {
       Decision d = new Decision(bestAttIdx, pivot);
 
       DecisionTree child = new DecisionTree(
-          attributes.get(bestAttIdx) + " <= " + pivot, d);
+          attributes[bestAttIdx] + " <= " + pivot, d);
 
       // Create the root if it doesn't exist
       if (root == null) {

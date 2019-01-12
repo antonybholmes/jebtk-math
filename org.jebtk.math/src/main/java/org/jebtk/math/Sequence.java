@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Generates vectors of numbers.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class Sequence {
 

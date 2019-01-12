@@ -30,7 +30,7 @@ package org.jebtk.math.matrix;
 /**
  * A conventional matrix with a fixed number of rows and columns.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public abstract class RegularMatrix extends Matrix {
 

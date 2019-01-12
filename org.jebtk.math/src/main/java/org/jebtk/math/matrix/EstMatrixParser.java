@@ -153,7 +153,7 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
     for (String name : columnNames) {
       line = reader.readLine();
       tokens = TextUtils.fastSplit(line, TextUtils.TAB_DELIMITER);
-      matrix.setColumnAnnotations(name,
+      matrix.getColumnHeader().setAnnotation(name,
           CollectionUtils.head(tokens, rowNames.size() + 1).toArray());
     }
 
@@ -170,7 +170,7 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 
       // add row annotations
       for (int i = 0; i < rowNames.size(); ++i) {
-        matrix.setRowAnnotation(rowNames.get(i), row, tokens.get(i + 1));
+        matrix.getIndex().setAnnotation(rowNames.get(i), row, tokens.get(i + 1));
       }
 
       // the first token is the column name so ignore it
@@ -243,7 +243,7 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
 
       List<String> values = CollectionUtils.subList(tokens, 2, rows);
 
-      matrix.setRowAnnotations(name, values.toArray());
+      matrix.getIndex().setAnnotation(name, values.toArray());
     }
 
     //
@@ -263,7 +263,7 @@ public abstract class EstMatrixParser<T> implements MatrixParser {
       // The number of values must match the number of columns
       List<String> values = CollectionUtils.subList(tokens, 2, columns);
 
-      matrix.setColumnAnnotations(name, values.toArray());
+      matrix.getColumnHeader().setAnnotation(name, values.toArray());
     }
 
     // Skip #MATRIX

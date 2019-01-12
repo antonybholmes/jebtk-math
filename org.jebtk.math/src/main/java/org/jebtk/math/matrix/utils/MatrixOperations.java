@@ -1043,8 +1043,10 @@ public class MatrixOperations {
     List<List<Indexed<Integer, Double>>> indexedColumns = new ArrayList<List<Indexed<Integer, Double>>>(
         m.getCols());
 
+    double[] values = new double[m.getRows()];
+    
     for (int i = 0; i < m.getCols(); ++i) {
-      double[] values = m.columnToDoubleArray(i);
+      m.columnToDouble(i, values);
 
       List<Indexed<Integer, Double>> sorted = Indexed.intIndex(values);
 
@@ -1057,14 +1059,14 @@ public class MatrixOperations {
 
     // get the mean of the values of each row when each column is sorted
 
+    double[] colValues = new double[m.getCols()];
+    
     for (int i = 0; i < m.getRows(); ++i) {
-      List<Double> values = new ArrayList<Double>(m.getCols());
-
       for (int j = 0; j < m.getCols(); ++j) {
-        values.add(indexedColumns.get(j).get(i).getValue());
+        colValues[j] = indexedColumns.get(j).get(i).getValue();
       }
 
-      rowMeans.add(Statistics.mean(values));
+      rowMeans.add(Statistics.mean(colValues));
     }
 
     List<Double> rowMeanRanks = Statistics.tiedRank(rowMeans);
@@ -1075,7 +1077,7 @@ public class MatrixOperations {
     DoubleMatrix zq = new DoubleMatrix(m.getRows(), m.getCols());
 
     for (int column = 0; column < m.getCols(); ++column) {
-      double[] values = m.columnToDoubleArray(column);
+      m.columnToDouble(column, values);
 
       // the ranks of the values we have
       double[] valueRanks = Mathematics.tiedRank(values);
@@ -1173,9 +1175,9 @@ public class MatrixOperations {
     Map<String, Double> maxStd = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
-      double std = Statistics.popStdDev(m.rowToDoubleArray(i));
+      double std = Statistics.popStdDev(m.rowToDouble(i));
 
       if (maxRow.containsKey(id)) {
         if (std > maxStd.get(id)) {
@@ -1229,7 +1231,7 @@ public class MatrixOperations {
       Map<Integer, List<Integer>> rowToRows,
       String rowAnnotation,
       DataFrame ret) {
-    List<String> names = m.getRowAnnotationNames();
+    List<String> names = m.getIndex().getNames();
 
     // Keep track of the current row in the new matrix we are editing
     int r = 0;
@@ -1260,10 +1262,10 @@ public class MatrixOperations {
         List<String> annotations = new ArrayList<String>(rows.size());
 
         for (int row : rows) {
-          annotations.add(m.getRowAnnotationText(name, row));
+          annotations.add(m.getIndex().getText(name, row));
         }
 
-        ret.setRowAnnotation(name, r, join.values(annotations).toString());
+        ret.getIndex().setAnnotation(name, r, join.values(annotations).toString());
       }
 
       ++r;
@@ -1288,9 +1290,9 @@ public class MatrixOperations {
     Map<String, Double> maxMean = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
-      double std = Statistics.mean(m.rowToDoubleArray(i));
+      double std = Statistics.mean(m.rowToDouble(i));
 
       if (maxRow.containsKey(id)) {
         if (std > maxMean.get(id)) {
@@ -1304,7 +1306,7 @@ public class MatrixOperations {
     }
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
       if (maxRow.containsKey(id)) {
         int index = maxRow.get(id);
@@ -1346,9 +1348,9 @@ public class MatrixOperations {
     Map<String, Double> maxMedian = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
-      double std = Statistics.median(m.rowToDoubleArray(i));
+      double std = Statistics.median(m.rowToDouble(i));
 
       if (maxRow.containsKey(id)) {
         if (std > maxMedian.get(id)) {
@@ -1391,9 +1393,9 @@ public class MatrixOperations {
     Map<String, Double> maxMap = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
-      double max = Mathematics.max(m.rowToDoubleArray(i));
+      double max = Mathematics.max(m.rowToDouble(i));
 
       if (maxRow.containsKey(id)) {
         if (max > maxMap.get(id)) {
@@ -1449,7 +1451,7 @@ public class MatrixOperations {
     Map<String, Double> maxP = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
       List<Double> p1 = new ArrayList<Double>();
 
@@ -1532,8 +1534,8 @@ public class MatrixOperations {
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setRowAnnotations("T-Stat", tStats);
-    // ret.setRowAnnotation("Abs T-Stat", ArrayUtils.toObjects(absTStats));
+    ret.getIndex().setAnnotation("T-Stat", tStats);
+    // ret.getIndex().setAnnotation("Abs T-Stat", ArrayUtils.toObjects(absTStats));
 
     return ret;
   }
@@ -1550,7 +1552,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_SUM_F, values);
 
-    ret.setRowAnnotations("Sum", values);
+    ret.getIndex().setAnnotation("Sum", values);
 
     return ret;
   }
@@ -1567,7 +1569,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MEAN_F, values);
 
-    ret.setRowAnnotations("Mean", values);
+    ret.getIndex().setAnnotation("Mean", values);
 
     return ret;
   }
@@ -1584,7 +1586,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MEDIAN_F, values);
 
-    ret.setRowAnnotations("Median", values);
+    ret.getIndex().setAnnotation("Median", values);
 
     return ret;
   }
@@ -1595,7 +1597,7 @@ public class MatrixOperations {
     double[] values = new double[m.getRows()];
     m.rowEval(ROW_MODE_F, values);
 
-    ret.setRowAnnotations("Mode", values);
+    ret.getIndex().setAnnotation("Mode", values);
 
     return ret;
   }
@@ -1610,7 +1612,7 @@ public class MatrixOperations {
     double[] iqrList = new double[m.getRows()];
 
     for (int i = 0; i < m.getRows(); ++i) {
-      double iqr = new Stats(m.rowToDoubleArray(i)).iqr();
+      double iqr = new Stats(m.rowToDouble(i)).iqr();
 
       // System.err.println("iqr " + iqr);
 
@@ -1619,7 +1621,7 @@ public class MatrixOperations {
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setRowAnnotations("IQR", iqrList);
+    ret.getIndex().setAnnotation("IQR", iqrList);
 
     return ret;
   }
@@ -1634,14 +1636,14 @@ public class MatrixOperations {
     double[] iqrList = new double[m.getRows()];
 
     for (int i = 0; i < m.getRows(); ++i) {
-      double iqr = new Stats(m.rowToDoubleArray(i)).quartCoeffDisp();
+      double iqr = new Stats(m.rowToDouble(i)).quartCoeffDisp();
 
       iqrList[i] = iqr;
     }
 
     DataFrame ret = new DataFrame(m);
 
-    ret.setRowAnnotations("QuartCoeffDisp", iqrList);
+    ret.getIndex().setAnnotation("QuartCoeffDisp", iqrList);
 
     return ret;
   }
@@ -1699,10 +1701,10 @@ public class MatrixOperations {
     Map<String, Integer> maxRows = new HashMap<String, Integer>();
     Map<String, Double> maxValueMap = new HashMap<String, Double>();
 
-    double[] iqrList = m.getRowAnnotationValues(valuesName);
+    double[] iqrList = m.getIndex().getValues(valuesName);
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
       double iqr = Math.abs(iqrList[i]);
 
@@ -1749,9 +1751,9 @@ public class MatrixOperations {
     Map<String, Double> minMap = new HashMap<String, Double>();
 
     for (int i = 0; i < m.getRows(); ++i) {
-      String id = m.getRowAnnotationText(rowAnnotation, i);
+      String id = m.getIndex().getText(rowAnnotation, i);
 
-      double min = Mathematics.min(m.rowToDoubleArray(i));
+      double min = Mathematics.min(m.rowToDouble(i));
 
       if (minRow.containsKey(id)) {
         if (min < minMap.get(id)) {
@@ -1795,13 +1797,13 @@ public class MatrixOperations {
       String regex,
       boolean keep) {
 
-    List<String> annotations = m.getRowAnnotationText(rowAnnotation);
+    String[] annotations = m.getIndex().getText(rowAnnotation);
 
     List<Integer> rows = new ArrayList<Integer>();
 
     if (keep) {
       for (int i = 0; i < m.getRows(); ++i) {
-        String id = annotations.get(i);
+        String id = annotations[i];
 
         if (id.matches(regex)) {
           rows.add(i);
@@ -1809,7 +1811,7 @@ public class MatrixOperations {
       }
     } else {
       for (int i = 0; i < m.getRows(); ++i) {
-        String id = annotations.get(i);
+        String id = annotations[i];
 
         if (!id.matches(regex)) {
           rows.add(i);
@@ -2005,7 +2007,7 @@ public class MatrixOperations {
    * @return the double
    */
   public static double median(final Matrix m, int row) {
-    return Statistics.median(m.rowToDoubleArray(row));
+    return Statistics.median(m.rowToDouble(row));
   }
 
   /**

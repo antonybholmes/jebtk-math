@@ -68,15 +68,16 @@ public class MatrixTest {
 
     System.err.println("col " + m2.getValue(0, 1));
 
-    System.err.println("v " + Arrays.toString(m2.columnToDoubleArray(1)));
+    double[] v = new double[m2.getRows()];
+    m2.columnToDouble(1, v);
+    
+    System.err.println("v " + Arrays.toString(v));
   }
 
   @Test
   public void multText() {
     Matrix m1 = DoubleMatrix.createDoubleMatrix(2, 3, 1, 2, 3, 4, 5, 6);
-
     Matrix m2 = DoubleMatrix.createDoubleMatrix(3, 2, 7, 8, 9, 10, 11, 12);
-
     Matrix m3 = m1.multiply(m2);
 
     for (int i = 0; i < m3.getRows(); ++i) {

@@ -31,7 +31,7 @@ package org.jebtk.math.matrix;
  * For matrices that use an index approach to store values in a 1D array with
  * appropriate offset calculations.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public abstract class IndexRowMatrix extends IndexMatrix {
 

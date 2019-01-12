@@ -40,7 +40,7 @@ import org.jebtk.core.IdObject;
  * clusters. The tree must be explored to the leaves to determine which are the
  * actual indices in the tree.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Cluster extends IdObject {

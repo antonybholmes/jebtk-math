@@ -42,7 +42,7 @@ import org.jebtk.math.statistics.TTest;
 /**
  * Matrix for storing integers only.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class IntMatrix extends IndexRowMatrix {
 
@@ -304,12 +304,12 @@ public class IntMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
    */
   @Override
-  public void rowToIntArray(int row, int[] ret) {
+  public void rowToInt(int row, int[] ret) {
     SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 
   @Override
-  public void columnToIntArray(int column, int[] ret) {
+  public void columnToInt(int column, int[] ret) {
     SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
   }
 
@@ -389,6 +389,15 @@ public class IntMatrix extends IndexRowMatrix {
     fireMatrixChanged();
   }
 
+  @Override
+  public void copyRow(final Matrix from, int row, int toRow) {
+    if (from instanceof IntMatrix) {
+      copyRow((IntMatrix) from, row, toRow);
+    } else {
+      super.copyRow(from, row, toRow);
+    }
+  }
+  
   /**
    * Copy row.
    *
@@ -397,7 +406,6 @@ public class IntMatrix extends IndexRowMatrix {
    * @param toRow the to row
    */
   public void copyRow(final IntMatrix from, int row, int toRow) {
-
     int c = Math.min(from.getCols(), getCols());
 
     System.arraycopy(from.mData,

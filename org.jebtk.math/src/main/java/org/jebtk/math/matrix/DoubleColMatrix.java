@@ -34,7 +34,7 @@ import org.jebtk.core.sys.SysUtils;
 /**
  * Matrix for storing doubles.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class DoubleColMatrix extends IndexColMatrix {
 
@@ -224,12 +224,12 @@ public class DoubleColMatrix extends IndexColMatrix {
   }
 
   @Override
-  public void rowToDoubleArray(int row, double[] ret) {
+  public void rowToDouble(int row, double[] ret) {
     SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 
   @Override
-  public void columnToDoubleArray(int column, double[] ret) {
+  public void columnToDouble(int column, double[] ret) {
     SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
   }
 

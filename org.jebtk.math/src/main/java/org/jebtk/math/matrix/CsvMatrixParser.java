@@ -40,7 +40,7 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Parses a text file and creates a matrix from it.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class CsvMatrixParser implements MatrixParser {
 
@@ -173,7 +173,7 @@ public class CsvMatrixParser implements MatrixParser {
 
         if (mHasHeader) {
           for (int i = 0; i < mRowAnnotations; ++i) {
-            matrix.setRowAnnotation(rowAnnotationNames.get(i),
+            matrix.getIndex().setAnnotation(rowAnnotationNames.get(i),
                 row,
                 tokens.get(i));
           }

@@ -42,7 +42,7 @@ import org.jebtk.math.statistics.Statistics;
 /**
  * Matrix for storing doubles.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class DoubleMatrix extends IndexRowMatrix {
 
@@ -646,6 +646,15 @@ public class DoubleMatrix extends IndexRowMatrix {
 
     fireMatrixChanged();
   }
+  
+  @Override
+  public void copyRow(final Matrix from, int row, int toRow) {
+    if (from instanceof DoubleMatrix) {
+      copyRow((DoubleMatrix) from, row, toRow);
+    } else {
+      super.copyRow(from, row, toRow);
+    }
+  }
 
   /*
    * (non-Javadoc)
@@ -653,7 +662,6 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
    * DoubleMatrix, int, int)
    */
-  @Override
   public void copyRow(final DoubleMatrix from, int row, int toRow) {
 
     int c = Math.min(from.getCols(), getCols());
@@ -673,7 +681,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
    */
   @Override
-  public void columnToDoubleArray(int column, double[] ret) {
+  public void columnToDouble(int column, double[] ret) {
     /*
      * int i1 = column;
      * 
@@ -691,7 +699,7 @@ public class DoubleMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.IndexMatrix#rowAsDouble(int)
    */
   @Override
-  public void rowToDoubleArray(int row, double[] ret) {
+  public void rowToDouble(int row, double[] ret) {
     SysUtils.arraycopy(mData, mRowOffsets[row], ret, mDim.mCols);
   }
 

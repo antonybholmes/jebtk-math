@@ -27,16 +27,13 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jebtk.core.text.TextUtils;
 
 /**
  * For matrices that intending to store data in a 1D array format. This class
  * provides some of the required implementation.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public abstract class IndexMatrix extends RegularMatrix {
 
@@ -506,7 +503,7 @@ public abstract class IndexMatrix extends RegularMatrix {
    * @see org.abh.common.math.matrix.Matrix#columnAsDouble(int)
    */
   @Override
-  public void columnToDoubleArray(int col, double[] ret) {
+  public void columnToDouble(int col, double[] ret) {
 
     int r = getRows();
 
@@ -548,7 +545,7 @@ public abstract class IndexMatrix extends RegularMatrix {
    * @see org.abh.common.math.matrix.Matrix#rowAsDouble(int)
    */
   @Override
-  public void rowToDoubleArray(int row, double[] ret) {
+  public void rowToDouble(int row, double[] ret) {
     int c = getCols();
 
     int i1 = getIndex(row, 0);
@@ -564,15 +561,15 @@ public abstract class IndexMatrix extends RegularMatrix {
    * @see org.abh.common.math.matrix.Matrix#rowAsText(int)
    */
   @Override
-  public List<String> rowAsText(int row) {
+  public String[] rowToText(int row) {
     int c = getCols();
 
-    List<String> values = new ArrayList<String>(c);
+    String[] values = new String[c];
 
     int i1 = getIndex(row, 0);
 
     for (int col = 0; col < c; ++col) {
-      values.add(getText(i1++));
+      values[col] = getText(i1++);
     }
 
     return values;

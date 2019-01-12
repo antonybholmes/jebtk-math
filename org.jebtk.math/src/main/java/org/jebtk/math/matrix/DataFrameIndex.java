@@ -27,6 +27,7 @@
  */
 package org.jebtk.math.matrix;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,18 +37,19 @@ import java.util.Map;
 import org.jebtk.core.collections.CyclicList;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.event.ChangeListeners;
-import org.jebtk.core.sys.SysUtils;
 
 /**
  * Provides annotation for a matrix.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
-public class Annotation extends ChangeListeners implements Iterable<String> {
+public class DataFrameIndex extends ChangeListeners implements Iterable<String> {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
+
+  public static final String HEADER_NAMES = "Headings";
 
   /**
    * The member names.
@@ -74,7 +76,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    *
    * @param size the size
    */
-  public Annotation(int size) {
+  public DataFrameIndex(int size) {
     mAnnotationMap = new HashMap<String, Matrix>(10);
     mSize = size;
   }
@@ -116,7 +118,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
   }
   
   public void setAnnotation(String name, String[] values) {
-    autoCreate(name, MatrixType.TEXT).setRow(0, values);
+    autoCreate(name, MatrixType.MIXED).setRow(0, values);
     
     //MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
   }
@@ -126,6 +128,8 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
     
     //MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
   }
+  
+
 
   /**
    * Sets the annotation.
@@ -239,7 +243,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @return the values
    */
   public double[] getValues(String name) {
-    return mAnnotationMap.get(name).rowToDoubleArray(0);
+    return mAnnotationMap.get(name).rowToDouble(0);
   }
 
   /**
@@ -248,7 +252,7 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param index the index
    * @return the text
    */
-  public List<String> getText(int index) {
+  public String[] getText(int index) {
     return getText(getName(index));
   }
 
@@ -258,8 +262,8 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
    * @param name the name
    * @return the text
    */
-  public List<String> getText(String name) {
-    return mAnnotationMap.get(name).rowAsText(0);
+  public String[] getText(String name) {
+    return mAnnotationMap.get(name).rowToText(0);
   }
 
   /**
@@ -392,5 +396,38 @@ public class Annotation extends ChangeListeners implements Iterable<String> {
 
     // modify the internal representation rather than a copy
     mAnnotationMap.get(name).set(0, index, value);
+  }
+
+  /**
+   * Returns the number of annotations.
+   * 
+   * @return
+   */
+  public int size() {
+    return mAnnotationMap.size();
+  }
+
+  public String[] getHeadings() {
+    return getText(HEADER_NAMES);
+  }
+  
+  public String getHeader(int index) {
+    return mAnnotationMap.get(HEADER_NAMES).getText(0, index);
+  }
+  
+  public void setHeading(int column, String name) {
+    setAnnotation(DataFrameIndex.HEADER_NAMES, column, name);
+  }
+  
+  public void setHeadings(String[] values) {
+    setAnnotation(HEADER_NAMES, values);
+    
+    //MatrixOperations.textToRow(values, 0, mAnnotationMap.get(name));
+  }
+
+  public void setHeadings(Collection<String> values) {
+    String[] names = new String[values.size()];
+    values.toArray(names);
+    setHeadings(names);
   }
 }

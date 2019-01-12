@@ -37,15 +37,13 @@ import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.io.FileUtils;
 import org.jebtk.core.io.Io;
 import org.jebtk.core.io.ReaderUtils;
-import org.jebtk.core.sys.SysUtils;
-import org.jebtk.core.text.Join;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.core.text.TextUtils;
 
 /**
  * Parses a text file and creates a matrix from it.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class MixedMatrixParser implements MatrixParser {
 
@@ -214,7 +212,7 @@ public class MixedMatrixParser implements MatrixParser {
 
         for (String name : rowAnnotationNames) {
           // Cause the annotation to be initialized
-          matrix.getRowAnnotations(name);
+          matrix.getIndex().getAnnotation(name);
         }
       } else {
         // Create default row annotations named 'Row Annotation 1', 
@@ -222,7 +220,7 @@ public class MixedMatrixParser implements MatrixParser {
         // the row labels cannot have names.
         
         for (int i = 0; i < mRowAnnotations; ++i) {
-          matrix.getRowAnnotations("Row Annotation " + (i + 1));
+          matrix.getIndex().getAnnotation("Row Annotation " + (i + 1));
         }
       }
 
@@ -259,7 +257,7 @@ public class MixedMatrixParser implements MatrixParser {
 
       // if (mHasHeader) {
       // for (int i = 0; i < mRowAnnotations; ++i) {
-      // matrix.setRowAnnotations(rowAnnotationNames.get(i),
+      // matrix.getIndex().setAnnotation(rowAnnotationNames.get(i),
       // annotations.get(i));
       // }
       // }

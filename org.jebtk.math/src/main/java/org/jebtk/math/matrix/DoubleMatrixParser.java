@@ -34,7 +34,7 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Parses a text file and creates a matrix from it.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class DoubleMatrixParser extends MixedMatrixParser {
 

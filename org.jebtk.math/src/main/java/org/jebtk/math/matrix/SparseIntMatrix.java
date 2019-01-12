@@ -32,7 +32,7 @@ import org.jebtk.core.Mathematics;
 /**
  * Number/String matrix using sparse representation.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class SparseIntMatrix extends SparseMatrix<Integer> {
 

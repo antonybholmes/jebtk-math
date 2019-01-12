@@ -38,7 +38,7 @@ import org.jebtk.core.collections.CollectionUtils;
 /**
  * Generates vectors of evenly spaced numbers.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Linspace {

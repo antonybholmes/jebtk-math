@@ -196,7 +196,7 @@ public class XLSXMetaData {
 
   }
 
-  public int estimateRowAnnotations() {
+  public int estimateIndexCols() {
     return estimateRowAnnotations(mRow);
   }
 

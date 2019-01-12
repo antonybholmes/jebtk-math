@@ -30,7 +30,7 @@ package org.jebtk.math.matrix;
 /**
  * Number/String matrix using sparse representation.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class SparseTextMatrix extends SparseMatrix<String> {
 

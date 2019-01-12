@@ -35,7 +35,7 @@ import org.jebtk.core.sys.SysUtils;
  * a symmetrical matrix. There is a small time penalty since lookups are not
  * conventional.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class UpperTriangularIntMatrix extends UpperTriangularMatrix {

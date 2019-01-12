@@ -30,7 +30,7 @@ package org.jebtk.math.matrix;
 /**
  * Transpose of the identity matrix.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class IdentityMatrixT extends RegularMatrix {
 

@@ -46,7 +46,7 @@ import org.jebtk.core.collections.DefaultTreeMap;
 /**
  * Provides statistical functions for Java structures.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Statistics {

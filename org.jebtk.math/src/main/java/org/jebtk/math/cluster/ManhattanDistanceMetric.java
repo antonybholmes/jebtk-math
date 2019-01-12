@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Manhattan distance metric.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class ManhattanDistanceMetric extends DistanceMetric {
 

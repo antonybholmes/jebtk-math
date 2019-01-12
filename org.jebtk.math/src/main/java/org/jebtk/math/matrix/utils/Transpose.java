@@ -54,14 +54,14 @@ public class Transpose {
     // ret.setColumnNames(getRowNames());
     // ret.setRowNames(getColumnNames());
 
-    for (String name : m.getRowAnnotationNames()) { // CollectionUtils.tail(getRowAnnotationNames()))
+    for (String name : m.getIndex().getNames()) { // CollectionUtils.tail(getIndex().getNames()))
                                                     // {
-      ret.setColumnAnnotations(name, m.getRowAnnotations(name));
+      ret.getColumnHeader().setAnnotation(name, m.getIndex().getAnnotation(name));
     }
 
-    for (String name : m.getColumnAnnotationNames()) { // CollectionUtils.tail(getColumnAnnotationNames()))
+    for (String name : m.getColumnHeader().getNames()) { // CollectionUtils.tail(getColumns().getNames()))
                                                        // {
-      ret.setRowAnnotations(name, m.getColumnAnnotations(name));
+      ret.getIndex().setAnnotation(name, m.getColumnHeader().getAnnotation(name));
     }
 
     return ret;

@@ -27,9 +27,7 @@
  */
 package org.jebtk.math.matrix;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.TextUtils;
@@ -40,7 +38,7 @@ import org.jebtk.core.text.TextUtils;
  * place of null so that calls to getText() always return a string object so
  * that null checks are not required.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class TextMatrix extends IndexRowMatrix {
 
@@ -270,7 +268,7 @@ public class TextMatrix extends IndexRowMatrix {
   }
   
   @Override
-  public void rowToTextArray(int row, String[] ret) {
+  public void rowToText(int row, String[] ret) {
     SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 
@@ -323,15 +321,22 @@ public class TextMatrix extends IndexRowMatrix {
     fireMatrixChanged();
   }
 
+  @Override
+  public void copyRow(final Matrix from, int row, int toRow) {
+    if (from instanceof TextMatrix) {
+      copyRow((TextMatrix) from, row, toRow);
+    } else {
+      super.copyRow(from, row, toRow);
+    }
+  }
+  
   /*
    * (non-Javadoc)
    * 
    * @see org.abh.common.math.matrix.Matrix#copyRow(org.abh.common.math.matrix.
    * TextMatrix, int, int)
    */
-  @Override
   public void copyRow(final TextMatrix from, int row, int toRow) {
-
     int c = Math.min(from.getCols(), getCols());
 
     System.arraycopy(from.mData,
@@ -367,7 +372,7 @@ public class TextMatrix extends IndexRowMatrix {
   }
   */
   
-  public void columnToTextArray(int column, String[] ret) {
+  public void columnToText(int column, String[] ret) {
     int rows = getRows();
     int cols = getCols();
     
@@ -386,15 +391,15 @@ public class TextMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.IndexMatrix#rowAsText(int)
    */
   @Override
-  public List<String> rowAsText(int row) {
+  public String[] rowToText(int row) {
     int c = getCols();
 
-    List<String> values = new ArrayList<String>(c);
+    String[] values = new String[c];
 
     int i1 = getIndex(row, 0);
 
     for (int col = 0; col < c; ++col) {
-      values.add(mData[i1++]);
+      values[col] = mData[i1++];
     }
 
     return values;

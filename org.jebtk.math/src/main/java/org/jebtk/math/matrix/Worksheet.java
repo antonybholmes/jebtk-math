@@ -38,7 +38,7 @@ import org.jebtk.core.collections.IterMap;
  * matrix's nominal dimensions are increased to match the largest row and column
  * encountered.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  * @param <T> the generic type
  */
 public abstract class Worksheet<T> extends ResizableMatrix {

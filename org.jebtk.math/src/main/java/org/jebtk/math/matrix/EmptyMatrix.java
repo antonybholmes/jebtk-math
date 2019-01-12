@@ -31,7 +31,7 @@ package org.jebtk.math.matrix;
  * A special matrix that hold no data. It can be used as a placeholder where a
  * matrix is required, but the data in it is immaterial.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class EmptyMatrix extends RegularMatrix {
 

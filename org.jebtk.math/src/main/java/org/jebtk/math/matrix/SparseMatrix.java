@@ -34,7 +34,7 @@ import org.jebtk.core.text.TextUtils;
 /**
  * Number/String matrix using sparse representation.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  * @param <T> the generic type
  */
 public abstract class SparseMatrix<T> extends IndexRowMatrix {

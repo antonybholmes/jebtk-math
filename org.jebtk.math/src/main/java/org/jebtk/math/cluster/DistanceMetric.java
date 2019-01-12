@@ -34,7 +34,7 @@ import org.jebtk.math.matrix.Matrix;
 /**
  * Calculate the distance between features.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public abstract class DistanceMetric {

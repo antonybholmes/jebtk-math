@@ -32,7 +32,7 @@ package org.jebtk.math.matrix;
  * appropriate offset calculations. This is column wise so accessing a whole
  * column is faster than a row.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public abstract class IndexColMatrix extends IndexMatrix {
 

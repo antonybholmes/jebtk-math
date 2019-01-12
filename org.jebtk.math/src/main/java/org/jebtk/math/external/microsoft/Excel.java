@@ -57,6 +57,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jebtk.core.Mathematics;
+import org.jebtk.core.collections.ArrayUtils;
 import org.jebtk.core.io.FileUtils;
 import org.jebtk.core.io.Io;
 import org.jebtk.core.io.PathUtils;
@@ -66,7 +67,7 @@ import org.jebtk.math.matrix.DataFrame;
 /**
  * Functions for reading and writing Excel files.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Excel {
@@ -252,11 +253,11 @@ public class Excel {
           if (cell != null) {
             if (evaluator.evaluateInCell(cell)
                 .getCellType() == Cell.CELL_TYPE_NUMERIC) {
-              matrix.setRowAnnotation(rowHeadings.get(j),
+              matrix.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   Double.toString(cell.getNumericCellValue()));
             } else {
-              matrix.setRowAnnotation(rowHeadings.get(j),
+              matrix.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   cell.getStringCellValue());
             }
@@ -381,11 +382,11 @@ public class Excel {
           if (cell != null) {
             if (evaluator.evaluateInCell(cell)
                 .getCellType() == Cell.CELL_TYPE_NUMERIC) {
-              matrix.setRowAnnotation(rowHeadings.get(j),
+              matrix.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   Double.toString(cell.getNumericCellValue()));
             } else {
-              matrix.setRowAnnotation(rowHeadings.get(j),
+              matrix.getIndex().setAnnotation(rowHeadings.get(j),
                   i,
                   cell.getStringCellValue());
             }
@@ -596,8 +597,8 @@ public class Excel {
     // Create the header
     //
 
-    List<String> names = m.getColumnAnnotationNames();
-    List<String> rowHeadings = m.getRowAnnotationNames();
+    List<String> names = m.getColumnHeader().getNames();
+    List<String> rowHeadings = m.getIndex().getNames();
 
     for (int i = 0; i < names.size() - 1; ++i) {
       row = (XSSFRow) sheet.createRow(r++);
@@ -610,7 +611,7 @@ public class Excel {
         cell = row.createCell(i);
 
         cell.setCellStyle(headerStyle);
-        cell.setCellValue(m.getColumnAnnotationText(name, j));
+        cell.setCellValue(m.getColumnHeader().getText(name, j));
       }
     }
 
@@ -632,7 +633,7 @@ public class Excel {
 
         cell.setCellStyle(headerStyle);
         cell.setCellValue(
-            m.getColumnAnnotationText(names.get(names.size() - 1), j));
+            m.getColumnHeader().getText(names.get(names.size() - 1), j));
       }
     }
 
@@ -646,7 +647,7 @@ public class Excel {
 
         cell.setCellStyle(defaultStyle);
 
-        Object v = m.getRowAnnotation(name, i);
+        Object v = m.getIndex().getAnnotation(name, i);
 
         if (v instanceof Number) {
           cell.setCellValue(((Number) v).doubleValue());
@@ -739,8 +740,8 @@ public class Excel {
     // Create the header
     //
 
-    List<String> names = m.getColumnAnnotationNames();
-    List<String> rowHeadings = m.getRowAnnotationNames();
+    List<String> names = m.getColumnHeader().getNames();
+    List<String> rowHeadings = m.getIndex().getNames();
 
     for (int i = 0; i < names.size() - 1; ++i) {
       row = (XSSFRow) sheet.createRow(r++);
@@ -753,7 +754,7 @@ public class Excel {
         cell = row.createCell(i);
 
         cell.setCellStyle(headerStyle);
-        cell.setCellValue(m.getColumnAnnotationText(name, j));
+        cell.setCellValue(m.getColumnHeader().getText(name, j));
       }
     }
 
@@ -775,7 +776,7 @@ public class Excel {
 
         cell.setCellStyle(headerStyle);
         cell.setCellValue(
-            m.getColumnAnnotationText(names.get(names.size() - 1), j));
+            m.getColumnHeader().getText(names.get(names.size() - 1), j));
       }
     }
 
@@ -789,7 +790,7 @@ public class Excel {
 
         cell.setCellStyle(defaultStyle);
 
-        Object v = m.getRowAnnotation(name, i);
+        Object v = m.getIndex().getAnnotation(name, i);
 
         if (v instanceof Number) {
           cell.setCellValue(((Number) v).doubleValue());
@@ -886,10 +887,10 @@ public class Excel {
    * @throws InvalidFormatException the invalid format exception
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  public static List<String> getTextFromFile(Path file, boolean skipHeader)
+  public static String[] getTextFromFile(Path file, boolean skipHeader)
       throws InvalidFormatException, IOException {
     if (file == null) {
-      return Collections.emptyList();
+      return ArrayUtils.EMPTY_STRING_ARRAY;
     }
 
     String ext = PathUtils.getFileExt(file);
@@ -991,10 +992,10 @@ public class Excel {
    * @throws InvalidFormatException the invalid format exception
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  public static List<String> load(Path file, boolean skipHeader)
+  public static String[] load(Path file, boolean skipHeader)
       throws InvalidFormatException, IOException {
     if (file == null) {
-      return Collections.emptyList();
+      return ArrayUtils.EMPTY_STRING_ARRAY;
     }
 
     String ext = PathUtils.getFileExt(file);
@@ -1015,16 +1016,16 @@ public class Excel {
    * @throws InvalidFormatException the invalid format exception
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  public static List<String> loadXlsx(Path file, boolean skipHeader)
+  public static String[] loadXlsx(Path file, boolean skipHeader)
       throws InvalidFormatException, IOException {
     XSSFWorkbook workbook = new XSSFWorkbook(OPCPackage.open(file.toFile()));
 
     XSSFSheet sheet = workbook.getSheetAt(0);
 
-    List<String> ret = new ArrayList<String>();
+    String[] ret = new String[sheet.getPhysicalNumberOfRows()];
 
     for (int i = skipHeader ? 1 : 0; i < sheet.getPhysicalNumberOfRows(); ++i) {
-      ret.add(sheet.getRow(i).getCell(0).getStringCellValue());
+      ret[i] = sheet.getRow(i).getCell(0).getStringCellValue();
     }
 
     workbook.close();
@@ -1041,17 +1042,17 @@ public class Excel {
    * @throws InvalidFormatException the invalid format exception
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  public static List<String> loadXls(Path file, boolean skipHeader)
+  public static String[] loadXls(Path file, boolean skipHeader)
       throws InvalidFormatException, IOException {
     HSSFWorkbook workbook = new HSSFWorkbook(
         FileUtils.newBufferedInputStream(file));
 
     HSSFSheet sheet = workbook.getSheetAt(0);
 
-    List<String> ret = new ArrayList<String>();
+    String[] ret = new String[sheet.getPhysicalNumberOfRows()];
 
     for (int i = skipHeader ? 1 : 0; i < sheet.getPhysicalNumberOfRows(); ++i) {
-      ret.add(sheet.getRow(i).getCell(0).getStringCellValue());
+      ret[i] = sheet.getRow(i).getCell(0).getStringCellValue();
     }
 
     workbook.close();

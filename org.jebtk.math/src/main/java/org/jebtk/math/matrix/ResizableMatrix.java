@@ -35,7 +35,7 @@ package org.jebtk.math.matrix;
  * matrix's nominal dimensions are increased to match the largest row and column
  * encountered.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  * @param <T> the generic type
  */
 public abstract class ResizableMatrix extends ObjectMatrix {

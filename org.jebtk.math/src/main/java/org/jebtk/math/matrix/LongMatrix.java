@@ -42,7 +42,7 @@ import org.jebtk.math.statistics.TTest;
 /**
  * Matrix for storing longs only.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class LongMatrix extends IndexRowMatrix {
 
@@ -408,10 +408,8 @@ public class LongMatrix extends IndexRowMatrix {
    * @see org.abh.common.math.matrix.IndexMatrix#columnAsDouble(int)
    */
   @Override
-  public double[] columnToDoubleArray(int column) {
+  public void columnToDouble(int column, double[] values) {
     int r = getRows();
-
-    double[] values = new double[r];
 
     int i1 = column;
 
@@ -420,17 +418,15 @@ public class LongMatrix extends IndexRowMatrix {
 
       i1 += mDim.mCols;
     }
-
-    return values;
   }
 
   @Override
-  public void rowToLongArray(int row, long[] ret) {
+  public void rowToLong(int row, long[] ret) {
     SysUtils.arraycopy(mData, getIndex(row, 0), ret, mDim.mCols);
   }
 
   @Override
-  public void columnToLongArray(int column, long[] ret) {
+  public void columnToLong(int column, long[] ret) {
     SysUtils.arraycopy(mData, column, mDim.mCols, ret, mDim.mRows);
   }
 

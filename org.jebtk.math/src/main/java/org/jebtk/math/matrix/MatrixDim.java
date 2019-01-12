@@ -18,7 +18,7 @@ package org.jebtk.math.matrix;
 /**
  * Immutable integer dimension.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class MatrixDim implements Comparable<MatrixDim> {

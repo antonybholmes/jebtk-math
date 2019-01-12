@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Maximum distance metric.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  */
 public class MaximumDistanceMetric extends DistanceMetric {
 

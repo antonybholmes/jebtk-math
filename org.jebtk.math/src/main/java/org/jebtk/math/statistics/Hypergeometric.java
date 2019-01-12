@@ -35,7 +35,7 @@ import org.jebtk.core.AgeMap;
 /**
  * Fast implementation of the hypergeometric function using the sum of logs.
  *
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class Hypergeometric {
