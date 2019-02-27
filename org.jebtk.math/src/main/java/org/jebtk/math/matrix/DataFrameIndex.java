@@ -329,7 +329,7 @@ public class DataFrameIndex extends ChangeListeners implements Iterable<String> 
   }
 
   /**
-   * Gets the name.
+   * Gets the name of the index
    *
    * @param index the index. Annotations are accessed using negative indices
    * @return the name

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -63,7 +64,6 @@ import org.jebtk.core.json.Json;
 import org.jebtk.core.json.JsonArray;
 import org.jebtk.core.json.JsonObject;
 import org.jebtk.core.json.JsonRepresentation;
-import org.jebtk.core.stream.Stream;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.core.xml.XmlRepresentation;
 import org.jebtk.core.xml.XmlUtils;
@@ -714,16 +714,33 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
     return findIndices(matrix.getRowNames(), groups);
   }
 
-  /**
-   * Find row indices.
-   *
-   * @param matrix the matrix
-   * @param group the group
-   * @return the list
-   */
-  public static List<Integer> findRowIndices(DataFrame matrix,
-      MatrixGroup group) {
-    return findIndices(matrix.getRowNames(), group);
+  public static <X extends MatrixGroup> List<Integer> findRowIndices(
+      DataFrame m,
+      X group) {
+    int n = m.getRows();
+
+    List<Integer> ret = new ArrayList<Integer>(n);
+
+    // Use the first set of indices
+    String[] v = m.getIndex().getText(0);
+    
+    for (int i = 0; i < n; ++i) {
+      
+      for (Pattern regex : group) {
+        //System.err.println("search for " + regex + " " + i + " " + v[i]);
+        
+        if (TextUtils.find(v[i], regex)) {
+          ret.add(i);
+          break;
+        }
+      }
+    }
+
+    if (ret.size() > 0) {
+      Collections.sort(ret);
+    }
+
+    return ret;
   }
 
   /**
@@ -763,8 +780,11 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
     List<Integer> ret = new ArrayList<Integer>(n);
 
     for (int i = 0; i < n; ++i) {
+      
       for (Pattern regex : group) {
-        if (TextUtils.find(m.getColumnHeader().getText(i), regex).size() > 0) {
+        //System.err.println("search for " + regex + " " + m.getColumnHeader().getHeader(i) + " " + TextUtils.find(m.getColumnHeader().getHeader(i), regex));
+        
+        if (TextUtils.find(m.getColumnHeader().getHeader(i), regex)) {
           ret.add(i);
           break;
         }
@@ -886,7 +906,9 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
     Set<Integer> ret = new HashSet<Integer>();
 
     for (Pattern regex : group) {
-      ret.addAll(Stream.asString(names).indices(regex));
+      //System.err.println("m group " + Arrays.toString(names) + " " + regex);
+      
+      ret.addAll(TextUtils.find(names, regex));
     }
 
     return CollectionUtils.sort(ret);

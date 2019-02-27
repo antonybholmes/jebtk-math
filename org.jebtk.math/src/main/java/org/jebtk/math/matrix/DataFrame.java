@@ -416,7 +416,7 @@ public class DataFrame extends Matrix
     int r = 0;
 
     for (String name : names) {
-      getIndex().setAnnotation(ROW_NAMES, r++, name);
+      getIndex().setHeading(r++, name);
     }
   }
 
@@ -436,7 +436,7 @@ public class DataFrame extends Matrix
    * @param name the name
    */
   public void setRowName(int row, String name) {
-    getIndex().setAnnotation(ROW_NAMES, row, name);
+    getIndex().setHeading(row, name);
   }
 
   /**
@@ -445,13 +445,15 @@ public class DataFrame extends Matrix
    * @return the row names
    */
   public String[] getRowNames() {
-    List<String> names = getIndex().getNames();
+    return getIndex().getText(0);
+    
+    //List<String> names = getIndex().getNames();
 
-    if (names.size() > 0) {
-      return getIndex().getAnnotation(names.get(0)).rowToText(0);
-    } else {
-      return ArrayUtils.EMPTY_STRING_ARRAY;
-    }
+    //if (names.size() > 0) {
+    //  return getIndex().getAnnotation(names.get(0)).rowToText(0);
+    //} else {
+    //  return ArrayUtils.EMPTY_STRING_ARRAY;
+    //}
   }
 
   /*
@@ -513,13 +515,13 @@ public class DataFrame extends Matrix
    * @return the column names
    */
   public String[] getColumnNames() {
-    List<String> names = getColumnHeader().getNames();
+    return getColumnHeader().getText(0);
 
-    if (names.size() > 0) {
-      return getColumnHeader().getAnnotation(names.get(0)).rowToText(0);
-    } else {
-      return ArrayUtils.EMPTY_STRING_ARRAY;
-    }
+    //if (names.length > 0) {
+    //  return getColumnHeader().getAnnotation(names.get(0)).rowToText(0);
+    //} else {
+    //  return ArrayUtils.EMPTY_STRING_ARRAY;
+    //}
   }
 
   /**

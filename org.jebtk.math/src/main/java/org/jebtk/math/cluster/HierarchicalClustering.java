@@ -138,6 +138,14 @@ public class HierarchicalClustering {
 
     return cluster(l, m.getCols(), optimalLeafOrder, distance);
   }
+  
+  public static Cluster columnCluster(final Matrix m,
+      final Linkage l,
+      boolean optimalLeafOrder,
+      final DistanceMatrix mDist) {
+
+    return cluster(l, m.getCols(), optimalLeafOrder, mDist);
+  }
 
   /**
    * Cluster.
