@@ -1400,7 +1400,7 @@ public class Statistics {
       double start,
       double end,
       double binWidth) {
-    int b = (int) ((end - start) / binWidth) + 1;
+    int b = (int) ((end - start) / binWidth); // + 1;
 
     List<Integer> bins = Mathematics.intZeros(b);
 
@@ -1410,8 +1410,10 @@ public class Statistics {
         continue;
       }
 
-      b = (int) Math.ceil((v - start) / binWidth) - 1;
+      b = (int) ((v - start) / binWidth); // - 1;
 
+      //System.err.println("hist " + v + " " + b + " " + start + " " + binWidth);
+      
       if (b >= 0) {
         bins.set(b, bins.get(b) + 1);
       }
@@ -1422,7 +1424,7 @@ public class Statistics {
     for (int c : bins) {
       histBins.add(new HistBin(start, binWidth, c));
 
-      // System.err.println(start + " " + c);
+      //System.err.println("hhh " + start + " " + c);
 
       start += binWidth;
     }
