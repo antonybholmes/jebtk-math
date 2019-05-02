@@ -1400,26 +1400,32 @@ public class Statistics {
       double start,
       double end,
       double binWidth) {
-    int b = (int) ((end - start) / binWidth); // + 1;
+    int n = (int) ((end - start) / binWidth);
+    int ni = n - 1;
+    
+    // If there are 3 bins, there are two divisions between them. The distance
+    // between divisions allows us to normalize which bin we are in. e.g.
+    // 3 bins => w = 1 / (3 - 1) = 0.5 so that < 0.5 = b1, < 1 = b2 and < 2 = b3
+    double w = (end - start) / ni;
 
-    List<Integer> bins = Mathematics.intZeros(b);
-
+    int[] bins = Mathematics.zerosIntArray(n);
+    
+    int b;
+    
     for (Double v : values) {
       // Skip values outside of range.
       if (v < start || v > end) {
         continue;
       }
 
-      b = (int) ((v - start) / binWidth); // - 1;
+      b = (int)((v - start) / w); //(int)((v - start) / binWidth);
 
       //System.err.println("hist " + v + " " + b + " " + start + " " + binWidth);
       
-      if (b >= 0) {
-        bins.set(b, bins.get(b) + 1);
-      }
+      bins[b] += 1;
     }
 
-    List<HistBin> histBins = new ArrayList<HistBin>(bins.size());
+    List<HistBin> histBins = new ArrayList<HistBin>(n);
 
     for (int c : bins) {
       histBins.add(new HistBin(start, binWidth, c));
