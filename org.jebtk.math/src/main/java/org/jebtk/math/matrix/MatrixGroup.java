@@ -819,7 +819,8 @@ Comparable<MatrixGroup>, Iterable<Pattern> {
       
       for (X group : groups) {
         for (Pattern regex : group) {
-          if (TextUtils.find(names, regex).size() > 0) {
+          
+          if (TextUtils.find(names[i], regex)) {
             ret.get(i).add(group);
             //found = true;
             break;
