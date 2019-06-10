@@ -333,9 +333,9 @@ public class Excel {
     int cols = sheet.getRow(0).getPhysicalNumberOfCells() - rowAnnotations;
 
     DataFrame matrix = DataFrame.createWorksheet(rows, cols); // .createMatrix(rows,
-                                                        // cols); //new
-                                                        // MixedSparseMatrix(r,
-                                                        // c);
+    // cols); //new
+    // MixedSparseMatrix(r,
+    // c);
 
     // lets create some row headings
 
@@ -660,16 +660,16 @@ public class Excel {
         cell = row.createCell(c++);
         cell.setCellStyle(defaultStyle);
 
-        double v = m.getValue(i, j);
+        Object v = m.get(i, j);
 
-        if (Mathematics.isValidNumber(v)) {
-          cell.setCellValue(v);
+        if (v instanceof Number) {
+          cell.setCellValue(((Number) v).doubleValue());
         } else {
-          String value = m.getText(i, j);
+          // String value = m.getText(i, j);
 
-          if (value != null) {
-            cell.setCellValue(value);
-          }
+          // if (value != null) {
+          cell.setCellValue(m.getText(i, j));
+          // }
         }
       }
     }
