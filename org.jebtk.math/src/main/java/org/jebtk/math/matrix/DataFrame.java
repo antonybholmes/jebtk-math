@@ -41,7 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jebtk.core.Indexed;
-import org.jebtk.core.NameProperty;
+import org.jebtk.core.NameGetter;
 import org.jebtk.core.collections.ArrayUtils;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.UniqueArrayList;
@@ -60,7 +60,7 @@ import org.jebtk.core.text.TextUtils;
  *
  */
 public class DataFrame extends Matrix
-    implements NameProperty {
+    implements NameGetter {
 
   /**
    * The constant serialVersionUID.

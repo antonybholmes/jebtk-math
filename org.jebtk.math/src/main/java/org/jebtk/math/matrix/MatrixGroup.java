@@ -50,7 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.jebtk.core.ColorUtils;
-import org.jebtk.core.NameProperty;
+import org.jebtk.core.NameGetter;
 import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.DefaultTreeMap;
@@ -75,7 +75,7 @@ import org.w3c.dom.Element;
  * The class MatrixGroup.
  */
 public class MatrixGroup extends ChangeListeners
-implements NameProperty, JsonRepresentation, XmlRepresentation,
+implements NameGetter, JsonRepresentation, XmlRepresentation,
 Comparable<MatrixGroup>, Iterable<Pattern> {
 
   /** The Constant serialVersionUID. */
