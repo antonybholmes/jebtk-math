@@ -37,7 +37,7 @@ import org.jebtk.core.text.TextUtils;
  * Matrix that can be dynamically resized to match maximum row/column. This
  * matrix uses lazy instantiation so cells are only created as they are
  * referenced. Thus there will be a performance loss at the expense of
- * flexibility. This matrix has both the properties of a matrix and a map. The
+ * flexibility. This matrix has both the Props of a matrix and a map. The
  * matrix's nominal dimensions are increased to match the largest row and column
  * encountered.
  *
