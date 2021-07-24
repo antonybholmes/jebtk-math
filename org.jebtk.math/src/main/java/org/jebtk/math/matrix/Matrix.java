@@ -341,16 +341,9 @@ public abstract class Matrix extends MatrixEventListeners {
       return;
     }
     
-    if (row < 5 && column < 5) {
-      System.err.println("sdsdf " + row + " " + column + " " + v.getClass() +  " " + v + " " +getClass());
-    }
-    
     if (v instanceof Double) {
       update(row, column, (double) v);
     } else if (v instanceof Integer) {
-      if (row < 5 && column < 5) {
-        System.err.println("sssss " + row + " " + column + " " + v.getClass() +  " " + v + " " +getClass());
-      }
       update(row, column, (int) v);
     } else if (v instanceof Number) {
       update(row, column, ((Number) v).doubleValue());
